@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>D247A43E-0D06-4157-8F3F-C7B6EFF2F985</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Replete</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>67861BB23AA24EFBE83DF8B705543D5A4F7F46A8</key>
+		<string>https://github.com/mfikes/replete.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Replete.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>67861BB23AA24EFBE83DF8B705543D5A4F7F46A8</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/mfikes/replete.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>67861BB23AA24EFBE83DF8B705543D5A4F7F46A8</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>67861BB23AA24EFBE83DF8B705543D5A4F7F46A8</string>
+			<key>IDESourceControlWCCName</key>
+			<string>replete</string>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -1,3 +1,7 @@
 xcuserdata
 ClojureScript/replete/resources/cljs
 ClojureScript/replete/out
+Pods
+Podfile.lock
+Replete.xcworkspace
+.DS_Store
