@@ -5,3 +5,5 @@ Pods
 Podfile.lock
 Replete.xcworkspace
 .DS_Store
+ClojureScript/replete/.idea
+ClojureScript/replete/replete.iml
