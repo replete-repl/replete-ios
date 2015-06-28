@@ -40,6 +40,6 @@
                      (ensure
                        (c/emit ast)))
                 _ (when DEBUG (prn "js:" js))]
-            (with-out-str (print (js/eval js))))
+            (println (js/eval js)))
           (catch js/Error e
-            (str (.-message e) "\n" (.-stack e))))))))
+            (println (str (.-message e) "\n" (.-stack e)))))))))
