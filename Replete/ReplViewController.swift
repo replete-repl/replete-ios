@@ -28,6 +28,8 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 textView.layer.cornerRadius = 5
                 textView.scrollsToTop = false
                 textView.textContainerInset = UIEdgeInsetsMake(4, 3, 3, 3)
+                textView.autocorrectionType = UITextAutocorrectionType.No;
+                textView.autocapitalizationType = UITextAutocapitalizationType.None;
                 textView.delegate = self
                 toolBar.addSubview(textView)
                 
