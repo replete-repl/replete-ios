@@ -10,7 +10,7 @@
             [cljs.env :as env]
             [cljs.reader :as edn]))
 
-(def DEBUG true)
+(def DEBUG false)
 
 (def cenv (env/default-compiler-env))
 
@@ -22,15 +22,13 @@
   (swap! cenv assoc-in [::ana/namespaces 'cljs.core$macros]
     (edn/read-string macros-edn)))
 
-(enable-console-print!)
-
 (defn read-eval-print [line]
-  (binding [ana/*cljs-ns* 'cljs.user
-            *ns* (create-ns 'cljs.user)
+  (binding [ana/*cljs-ns* 'replete.core
+            *ns* (create-ns 'replete.core)
             r/*data-readers* tags/*cljs-data-readers*]
     (with-compiler-env cenv
       (let [env (assoc (ana/empty-env) :context :expr
-                                       :ns {:name 'cljs.user}
+                                       :ns {:name 'replete.core}
                                        :def-emits-var true)]
         (try
           (let [_ (when DEBUG (prn "line:" line))
@@ -42,6 +40,6 @@
                      (ensure
                        (c/emit ast)))
                 _ (when DEBUG (prn "js:" js))]
-            (str (js/eval js)))
+            (with-out-str (print (js/eval js))))
           (catch js/Error e
             (str (.-message e) "\n" (.-stack e))))))))

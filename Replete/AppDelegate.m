@@ -50,7 +50,7 @@
     [self processFile:[[NSBundle mainBundle] pathForResource:@"core.cljs.cache.aot" ofType:@"edn"]
               calling:@"load-core-cache" inContext:context];
     
-    NSString* coreMacrosCacheAotEdn = [[outCljsURL URLByAppendingPathComponent:@"core$macros.cljs.cache.aot"]
+    NSString* coreMacrosCacheAotEdn = [[outCljsURL URLByAppendingPathComponent:@"core$macros.cljc.cache"]
                                  URLByAppendingPathExtension:@"edn"].path;
     
     
@@ -59,7 +59,15 @@
     JSValue* readEvalPrintFn = [self getValue:@"read-eval-print" inNamespace:@"replete.core" fromContext:context];
     NSAssert(!readEvalPrintFn.isUndefined, @"Could not find the Read-Eval-Print function");
     
-    JSValue* response = [readEvalPrintFn callWithArguments:@[@"1"]];
+    context[@"REPLETE_PRINT_FN"] = ^(NSString *message) {
+        NSLog(@"REPLETE_PRINT: %@", message);
+    };
+    [context evaluateScript:@"cljs.core.set_print_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
+    
+    // TODO look into this. Without it thngs won't work.
+    [context evaluateScript:@"var window = global;"];
+    
+    JSValue* response = [readEvalPrintFn callWithArguments:@[@"(def a 3)"]];
     NSLog(@"%@", [response toString]);
     
     return YES;
