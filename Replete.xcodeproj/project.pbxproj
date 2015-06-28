@@ -10,12 +10,15 @@
 		2C7CFB443527243C47B0279F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7AFE2C9D909563258DFF3198 /* libPods.a */; };
 		ED06DC271B3F62E800100331 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = ED06DC261B3F62E800100331 /* main.m */; };
 		ED06DC2A1B3F62E800100331 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ED06DC291B3F62E800100331 /* AppDelegate.m */; };
-		ED06DC2D1B3F62E800100331 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED06DC2C1B3F62E800100331 /* ViewController.m */; };
 		ED06DC301B3F62E800100331 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ED06DC2E1B3F62E800100331 /* Main.storyboard */; };
 		ED06DC321B3F62E800100331 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED06DC311B3F62E800100331 /* Images.xcassets */; };
 		ED06DC351B3F62E800100331 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED06DC331B3F62E800100331 /* LaunchScreen.xib */; };
 		ED06DC411B3F62E800100331 /* RepleteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED06DC401B3F62E800100331 /* RepleteTests.m */; };
 		ED1B77241B3F7ADE00854598 /* core.cljs.cache.aot.edn in Resources */ = {isa = PBXBuildFile; fileRef = ED1B77231B3F7ADE00854598 /* core.cljs.cache.aot.edn */; };
+		ED93310C1B4013F0004B09FD /* ReplViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED93310B1B4013F0004B09FD /* ReplViewController.swift */; };
+		ED93310F1B401411004B09FD /* HistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED93310D1B401411004B09FD /* HistoryTableViewCell.swift */; };
+		ED9331131B40151A004B09FD /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9331111B40151A004B09FD /* History.swift */; };
+		ED9331141B40151A004B09FD /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9331121B40151A004B09FD /* Message.swift */; };
 		EDE7D6CB1B3F79AB00710B50 /* out in Resources */ = {isa = PBXBuildFile; fileRef = EDE7D6CA1B3F79AB00710B50 /* out */; };
 /* End PBXBuildFile section */
 
@@ -38,8 +41,6 @@
 		ED06DC261B3F62E800100331 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		ED06DC281B3F62E800100331 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		ED06DC291B3F62E800100331 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		ED06DC2B1B3F62E800100331 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		ED06DC2C1B3F62E800100331 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		ED06DC2F1B3F62E800100331 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		ED06DC311B3F62E800100331 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		ED06DC341B3F62E800100331 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -47,6 +48,11 @@
 		ED06DC3F1B3F62E800100331 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ED06DC401B3F62E800100331 /* RepleteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RepleteTests.m; sourceTree = "<group>"; };
 		ED1B77231B3F7ADE00854598 /* core.cljs.cache.aot.edn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = core.cljs.cache.aot.edn; path = ClojureScript/replete/resources/cljs/core.cljs.cache.aot.edn; sourceTree = SOURCE_ROOT; };
+		ED93310A1B4013EF004B09FD /* Replete-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Replete-Bridging-Header.h"; sourceTree = "<group>"; };
+		ED93310B1B4013F0004B09FD /* ReplViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplViewController.swift; sourceTree = "<group>"; };
+		ED93310D1B401411004B09FD /* HistoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HistoryTableViewCell.swift; sourceTree = "<group>"; };
+		ED9331111B40151A004B09FD /* History.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
+		ED9331121B40151A004B09FD /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		EDE7D6CA1B3F79AB00710B50 /* out */ = {isa = PBXFileReference; lastKnownFileType = folder; name = out; path = ClojureScript/replete/out; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -113,12 +119,15 @@
 				EDE7D6CA1B3F79AB00710B50 /* out */,
 				ED06DC281B3F62E800100331 /* AppDelegate.h */,
 				ED06DC291B3F62E800100331 /* AppDelegate.m */,
-				ED06DC2B1B3F62E800100331 /* ViewController.h */,
-				ED06DC2C1B3F62E800100331 /* ViewController.m */,
+				ED93310B1B4013F0004B09FD /* ReplViewController.swift */,
+				ED93310D1B401411004B09FD /* HistoryTableViewCell.swift */,
+				ED9331111B40151A004B09FD /* History.swift */,
+				ED9331121B40151A004B09FD /* Message.swift */,
 				ED06DC2E1B3F62E800100331 /* Main.storyboard */,
 				ED06DC311B3F62E800100331 /* Images.xcassets */,
 				ED06DC331B3F62E800100331 /* LaunchScreen.xib */,
 				ED06DC241B3F62E800100331 /* Supporting Files */,
+				ED93310A1B4013EF004B09FD /* Replete-Bridging-Header.h */,
 			);
 			path = Replete;
 			sourceTree = "<group>";
@@ -286,8 +295,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED06DC2D1B3F62E800100331 /* ViewController.m in Sources */,
+				ED93310F1B401411004B09FD /* HistoryTableViewCell.swift in Sources */,
+				ED9331131B40151A004B09FD /* History.swift in Sources */,
+				ED93310C1B4013F0004B09FD /* ReplViewController.swift in Sources */,
 				ED06DC2A1B3F62E800100331 /* AppDelegate.m in Sources */,
+				ED9331141B40151A004B09FD /* Message.swift in Sources */,
 				ED06DC271B3F62E800100331 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -415,9 +427,12 @@
 			baseConfigurationReference = 481651E85E5AA77D6C273322 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Replete/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Replete/Replete-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -426,9 +441,11 @@
 			baseConfigurationReference = 20A0AE708C7C3592BDE9E85C /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Replete/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Replete/Replete-Bridging-Header.h";
 			};
 			name = Release;
 		};
