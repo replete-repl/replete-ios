@@ -37,14 +37,20 @@ class HistoryTableViewCell: UITableViewCell {
             messageLabel.textColor = UIColor.grayColor();
         }
         
-        // Flexible width autoresizing causes text to jump because center text alignment doesn't animate
         messageLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+        
         contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Left, relatedBy: .Equal, toItem: contentView, attribute: .Left, multiplier: 1, constant: 10))
-        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .Top, multiplier: 1, constant: 13))
-        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Bottom, relatedBy: .Equal, toItem: contentView, attribute: .Bottom, multiplier: 1, constant: -4.5))
+        
+        if (message.incoming) {
+            contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .Top, multiplier: 1, constant: 9))
+        } else {
+            contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .Top, multiplier: 1, constant: 19))
+        }
+        
+        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Bottom, relatedBy: .Equal, toItem: contentView, attribute: .Bottom, multiplier: 1, constant: -2.5))
         
     }
-
+    
     // Highlight cell #CopyMessage
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

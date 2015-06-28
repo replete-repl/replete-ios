@@ -1,6 +1,6 @@
 import UIKit
 
-let messageFontSize: CGFloat = 12
+let messageFontSize: CGFloat = 16
 let toolBarMinHeight: CGFloat = 44
 let textViewMaxHeight: (portrait: CGFloat, landscape: CGFloat) = (portrait: 272, landscape: 90)
 
@@ -33,7 +33,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 
                 sendButton = UIButton.buttonWithType(.System) as! UIButton
                 sendButton.enabled = false
-                sendButton.titleLabel?.font = UIFont.boldSystemFontOfSize(14)
+                sendButton.titleLabel?.font = UIFont.boldSystemFontOfSize(17)
                 sendButton.setTitle("Eval", forState: .Normal)
                 sendButton.setTitleColor(UIColor(red: 142/255, green: 142/255, blue: 147/255, alpha: 1), forState: .Disabled)
                 sendButton.setTitleColor(UIColor(red: 1/255, green: 122/255, blue: 255/255, alpha: 1), forState: .Normal)
