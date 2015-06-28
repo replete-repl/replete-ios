@@ -40,6 +40,12 @@
                      (ensure
                        (c/emit ast)))
                 _ (when DEBUG (prn "js:" js))]
-            (println (js/eval js)))
+            (println (let [ret (js/eval js)]
+                       (when-not ('#{*1 *2 *3 *e} form)
+                         (set! *3 *2)
+                         (set! *2 *1)
+                         (set! *1 ret))
+                       ret)))
           (catch js/Error e
+            (set! *e e)
             (println (str (.-message e) "\n" (.-stack e)))))))))
