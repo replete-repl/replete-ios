@@ -10,7 +10,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var tableView: UITableView!
     var toolBar: UIToolbar!
     var textView: UITextView!
-    var sendButton: UIButton!
+    var evalButton: UIButton!
     var rotating = false
     var textFieldHeightLayoutConstraint: NSLayoutConstraint!
     var currentKeyboardHeight: CGFloat!
@@ -33,26 +33,26 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 textView.delegate = self
                 toolBar.addSubview(textView)
                 
-                sendButton = UIButton.buttonWithType(.System) as! UIButton
-                sendButton.enabled = false
-                sendButton.titleLabel?.font = UIFont.boldSystemFontOfSize(17)
-                sendButton.setTitle("Eval", forState: .Normal)
-                sendButton.setTitleColor(UIColor(red: 142/255, green: 142/255, blue: 147/255, alpha: 1), forState: .Disabled)
-                sendButton.setTitleColor(UIColor(red: 1/255, green: 122/255, blue: 255/255, alpha: 1), forState: .Normal)
-                sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
-                sendButton.addTarget(self, action: "sendAction", forControlEvents: UIControlEvents.TouchUpInside)
-                toolBar.addSubview(sendButton)
+                evalButton = UIButton.buttonWithType(.System) as! UIButton
+                evalButton.enabled = false
+                evalButton.titleLabel?.font = UIFont.boldSystemFontOfSize(17)
+                evalButton.setTitle("Eval", forState: .Normal)
+                evalButton.setTitleColor(UIColor(red: 142/255, green: 142/255, blue: 147/255, alpha: 1), forState: .Disabled)
+                evalButton.setTitleColor(UIColor(red: 1/255, green: 122/255, blue: 255/255, alpha: 1), forState: .Normal)
+                evalButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
+                evalButton.addTarget(self, action: "sendAction", forControlEvents: UIControlEvents.TouchUpInside)
+                toolBar.addSubview(evalButton)
                 
                 textView.setTranslatesAutoresizingMaskIntoConstraints(false)
-                sendButton.setTranslatesAutoresizingMaskIntoConstraints(false)
+                evalButton.setTranslatesAutoresizingMaskIntoConstraints(false)
                 toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Left, relatedBy: .Equal, toItem: toolBar, attribute: .Left, multiplier: 1, constant: 8))
                 //toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Top, relatedBy: .Equal, toItem: toolBar, attribute: .Top, multiplier: 1, constant: 7.5))
                 textFieldHeightLayoutConstraint = NSLayoutConstraint(item: textView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 28)
                 toolBar.addConstraint(textFieldHeightLayoutConstraint)
-                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Right, relatedBy: .Equal, toItem: sendButton, attribute: .Left, multiplier: 1, constant: -2))
+                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Right, relatedBy: .Equal, toItem: evalButton, attribute: .Left, multiplier: 1, constant: -2))
                 toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Bottom, relatedBy: .Equal, toItem: toolBar, attribute: .Bottom, multiplier: 1, constant: -8))
-                toolBar.addConstraint(NSLayoutConstraint(item: sendButton, attribute: .Right, relatedBy: .Equal, toItem: toolBar, attribute: .Right, multiplier: 1, constant: 0))
-                toolBar.addConstraint(NSLayoutConstraint(item: sendButton, attribute: .Bottom, relatedBy: .Equal, toItem: toolBar, attribute: .Bottom, multiplier: 1, constant: -4.5))
+                toolBar.addConstraint(NSLayoutConstraint(item: evalButton, attribute: .Right, relatedBy: .Equal, toItem: toolBar, attribute: .Right, multiplier: 1, constant: 0))
+                toolBar.addConstraint(NSLayoutConstraint(item: evalButton, attribute: .Bottom, relatedBy: .Equal, toItem: toolBar, attribute: .Bottom, multiplier: 1, constant: -4.5))
                 
             }
             return toolBar
@@ -167,7 +167,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func textViewDidChange(textView: UITextView) {
         updateTextViewHeight()
-        sendButton.enabled = textView.hasText()
+        evalButton.enabled = textView.hasText()
     }
     
     func keyboardWillShow(notification: NSNotification) {
@@ -278,7 +278,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         textView.text = nil
         updateTextViewHeight()
-        sendButton.enabled = false
+        evalButton.enabled = false
         
         // Dispatch to be evaluated
         
