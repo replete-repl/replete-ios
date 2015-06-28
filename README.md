@@ -2,7 +2,7 @@
 
 ClojureScript REPL iOS app.
 
-This app presents a self-contained (no network connectivity needed) ClojureScript REPL, based on the recent bootstrapped ClojureScript compiler work. My intent is to polish this app and release it as a free app in the App Store.
+Read more in blog post: [Replete: A Standalone iOS CLJS REPL](http://blog.fikesfarm.com/posts/2015-06-27-replete-a-standalone-ios-cljs-repl.html).
 
 # Running
 
