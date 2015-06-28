@@ -7,8 +7,11 @@
 //
 
 #import "AppDelegate.h"
+#import "ABYContextManager.h"
 
 @interface AppDelegate ()
+
+@property (strong, nonatomic) ABYContextManager* contextManager;
 
 @end
 
@@ -16,7 +19,35 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    
+    NSString *outPath = [[NSBundle mainBundle] pathForResource:@"out" ofType:nil];
+    NSURL* outURL = [NSURL URLWithString:outPath];
+    
+    self.contextManager = [[ABYContextManager alloc] initWithContext:JSGlobalContextCreate(NULL)
+                                             compilerOutputDirectory:outURL];
+    [self.contextManager setUpConsoleLog];
+    [self.contextManager setUpAmblyImportScript];
+    
+    NSString* mainJsFilePath = [[outURL URLByAppendingPathComponent:@"deps" isDirectory:NO]
+                                URLByAppendingPathExtension:@"js"].path;
+    
+    NSURL* googDirectory = [outURL URLByAppendingPathComponent:@"goog"];
+    
+    [self.contextManager bootstrapWithDepsFilePath:mainJsFilePath
+                                      googBasePath:[[googDirectory URLByAppendingPathComponent:@"base" isDirectory:NO] URLByAppendingPathExtension:@"js"].path];
+    
+    JSContext* context = [JSContext contextWithJSGlobalContextRef:self.contextManager.context];
+    
+    NSURL* outCljsURL = [outURL URLByAppendingPathComponent:@"cljs"];
+    NSString* macrosJsPath = [outCljsURL URLByAppendingPathComponent:@"core$macros"].path;
+    
+    [self processFile:macrosJsPath withExt:@"js" calling:nil inContext:context];
+    
+    [self requireAppNamespaces:context];
+    
+    [self processFile:@"core.cljs.cache.aot" withExt:@"edn" calling:@"load-core-cache" inContext:context];
+    [self processFile:@"core$macros.cljc.cache" withExt:@"edn" calling:@"load-macros-cache" inContext:context];
+  
     return YES;
 }
 
@@ -41,5 +72,52 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+
+- (void)processFile:(NSString*)path withExt:(NSString*)ext calling:(NSString*)fn inContext:(JSContext*)context
+{
+
+    NSError* error = nil;
+    NSString* contents = [NSString stringWithContentsOfFile:path
+                                                   encoding:NSUTF8StringEncoding error:&error];
+    
+    if (!fn) {
+        [context evaluateScript:contents];
+    } else {
+        JSValue* processFileFn = [self getValue:fn inNamespace:@"replete.core" fromContext:context];
+        NSAssert(!processFileFn.isUndefined, @"Could not find the process file function");
+        
+        if (!error && contents) {
+            [processFileFn callWithArguments:@[contents]];
+        }
+    }
+}
+
+-(void)requireAppNamespaces:(JSContext*)context
+{
+    [context evaluateScript:[NSString stringWithFormat:@"goog.require('%@');", [self munge:@"niode.ui"]]];
+    [context evaluateScript:[NSString stringWithFormat:@"goog.require('%@');", [self munge:@"niode.core"]]];
+}
+
+- (JSValue*)getValue:(NSString*)name inNamespace:(NSString*)namespace fromContext:(JSContext*)context
+{
+    JSValue* namespaceValue = nil;
+    for (NSString* namespaceElement in [namespace componentsSeparatedByString: @"."]) {
+        if (namespaceValue) {
+            namespaceValue = namespaceValue[[self munge:namespaceElement]];
+        } else {
+            namespaceValue = context[[self munge:namespaceElement]];
+        }
+    }
+    
+    return namespaceValue[[self munge:name]];
+}
+
+- (NSString*)munge:(NSString*)s
+{
+    return [[[s stringByReplacingOccurrencesOfString:@"-" withString:@"_"]
+             stringByReplacingOccurrencesOfString:@"!" withString:@"_BANG_"]
+            stringByReplacingOccurrencesOfString:@"?" withString:@"_QMARK_"];
+}
+
 
 @end
