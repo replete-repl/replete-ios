@@ -15,6 +15,8 @@
 		ED06DC321B3F62E800100331 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED06DC311B3F62E800100331 /* Images.xcassets */; };
 		ED06DC351B3F62E800100331 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED06DC331B3F62E800100331 /* LaunchScreen.xib */; };
 		ED06DC411B3F62E800100331 /* RepleteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED06DC401B3F62E800100331 /* RepleteTests.m */; };
+		ED1B77241B3F7ADE00854598 /* core.cljs.cache.aot.edn in Resources */ = {isa = PBXBuildFile; fileRef = ED1B77231B3F7ADE00854598 /* core.cljs.cache.aot.edn */; };
+		EDE7D6CB1B3F79AB00710B50 /* out in Resources */ = {isa = PBXBuildFile; fileRef = EDE7D6CA1B3F79AB00710B50 /* out */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +46,8 @@
 		ED06DC3A1B3F62E800100331 /* RepleteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RepleteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED06DC3F1B3F62E800100331 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ED06DC401B3F62E800100331 /* RepleteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RepleteTests.m; sourceTree = "<group>"; };
+		ED1B77231B3F7ADE00854598 /* core.cljs.cache.aot.edn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = core.cljs.cache.aot.edn; path = ClojureScript/replete/resources/cljs/core.cljs.cache.aot.edn; sourceTree = SOURCE_ROOT; };
+		EDE7D6CA1B3F79AB00710B50 /* out */ = {isa = PBXFileReference; lastKnownFileType = folder; name = out; path = ClojureScript/replete/out; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +109,8 @@
 		ED06DC231B3F62E800100331 /* Replete */ = {
 			isa = PBXGroup;
 			children = (
+				ED1B77231B3F7ADE00854598 /* core.cljs.cache.aot.edn */,
+				EDE7D6CA1B3F79AB00710B50 /* out */,
 				ED06DC281B3F62E800100331 /* AppDelegate.h */,
 				ED06DC291B3F62E800100331 /* AppDelegate.m */,
 				ED06DC2B1B3F62E800100331 /* ViewController.h */,
@@ -227,7 +233,9 @@
 			files = (
 				ED06DC301B3F62E800100331 /* Main.storyboard in Resources */,
 				ED06DC351B3F62E800100331 /* LaunchScreen.xib in Resources */,
+				ED1B77241B3F7ADE00854598 /* core.cljs.cache.aot.edn in Resources */,
 				ED06DC321B3F62E800100331 /* Images.xcassets in Resources */,
+				EDE7D6CB1B3F79AB00710B50 /* out in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

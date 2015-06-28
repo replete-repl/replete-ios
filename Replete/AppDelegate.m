@@ -26,6 +26,7 @@
     self.contextManager = [[ABYContextManager alloc] initWithContext:JSGlobalContextCreate(NULL)
                                              compilerOutputDirectory:outURL];
     [self.contextManager setUpConsoleLog];
+    [self.contextManager setupGlobalContext];
     [self.contextManager setUpAmblyImportScript];
     
     NSString* mainJsFilePath = [[outURL URLByAppendingPathComponent:@"deps" isDirectory:NO]
@@ -39,15 +40,28 @@
     JSContext* context = [JSContext contextWithJSGlobalContextRef:self.contextManager.context];
     
     NSURL* outCljsURL = [outURL URLByAppendingPathComponent:@"cljs"];
-    NSString* macrosJsPath = [outCljsURL URLByAppendingPathComponent:@"core$macros"].path;
+    NSString* macrosJsPath = [[outCljsURL URLByAppendingPathComponent:@"core$macros"]
+                              URLByAppendingPathExtension:@"js"].path;
     
-    [self processFile:macrosJsPath withExt:@"js" calling:nil inContext:context];
+    [self processFile:macrosJsPath calling:nil inContext:context];
     
     [self requireAppNamespaces:context];
+        
+    [self processFile:[[NSBundle mainBundle] pathForResource:@"core.cljs.cache.aot" ofType:@"edn"]
+              calling:@"load-core-cache" inContext:context];
     
-    [self processFile:@"core.cljs.cache.aot" withExt:@"edn" calling:@"load-core-cache" inContext:context];
-    [self processFile:@"core$macros.cljc.cache" withExt:@"edn" calling:@"load-macros-cache" inContext:context];
-  
+    NSString* coreMacrosCacheAotEdn = [[outCljsURL URLByAppendingPathComponent:@"core$macros.cljs.cache.aot"]
+                                 URLByAppendingPathExtension:@"edn"].path;
+    
+    
+    [self processFile:coreMacrosCacheAotEdn calling:@"load-macros-cache" inContext:context];
+    
+    JSValue* readEvalPrintFn = [self getValue:@"read-eval-print" inNamespace:@"replete.core" fromContext:context];
+    NSAssert(!readEvalPrintFn.isUndefined, @"Could not find the Read-Eval-Print function");
+    
+    JSValue* response = [readEvalPrintFn callWithArguments:@[@"1"]];
+    NSLog(@"%@", [response toString]);
+    
     return YES;
 }
 
@@ -73,7 +87,7 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
-- (void)processFile:(NSString*)path withExt:(NSString*)ext calling:(NSString*)fn inContext:(JSContext*)context
+- (void)processFile:(NSString*)path calling:(NSString*)fn inContext:(JSContext*)context
 {
 
     NSError* error = nil;
@@ -94,8 +108,8 @@
 
 -(void)requireAppNamespaces:(JSContext*)context
 {
-    [context evaluateScript:[NSString stringWithFormat:@"goog.require('%@');", [self munge:@"niode.ui"]]];
-    [context evaluateScript:[NSString stringWithFormat:@"goog.require('%@');", [self munge:@"niode.core"]]];
+    [context evaluateScript:[NSString stringWithFormat:@"goog.require('%@');", [self munge:@"replete.ui"]]];
+    [context evaluateScript:[NSString stringWithFormat:@"goog.require('%@');", [self munge:@"replete.core"]]];
 }
 
 - (JSValue*)getValue:(NSString*)name inNamespace:(NSString*)namespace fromContext:(JSContext*)context

@@ -22,6 +22,8 @@
   (swap! cenv assoc-in [::ana/namespaces 'cljs.core$macros]
     (edn/read-string macros-edn)))
 
+(enable-console-print!)
+
 (defn read-eval-print [line]
   (binding [ana/*cljs-ns* 'cljs.user
             *ns* (create-ns 'cljs.user)
