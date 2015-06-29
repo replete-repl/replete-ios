@@ -43,14 +43,18 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 evalButton.addTarget(self, action: "sendAction", forControlEvents: UIControlEvents.TouchUpInside)
                 toolBar.addSubview(evalButton)
                 
+                toolBar.setTranslatesAutoresizingMaskIntoConstraints(false)
                 textView.setTranslatesAutoresizingMaskIntoConstraints(false)
                 evalButton.setTranslatesAutoresizingMaskIntoConstraints(false)
-                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Left, relatedBy: .Equal, toItem: toolBar, attribute: .Left, multiplier: 1, constant: 8))
-                //toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Top, relatedBy: .Equal, toItem: toolBar, attribute: .Top, multiplier: 1, constant: 7.5))
+
                 textFieldHeightLayoutConstraint = NSLayoutConstraint(item: textView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 28)
                 toolBar.addConstraint(textFieldHeightLayoutConstraint)
+
+                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Left, relatedBy: .Equal, toItem: toolBar, attribute: .Left, multiplier: 1, constant: 8))
+                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Top, relatedBy: .Equal, toItem: toolBar, attribute: .Top, multiplier: 1, constant: 7.5))
                 toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Right, relatedBy: .Equal, toItem: evalButton, attribute: .Left, multiplier: 1, constant: -2))
                 toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Bottom, relatedBy: .Equal, toItem: toolBar, attribute: .Bottom, multiplier: 1, constant: -8))
+
                 toolBar.addConstraint(NSLayoutConstraint(item: evalButton, attribute: .Right, relatedBy: .Equal, toItem: toolBar, attribute: .Right, multiplier: 1, constant: 0))
                 toolBar.addConstraint(NSLayoutConstraint(item: evalButton, attribute: .Bottom, relatedBy: .Equal, toItem: toolBar, attribute: .Bottom, multiplier: 1, constant: -4.5))
                 
