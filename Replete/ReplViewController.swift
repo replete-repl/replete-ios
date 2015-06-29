@@ -85,10 +85,10 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let whiteColor = UIColor.whiteColor()
         view.backgroundColor = whiteColor
         
-        tableView = UITableView(frame: view.bounds, style: .Plain)
+        tableView = UITableView(frame: CGRect(x: 0, y: 20, width: view.bounds.width, height: view.bounds.height-20), style: .Plain)
         tableView.autoresizingMask = .FlexibleWidth | .FlexibleHeight
         tableView.backgroundColor = whiteColor
-        let edgeInsets = UIEdgeInsets(top: 20, left: 0, bottom: toolBarMinHeight, right: 0)
+        let edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: toolBarMinHeight, right: 0)
         tableView.contentInset = edgeInsets
         tableView.dataSource = self
         tableView.delegate = self
