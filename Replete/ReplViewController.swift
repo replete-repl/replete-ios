@@ -1,6 +1,6 @@
 import UIKit
 
-let messageFontSize: CGFloat = 16
+let messageFontSize: CGFloat = 14
 let toolBarMinHeight: CGFloat = 44
 let textViewMaxHeight: (portrait: CGFloat, landscape: CGFloat) = (portrait: 272, landscape: 90)
 
