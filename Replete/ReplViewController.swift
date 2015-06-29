@@ -317,7 +317,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // 2. Copy text to pasteboard
     func messageCopyTextAction(menuController: UIMenuController) {
         let selectedIndexPath = tableView.indexPathForSelectedRow()
-        let selectedMessage = history.loadedMessages[selectedIndexPath!.section][selectedIndexPath!.row-1]
+        let selectedMessage = history.loadedMessages[selectedIndexPath!.section][selectedIndexPath!.row]
         UIPasteboard.generalPasteboard().string = selectedMessage.text
     }
     // 3. Deselect row
