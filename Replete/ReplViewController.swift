@@ -14,6 +14,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var rotating = false
     var textFieldHeightLayoutConstraint: NSLayoutConstraint!
     var currentKeyboardHeight: CGFloat!
+    var initialized = false;
     
     override var inputAccessoryView: UIView! {
         get {
@@ -103,9 +104,23 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         notificationCenter.addObserver(self, selector: "menuControllerWillHide:", name: UIMenuControllerWillHideMenuNotification, object: nil) // #CopyMessage
         
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        
         appDelegate.setPrintCallback { (message: String!) -> Void in
             //NSLog("cb: %@", message);
             self.loadMessage(true, text: message)
+        }
+
+        NSLog("Initializing...");
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+            appDelegate.initializeJavaScriptEnvironment()
+            
+            dispatch_async(dispatch_get_main_queue()) {
+                // mark ready
+                NSLog("Ready");
+                self.initialized = true;
+                self.evalButton.enabled = self.textView.hasText()
+            }
         }
         
     }
@@ -171,7 +186,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func textViewDidChange(textView: UITextView) {
         updateTextViewHeight()
-        evalButton.enabled = textView.hasText()
+        evalButton.enabled = self.initialized && textView.hasText()
     }
     
     func keyboardWillShow(notification: NSNotification) {

@@ -12,6 +12,7 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
+- (void)initializeJavaScriptEnvironment;
 -(void)setPrintCallback:(void (^)(NSString*))printCallback;
 -(void)evaluate:(NSString*)text;
 
