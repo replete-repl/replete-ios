@@ -281,7 +281,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // Dispatch to be evaluated
         
         let delayTime = dispatch_time(DISPATCH_TIME_NOW,
-            Int64(100 * Double(NSEC_PER_MSEC)))
+            Int64(50 * Double(NSEC_PER_MSEC)))
         dispatch_after(delayTime, dispatch_get_main_queue()) {
             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
             appDelegate.evaluate(textToEvaluate)
