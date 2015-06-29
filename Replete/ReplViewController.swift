@@ -1,6 +1,6 @@
 import UIKit
 
-let messageFontSize: CGFloat = 16
+let messageFontSize: CGFloat = 14
 let toolBarMinHeight: CGFloat = 44
 let textViewMaxHeight: (portrait: CGFloat, landscape: CGFloat) = (portrait: 272, landscape: 90)
 
@@ -283,7 +283,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // Dispatch to be evaluated
         
         let delayTime = dispatch_time(DISPATCH_TIME_NOW,
-            Int64(100 * Double(NSEC_PER_MSEC)))
+            Int64(50 * Double(NSEC_PER_MSEC)))
         dispatch_after(delayTime, dispatch_get_main_queue()) {
             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
             appDelegate.evaluate(textToEvaluate)
@@ -319,7 +319,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // 2. Copy text to pasteboard
     func messageCopyTextAction(menuController: UIMenuController) {
         let selectedIndexPath = tableView.indexPathForSelectedRow()
-        let selectedMessage = history.loadedMessages[selectedIndexPath!.section][selectedIndexPath!.row-1]
+        let selectedMessage = history.loadedMessages[selectedIndexPath!.section][selectedIndexPath!.row]
         UIPasteboard.generalPasteboard().string = selectedMessage.text
     }
     // 3. Deselect row
