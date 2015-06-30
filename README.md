@@ -8,8 +8,8 @@ Read more in blog post: [Replete: A Standalone iOS CLJS REPL](http://blog.fikesf
 
 # Running
 
-1. Build ClojureScript master (`script/build`).
-2. Checkout David Nolen's [fork of `tools.reader`](https://github.com/swannodette/tools.reader) and do `lein install`.
+1. Clone and build ClojureScript master (`script/build`).
+2. Clone David Nolen's [fork of `tools.reader`](https://github.com/swannodette/tools.reader) and do `lein install`.
 3. Set the `project.clj` file so that it matches the ClojureScript master build number.
 4. In the `ClojureScript/replete` directory, do `lein run -m clojure.main script/build.clj`
 5. Do a `pod install` in the top level.
