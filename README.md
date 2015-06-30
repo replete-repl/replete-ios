@@ -18,3 +18,7 @@ Read more in blog post: [Replete: A Standalone iOS CLJS REPL](http://blog.fikesf
 # Contributing
 
 Happy to take PRs!
+
+# License
+
+Distributed under the Eclipse Public License, which is also used by ClojureScript.
