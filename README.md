@@ -14,3 +14,7 @@ Read more in blog post: [Replete: A Standalone iOS CLJS REPL](http://blog.fikesf
 4. In the `ClojureScript/replete` directory, do `lein run -m clojure.main script/build.clj`
 5. Do a `pod install` in the top level.
 6. `open Replete.xcworkspace` and run the app on a device or in the simulator.
+
+# Contributing
+
+Happy to take PRs!
