@@ -34,7 +34,7 @@
           (let [_ (when DEBUG (prn "line:" line))
                 form (r/read-string line)
                 _ (when DEBUG (prn "form:" form))
-                ast (no-warn (ana/analyze env form))
+                ast (ana/analyze env form)
                 _ (when DEBUG (prn "ast:" ast))
                 js (with-out-str
                      (ensure
