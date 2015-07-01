@@ -23,12 +23,13 @@
     (edn/read-string macros-edn)))
 
 (defn read-eval-print [line]
-  (binding [ana/*cljs-ns* 'replete.core
-            *ns* (create-ns 'replete.core)
+  (ns cljs.user)
+  (binding [ana/*cljs-ns* 'cljs.user
+            *ns* (create-ns 'cljs.user)
             r/*data-readers* tags/*cljs-data-readers*]
     (with-compiler-env cenv
       (let [env (assoc (ana/empty-env) :context :expr
-                                       :ns {:name 'replete.core}
+                                       :ns {:name 'cljs.user}
                                        :def-emits-var true)]
         (try
           (let [_ (when DEBUG (prn "line:" line))
