@@ -348,6 +348,13 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
         (notification.object as! UIMenuController).menuItems = nil
     }
+    
+    override var keyCommands: [AnyObject]? {
+        get {
+            let commandEnter = UIKeyCommand(input: "\r", modifierFlags: .Command, action: Selector("sendAction"))
+            return [commandEnter]
+        }
+    }
 }
 
 // Only show "Copy" when editing `textView` #CopyMessage
