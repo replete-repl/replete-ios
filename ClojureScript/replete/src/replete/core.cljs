@@ -22,7 +22,16 @@
   (swap! cenv assoc-in [::ana/namespaces 'cljs.core$macros]
     (edn/read-string macros-edn)))
 
-(defn read-eval-print [line]
+(defn ^:export is-readable? [line]
+  (binding [r/*data-readers* tags/*cljs-data-readers*]
+    (with-compiler-env cenv
+      (try
+        (r/read-string line)
+        true
+        (catch :default _
+          false)))))
+
+(defn ^:export read-eval-print [line]
   (ns cljs.user)
   (binding [ana/*cljs-ns* 'cljs.user
             *ns* (create-ns 'cljs.user)

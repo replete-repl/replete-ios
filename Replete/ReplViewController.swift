@@ -184,6 +184,19 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return nil
     }
     
+    func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
+        if (text == "\n" && range.location == count(textView.text) && self.initialized) {
+            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+            if (appDelegate.isReadable(textView.text)) {
+                dispatch_async(dispatch_get_main_queue()) {
+                  self.sendAction();
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+    
     func textViewDidChange(textView: UITextView) {
         updateTextViewHeight()
         evalButton.enabled = self.initialized && textView.hasText()

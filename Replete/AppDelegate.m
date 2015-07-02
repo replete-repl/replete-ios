@@ -13,6 +13,7 @@
 
 @property (strong, nonatomic) ABYContextManager* contextManager;
 @property (strong, nonatomic) JSValue* readEvalPrintFn;
+@property (strong, nonatomic) JSValue* isReadableFn;
 @property (nonatomic, copy) void (^myPrintCallback)(NSString*);
 
 @end
@@ -85,7 +86,11 @@
     [self processFile:coreMacrosCacheAotEdn calling:@"load-macros-cache" inContext:context];
     
     self.readEvalPrintFn = [self getValue:@"read-eval-print" inNamespace:@"replete.core" fromContext:context];
-    NSAssert(!self.readEvalPrintFn.isUndefined, @"Could not find the Read-Eval-Print function");
+    NSAssert(!self.readEvalPrintFn.isUndefined, @"Could not find the read-eval-print function");
+    
+    self.isReadableFn = [self getValue:@"is-readable?" inNamespace:@"replete.core" fromContext:context];
+    NSAssert(!self.isReadableFn.isUndefined, @"Could not find the is-readable? function");
+
     
     context[@"REPLETE_PRINT_FN"] = ^(NSString *message) {
         if (self.myPrintCallback) {
@@ -151,16 +156,6 @@
             stringByReplacingOccurrencesOfString:@"?" withString:@"_QMARK_"];
 }
 
-/*
- - (IBAction)evalButtonPressed:(id)sender {
- NSString* inputText = self.inputTextView.text;
- self.inputTextView.text = @"";
- self.outputTextView.text = [self.outputTextView.text stringByAppendingString:
- [NSString stringWithFormat:@"replete.core=> %@\n", inputText]];
- [self.readEvalPrintFn callWithArguments:@[inputText]];
- }
- */
-
 -(void)setPrintCallback:(void (^)(NSString*))thePrintCallback
 {
     self.myPrintCallback = thePrintCallback;
@@ -169,6 +164,11 @@
 -(void)evaluate:(NSString*)text
 {
     [self.readEvalPrintFn callWithArguments:@[text]];
+}
+
+-(BOOL)isReadable:(NSString*)text
+{
+    return [self.isReadableFn callWithArguments:@[text]].toBool;
 }
 
 
