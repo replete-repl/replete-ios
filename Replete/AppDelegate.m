@@ -109,8 +109,6 @@
 
 - (void)processFile:(NSString*)path calling:(NSString*)fn inContext:(JSContext*)context
 {
-    NSLog(@"processFile %@", path);
-    
     NSError* error = nil;
     NSString* contents = [NSString stringWithContentsOfFile:path
                                                    encoding:NSUTF8StringEncoding error:&error];
