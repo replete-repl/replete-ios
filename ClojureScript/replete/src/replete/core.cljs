@@ -8,19 +8,26 @@
             [cljs.analyzer :as ana]
             [cljs.compiler :as c]
             [cljs.env :as env]
-            [cljs.reader :as edn]))
+            [cljs.reader :as edn]
+            [cognitect.transit :as t]))
 
 (def DEBUG false)
 
 (def cenv (env/default-compiler-env))
 
-(defn ^:export load-core-cache [core-edn]
-  (swap! cenv assoc-in [::ana/namespaces 'cljs.core]
-    (edn/read-string core-edn)))
+(defn ^:export load-core-cache [core-transit]
+  (let [r (t/reader :json)
+        core-cache (t/read r core-transit)]
+    (swap! cenv assoc-in [::ana/namespaces 'cljs.core]
+      core-cache)
+    nil))
 
-(defn ^:export load-macros-cache [macros-edn]
-  (swap! cenv assoc-in [::ana/namespaces 'cljs.core$macros]
-    (edn/read-string macros-edn)))
+(defn ^:export load-macros-cache [macros-transit]
+  (let [r (t/reader :json)
+        macros-cache (t/read r macros-transit)]
+    (swap! cenv assoc-in [::ana/namespaces 'cljs.core$macros]
+      macros-cache)
+    nil))
 
 (defn ^:export is-readable? [line]
   (binding [r/*data-readers* tags/*cljs-data-readers*]

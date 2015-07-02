@@ -76,15 +76,12 @@
     
     [self requireAppNamespaces:context];
     
-    [self processFile:[[NSBundle mainBundle] pathForResource:@"core.cljs.cache.aot" ofType:@"edn"]
+    [self processFile:[[NSBundle mainBundle] pathForResource:@"core.cljs.cache.aot" ofType:@"transit"]
               calling:@"load-core-cache" inContext:context];
     
-    NSString* coreMacrosCacheAotEdn = [[outCljsURL URLByAppendingPathComponent:@"core$macros.cljc.cache"]
-                                       URLByAppendingPathExtension:@"edn"].path;
-    
-    
-    [self processFile:coreMacrosCacheAotEdn calling:@"load-macros-cache" inContext:context];
-    
+    [self processFile:[[NSBundle mainBundle] pathForResource:@"core$macros.cljc.cache" ofType:@"transit"]
+              calling:@"load-macros-cache" inContext:context];
+        
     self.readEvalPrintFn = [self getValue:@"read-eval-print" inNamespace:@"replete.core" fromContext:context];
     NSAssert(!self.readEvalPrintFn.isUndefined, @"Could not find the read-eval-print function");
     
@@ -112,6 +109,7 @@
 
 - (void)processFile:(NSString*)path calling:(NSString*)fn inContext:(JSContext*)context
 {
+    NSLog(@"processFile %@", path);
     
     NSError* error = nil;
     NSString* contents = [NSString stringWithContentsOfFile:path
