@@ -39,14 +39,19 @@
         (catch :default _
           false)))))
 
+(def current-ns (atom 'cljs.user))
+
+(defn ns-form? [form]
+  (and (seq? form) (= 'ns (first form))))
+
 (defn ^:export read-eval-print [line]
   (ns cljs.user)
-  (binding [ana/*cljs-ns* 'cljs.user
-            *ns* (create-ns 'cljs.user)
+  (binding [ana/*cljs-ns* @current-ns
+            *ns* (create-ns @current-ns)
             r/*data-readers* tags/*cljs-data-readers*]
     (with-compiler-env cenv
       (let [env (assoc (ana/empty-env) :context :expr
-                                       :ns {:name 'cljs.user}
+                                       :ns {:name @current-ns}
                                        :def-emits-var true)]
         (try
           (let [_ (when DEBUG (prn "line:" line))
@@ -59,10 +64,14 @@
                        (c/emit ast)))
                 _ (when DEBUG (prn "js:" js))]
             (try (prn (let [ret (js/eval js)]
-                        (when-not ('#{*1 *2 *3 *e} form)
+                        (when-not
+                          (or ('#{*1 *2 *3 *e} form)
+                            (ns-form? form))
                           (set! *3 *2)
                           (set! *2 *1)
                           (set! *1 ret))
+                        (when (ns-form? form)
+                          (reset! current-ns (second form)))
                         ret))
                  (catch js/Error e
                    (set! *e e)
