@@ -9,7 +9,8 @@
             [cljs.compiler :as c]
             [cljs.env :as env]
             [cljs.reader :as edn]
-            [cognitect.transit :as t]))
+            [cognitect.transit :as t]
+            [clojure.string :as s]))
 
 (def DEBUG false)
 
@@ -57,12 +58,14 @@
                      (ensure
                        (c/emit ast)))
                 _ (when DEBUG (prn "js:" js))]
-            (prn (let [ret (js/eval js)]
-                   (when-not ('#{*1 *2 *3 *e} form)
-                     (set! *3 *2)
-                     (set! *2 *1)
-                     (set! *1 ret))
-                   ret)))
+            (try (prn (let [ret (js/eval js)]
+                        (when-not ('#{*1 *2 *3 *e} form)
+                          (set! *3 *2)
+                          (set! *2 *1)
+                          (set! *1 ret))
+                        ret))
+                 (catch js/Error e
+                   (set! *e e)
+                   (print (.-message e) "\n" (first (s/split (.-stack e) #"eval code"))))))
           (catch js/Error e
-            (set! *e e)
-            (println (str (.-message e) "\n" (.-stack e)))))))))
+            (println (.-message e))))))))
