@@ -173,7 +173,20 @@
         annotation:(id)annotation
 {
     if (url != nil && [url isFileURL]) {
-        NSLog(@"%@", [url absoluteString]);
+
+        NSLog(@"Accepting file URL for evaluation: %@", [url absoluteString]);
+        NSString *urlContent = [NSString stringWithContentsOfURL:url
+                                                    usedEncoding: NULL
+                                                           error: NULL];
+        if (urlContent != nil) {
+
+            NSString *urlContentWrappedInDo = [NSString stringWithFormat: @"(do %@)",
+                                               urlContent];
+
+            NSLog(@"Evaluating code: %@", urlContentWrappedInDo);
+            [self evaluate: urlContentWrappedInDo];
+
+        }
     }
     return YES;
 }
