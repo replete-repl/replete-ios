@@ -15,6 +15,8 @@
 @property (strong, nonatomic) JSValue* readEvalPrintFn;
 @property (strong, nonatomic) JSValue* isReadableFn;
 @property (nonatomic, copy) void (^myPrintCallback)(NSString*);
+@property BOOL initialized;
+@property NSString *codeToBeEvaluatedWhenReady;
 
 @end
 
@@ -105,6 +107,13 @@
     //JSValue* response = [readEvalPrintFn callWithArguments:@[@"(def a 3)"]];
     //NSLog(@"%@", [response toString]);
 
+    self.initialized = true;
+
+    if ([self codeToBeEvaluatedWhenReady]) {
+        NSLog(@"Delayed code to be evaluated: %@", [self codeToBeEvaluatedWhenReady]);
+        [self evaluate: [self codeToBeEvaluatedWhenReady]];
+    }
+
 }
 
 - (void)processFile:(NSString*)path calling:(NSString*)fn inContext:(JSContext*)context
@@ -173,7 +182,35 @@
         annotation:(id)annotation
 {
     if (url != nil && [url isFileURL]) {
-        NSLog(@"%@", [url absoluteString]);
+
+        NSLog(@"Accepting file URL for evaluation: %@", [url absoluteString]);
+        NSError *err;
+        NSString *urlContent = [NSString stringWithContentsOfURL:url
+                                                    usedEncoding: NULL
+                                                           error: &err];
+        if (urlContent != nil) {
+
+            NSString *urlContentWrappedInDo = [NSString stringWithFormat: @"(do %@\n)",
+                                               urlContent];
+            
+            if ([self initialized]) {
+                NSLog(@"Evaluating code: %@", urlContentWrappedInDo);
+                [self evaluate: urlContentWrappedInDo];
+            } else {
+                NSLog(@"Code to be evaluated when ready: %@", urlContentWrappedInDo);
+                self.codeToBeEvaluatedWhenReady = urlContentWrappedInDo;
+            }
+
+        } else {
+
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error accepting file"
+                                                                message:[err localizedDescription]
+                                                               delegate:self
+                                                      cancelButtonTitle:@"Cancel"
+                                                      otherButtonTitles:nil];
+            [alertView show];
+
+        }
     }
     return YES;
 }
