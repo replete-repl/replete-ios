@@ -167,5 +167,15 @@
     return [self.isReadableFn callWithArguments:@[text]].toBool;
 }
 
+-(BOOL)application:(UIApplication *)application
+           openURL:(NSURL *)url
+ sourceApplication:(NSString *)sourceApplication
+        annotation:(id)annotation
+{
+    if (url != nil && [url isFileURL]) {
+        NSLog(@"%@", [url absoluteString]);
+    }
+    return YES;
+}
 
 @end
