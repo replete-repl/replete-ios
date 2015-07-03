@@ -190,7 +190,7 @@
                                                            error: &err];
         if (urlContent != nil) {
 
-            NSString *urlContentWrappedInDo = [NSString stringWithFormat: @"(do %@)",
+            NSString *urlContentWrappedInDo = [NSString stringWithFormat: @"(do %@\n)",
                                                urlContent];
             
             if ([self initialized]) {
