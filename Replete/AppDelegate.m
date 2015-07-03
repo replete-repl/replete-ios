@@ -15,6 +15,8 @@
 @property (strong, nonatomic) JSValue* readEvalPrintFn;
 @property (strong, nonatomic) JSValue* isReadableFn;
 @property (nonatomic, copy) void (^myPrintCallback)(NSString*);
+@property BOOL initialized;
+@property NSString *codeToBeEvaluatedWhenReady;
 
 @end
 
@@ -105,6 +107,13 @@
     //JSValue* response = [readEvalPrintFn callWithArguments:@[@"(def a 3)"]];
     //NSLog(@"%@", [response toString]);
 
+    self.initialized = true;
+
+    if ([self codeToBeEvaluatedWhenReady]) {
+        NSLog(@"Delayed code to be evaluated: %@", [self codeToBeEvaluatedWhenReady]);
+        [self evaluate: [self codeToBeEvaluatedWhenReady]];
+    }
+
 }
 
 - (void)processFile:(NSString*)path calling:(NSString*)fn inContext:(JSContext*)context
@@ -183,8 +192,14 @@
 
             NSString *urlContentWrappedInDo = [NSString stringWithFormat: @"(do %@)",
                                                urlContent];
-            NSLog(@"Evaluating code: %@", urlContentWrappedInDo);
-            [self evaluate: urlContentWrappedInDo];
+            
+            if ([self initialized]) {
+                NSLog(@"Evaluating code: %@", urlContentWrappedInDo);
+                [self evaluate: urlContentWrappedInDo];
+            } else {
+                NSLog(@"Code to be evaluated when ready: %@", urlContentWrappedInDo);
+                self.codeToBeEvaluatedWhenReady = urlContentWrappedInDo;
+            }
 
         } else {
 
