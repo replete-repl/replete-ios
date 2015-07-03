@@ -175,16 +175,25 @@
     if (url != nil && [url isFileURL]) {
 
         NSLog(@"Accepting file URL for evaluation: %@", [url absoluteString]);
+        NSError *err;
         NSString *urlContent = [NSString stringWithContentsOfURL:url
                                                     usedEncoding: NULL
-                                                           error: NULL];
+                                                           error: &err];
         if (urlContent != nil) {
 
             NSString *urlContentWrappedInDo = [NSString stringWithFormat: @"(do %@)",
                                                urlContent];
-
             NSLog(@"Evaluating code: %@", urlContentWrappedInDo);
             [self evaluate: urlContentWrappedInDo];
+
+        } else {
+
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error accepting file"
+                                                                message:[err localizedDescription]
+                                                               delegate:self
+                                                      cancelButtonTitle:@"Cancel"
+                                                      otherButtonTitles:nil];
+            [alertView show];
 
         }
     }
