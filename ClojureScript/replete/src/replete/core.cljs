@@ -48,7 +48,6 @@
   (and (seq? form) (= 'in-ns (first form))))
 
 (defn ^:export read-eval-print [line]
-  (ns cljs.user)
   (binding [ana/*cljs-ns* @current-ns
             *ns* (create-ns @current-ns)
             r/*data-readers* tags/*cljs-data-readers*]
