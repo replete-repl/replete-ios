@@ -44,6 +44,9 @@
 (defn ns-form? [form]
   (and (seq? form) (= 'ns (first form))))
 
+(defn repl-special? [form]
+  (and (seq? form) (= 'in-ns (first form))))
+
 (defn ^:export read-eval-print [line]
   (ns cljs.user)
   (binding [ana/*cljs-ns* @current-ns
@@ -55,26 +58,29 @@
                                        :def-emits-var true)]
         (try
           (let [_ (when DEBUG (prn "line:" line))
-                form (r/read-string line)
-                _ (when DEBUG (prn "form:" form))
-                ast (ana/analyze env form)
-                _ (when DEBUG (prn "ast:" ast))
-                js (with-out-str
-                     (ensure
-                       (c/emit ast)))
-                _ (when DEBUG (prn "js:" js))]
-            (try (prn (let [ret (js/eval js)]
-                        (when-not
-                          (or ('#{*1 *2 *3 *e} form)
-                            (ns-form? form))
-                          (set! *3 *2)
-                          (set! *2 *1)
-                          (set! *1 ret))
-                        (when (ns-form? form)
-                          (reset! current-ns (second form)))
-                        ret))
-                 (catch js/Error e
-                   (set! *e e)
-                   (print (.-message e) "\n" (first (s/split (.-stack e) #"eval code"))))))
+                form (r/read-string line)]
+            (if (repl-special? form)
+              (case (first form)
+                'in-ns (reset! current-ns (second (second form))))
+              (let [_ (when DEBUG (prn "form:" form))
+                    ast (ana/analyze env form)
+                    _ (when DEBUG (prn "ast:" ast))
+                    js (with-out-str
+                         (ensure
+                           (c/emit ast)))
+                    _ (when DEBUG (prn "js:" js))]
+                (try (prn (let [ret (js/eval js)]
+                            (when-not
+                              (or ('#{*1 *2 *3 *e} form)
+                                (ns-form? form))
+                              (set! *3 *2)
+                              (set! *2 *1)
+                              (set! *1 ret))
+                            (when (ns-form? form)
+                              (reset! current-ns (second form)))
+                            ret))
+                     (catch js/Error e
+                       (set! *e e)
+                       (print (.-message e) "\n" (first (s/split (.-stack e) #"eval code"))))))))
           (catch js/Error e
             (println (.-message e))))))))
