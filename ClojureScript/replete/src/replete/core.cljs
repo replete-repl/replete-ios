@@ -76,8 +76,7 @@
                               (set! *3 *2)
                               (set! *2 *1)
                               (set! *1 ret))
-                            (when (ns-form? form)
-                              (reset! current-ns (second form)))
+                            (reset! current-ns ana/*cljs-ns*)
                             ret))
                      (catch js/Error e
                        (set! *e e)
