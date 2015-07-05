@@ -83,7 +83,11 @@
     
     [self processFile:[[NSBundle mainBundle] pathForResource:@"core$macros.cljc.cache" ofType:@"transit"]
               calling:@"load-macros-cache" inContext:context];
-        
+    
+    JSValue* setupCljsUser = [self getValue:@"setup-cljs-user" inNamespace:@"replete.core" fromContext:context];
+    NSAssert(!setupCljsUser.isUndefined, @"Could not find the setup-cljs-user function");
+    [setupCljsUser callWithArguments:@[]];
+    
     self.readEvalPrintFn = [self getValue:@"read-eval-print" inNamespace:@"replete.core" fromContext:context];
     NSAssert(!self.readEvalPrintFn.isUndefined, @"Could not find the read-eval-print function");
     
