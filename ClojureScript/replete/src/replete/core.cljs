@@ -2,7 +2,9 @@
   (:require-macros [cljs.env.macros :refer [ensure with-compiler-env]]
                    [cljs.analyzer.macros :refer [no-warn]])
   (:require [cljs.pprint :refer [pprint]]
-            [cljs.reader :as r]
+            [cljs.tagged-literals :as tags]
+            [cljs.tools.reader :as r]
+            [cljs.tools.reader.reader-types :refer [string-push-back-reader]]
             [cljs.analyzer :as ana]
             [cljs.compiler :as c]
             [cljs.env :as env]
@@ -32,12 +34,13 @@
   (js/eval "goog.require('cljs.core')"))
 
 (defn ^:export is-readable? [line]
-  (with-compiler-env cenv
-    (try
-      (r/read-string line)
-      true
-      (catch :default _
-        false))))
+  (binding [r/*data-readers* tags/*cljs-data-readers*]
+    (with-compiler-env cenv
+      (try
+        (r/read-string line)
+        true
+        (catch :default _
+          false)))))
 
 (def current-ns (atom 'cljs.user))
 
@@ -49,7 +52,8 @@
 
 (defn ^:export read-eval-print [line]
   (binding [ana/*cljs-ns* @current-ns
-            *ns* (create-ns @current-ns)]
+            *ns* (create-ns @current-ns)
+            r/*data-readers* tags/*cljs-data-readers*]
     (with-compiler-env cenv
       (let [env (assoc (ana/empty-env) :context :expr
                                        :ns {:name @current-ns}
