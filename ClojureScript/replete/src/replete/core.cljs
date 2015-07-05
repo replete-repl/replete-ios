@@ -8,7 +8,6 @@
             [cljs.analyzer :as ana]
             [cljs.compiler :as c]
             [cljs.env :as env]
-            [cljs.reader :as edn]
             [cognitect.transit :as t]
             [clojure.string :as s]))
 
