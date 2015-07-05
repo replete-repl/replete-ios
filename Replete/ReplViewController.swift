@@ -106,8 +106,9 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         
         appDelegate.setPrintCallback { (message: String!) -> Void in
-            //NSLog("cb: %@", message);
-            self.loadMessage(true, text: message)
+            dispatch_async(dispatch_get_main_queue()) {
+                self.loadMessage(true, text: message)
+            }
         }
 
         NSLog("Initializing...");
