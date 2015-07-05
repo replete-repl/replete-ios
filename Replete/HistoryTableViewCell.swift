@@ -5,7 +5,8 @@ let incomingTag = 0, outgoingTag = 1
 class HistoryTableViewCell: UITableViewCell {
 
     let messageLabel: UILabel
-
+    var topLayoutConstraint: NSLayoutConstraint!
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         
         messageLabel = UILabel(frame: CGRectZero)
@@ -17,7 +18,15 @@ class HistoryTableViewCell: UITableViewCell {
         selectionStyle = .None
 
         contentView.addSubview(messageLabel)
+        
         messageLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+        
+        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Left, relatedBy: .Equal, toItem: contentView, attribute: .Left, multiplier: 1, constant: 10))
+        
+        self.topLayoutConstraint = NSLayoutConstraint(item: messageLabel, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .Top, multiplier: 1, constant: 10);
+        contentView.addConstraint(self.topLayoutConstraint)
+        
+        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Bottom, relatedBy: .Equal, toItem: contentView, attribute: .Bottom, multiplier: 1, constant: -4))
     }
 
     required init(coder aDecoder: NSCoder) {
@@ -36,18 +45,12 @@ class HistoryTableViewCell: UITableViewCell {
         } else {
             messageLabel.textColor = UIColor.grayColor();
         }
-        
-        messageLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
-        
-        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Left, relatedBy: .Equal, toItem: contentView, attribute: .Left, multiplier: 1, constant: 10))
-        
+                
         if (message.incoming) {
-            contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .Top, multiplier: 1, constant: 4))
+            self.topLayoutConstraint.constant = 4
         } else {
-            contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .Top, multiplier: 1, constant: 10))
+            self.topLayoutConstraint.constant = 10
         }
-        
-        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Bottom, relatedBy: .Equal, toItem: contentView, attribute: .Bottom, multiplier: 1, constant: -4))
         
     }
     
