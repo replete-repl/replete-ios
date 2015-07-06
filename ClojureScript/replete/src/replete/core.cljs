@@ -48,8 +48,21 @@
 (defn ns-form? [form]
   (and (seq? form) (= 'ns (first form))))
 
+(def repl-specials '#{in-ns doc})
+
 (defn repl-special? [form]
-  (and (seq? form) ('#{in-ns doc} (first form))))
+  (and (seq? form) (repl-specials (first form))))
+
+(def repl-special-doc-map
+  '{in-ns {:arglists ([name])
+           :doc "Sets *cljs-ns* to the namespace named by the symbol, creating it if needed."}
+    doc {:arglists ([name])
+         :doc "Prints documentation for a var or special form given its name"}})
+
+(defn- repl-special-doc [name-symbol]
+  (assoc (repl-special-doc-map name-symbol)
+    :name name-symbol
+    :repl-special-function true))
 
 (defn ^:export read-eval-print [line]
   (binding [ana/*cljs-ns* @current-ns
@@ -65,12 +78,14 @@
             (if (repl-special? form)
               (case (first form)
                 in-ns (reset! current-ns (second (second form)))
-                doc (let [var-ast (ana/analyze env `(var ~(second form)))
-                          var-js (with-out-str
-                                   (ensure
-                                     (c/emit var-ast)))
-                          var-ret (js/eval var-js)]
-                      (repl/print-doc (meta var-ret))))
+                doc (if (repl-specials (second form))
+                      (repl/print-doc (repl-special-doc (second form)))
+                      (let [var-ast (ana/analyze env `(var ~(second form)))
+                           var-js (with-out-str
+                                    (ensure
+                                      (c/emit var-ast)))
+                           var-ret (js/eval var-js)]
+                       (repl/print-doc (meta var-ret)))))
               (let [_ (when DEBUG (prn "form:" form))
                     ast (ana/analyze env form)
                     _ (when DEBUG (prn "ast:" ast))
