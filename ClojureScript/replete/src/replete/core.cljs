@@ -8,6 +8,7 @@
             [cljs.analyzer :as ana]
             [cljs.compiler :as c]
             [cljs.env :as env]
+            [cljs.repl :as repl]
             [cognitect.transit :as t]
             [clojure.string :as s]))
 
@@ -48,7 +49,7 @@
   (and (seq? form) (= 'ns (first form))))
 
 (defn repl-special? [form]
-  (and (seq? form) (= 'in-ns (first form))))
+  (and (seq? form) ('#{in-ns doc} (first form))))
 
 (defn ^:export read-eval-print [line]
   (binding [ana/*cljs-ns* @current-ns
@@ -63,7 +64,13 @@
                 form (r/read-string line)]
             (if (repl-special? form)
               (case (first form)
-                'in-ns (reset! current-ns (second (second form))))
+                in-ns (reset! current-ns (second (second form)))
+                doc (let [var-ast (ana/analyze env `(var ~(second form)))
+                          var-js (with-out-str
+                                   (ensure
+                                     (c/emit var-ast)))
+                          var-ret (js/eval var-js)]
+                      (repl/print-doc (meta var-ret))))
               (let [_ (when DEBUG (prn "form:" form))
                     ast (ana/analyze env form)
                     _ (when DEBUG (prn "ast:" ast))
