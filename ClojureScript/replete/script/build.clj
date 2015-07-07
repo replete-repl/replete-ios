@@ -32,10 +32,10 @@
                 :source-map true
                 :static-fns true)]
     (env/with-compiler-env (env/default-compiler-env opts)
-      (let [;; Generate core$macros
-            deps-macros (compile1 copts "cljs/core.cljc")
-            ;; Compile main file
-            deps (compile1 copts file)]
+      (let [;; Compile main file
+            deps (compile1 copts file)
+            ;; Generate core$macros
+            deps-macros (compile1 copts "cljs/core.cljc")]
         ;; output unoptimized code and the deps file
         ;; for all compiled namespaces
         (apply closure/output-unoptimized
