@@ -44,7 +44,6 @@
             :output-to (.getPath (io/file output-dir "deps.js")))
           (concat deps deps-macros)))))
 
-  ;; TODO: this should really come from the compilation above
   (let [core-cache (edn/read-string (slurp (io/resource "cljs/core.cljs.cache.aot.edn")))
         out (FileOutputStream. "./resources/cljs/core.cljs.cache.aot.transit")
         writer (transit/writer out :json)
