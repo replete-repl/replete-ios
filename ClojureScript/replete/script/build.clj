@@ -30,8 +30,7 @@
                 :output-dir output-dir
                 :cache-analysis true
                 :source-map true
-                :static-fns true
-                :def-emits-var true)]
+                :static-fns true)]
     (env/with-compiler-env (env/default-compiler-env opts)
       (let [;; Generate core$macros
             deps-macros (compile1 copts "cljs/core.cljc")
