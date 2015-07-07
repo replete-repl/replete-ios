@@ -30,6 +30,7 @@
                 :output-dir output-dir
                 :cache-analysis true
                 :source-map true
+                :static-fns true
                 :def-emits-var true)]
     (env/with-compiler-env (env/default-compiler-env opts)
       (let [;; Generate core$macros
