@@ -38,7 +38,8 @@
   (binding [r/*data-readers* tags/*cljs-data-readers*]
     (with-compiler-env cenv
       (try
-        (r/read-string line)
+        (binding [*read-eval* false]
+          (r/read-string {:read-cond :allow :features #{:cljs}} line))
         true
         (catch :default _
           false)))))
@@ -74,7 +75,8 @@
                                        :def-emits-var true)]
         (try
           (let [_ (when DEBUG (prn "line:" line))
-                form (r/read-string line)]
+                form (binding [*read-eval* false]
+                        (r/read-string {:read-cond :allow :features #{:cljs}} line))]
             (if (repl-special? form)
               (case (first form)
                 in-ns (reset! current-ns (second (second form)))
