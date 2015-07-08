@@ -34,12 +34,14 @@
   (js/eval "goog.provide('cljs.user')")
   (js/eval "goog.require('cljs.core')"))
 
+(defn repl-read-string [line]
+  (r/read-string {:read-cond :allow :features #{:cljs}} line))
+
 (defn ^:export is-readable? [line]
   (binding [r/*data-readers* tags/*cljs-data-readers*]
     (with-compiler-env cenv
       (try
-        (binding [*read-eval* false]
-          (r/read-string {:read-cond :allow :features #{:cljs}} line))
+        (repl-read-string line)
         true
         (catch :default _
           false)))))
@@ -75,8 +77,7 @@
                                        :def-emits-var true)]
         (try
           (let [_ (when DEBUG (prn "line:" line))
-                form (binding [*read-eval* false]
-                        (r/read-string {:read-cond :allow :features #{:cljs}} line))]
+                form (repl-read-string line)]
             (if (repl-special? form)
               (case (first form)
                 in-ns (reset! current-ns (second (second form)))
