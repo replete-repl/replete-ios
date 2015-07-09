@@ -59,6 +59,6 @@ class HistoryTableViewCell: UITableViewCell {
     // Highlight cell #CopyMessage
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        messageLabel.highlighted = selected
+        messageLabel.backgroundColor = selected ? UIColor.blueColor().colorWithAlphaComponent(0.15) : UIColor.whiteColor()
     }
 }
