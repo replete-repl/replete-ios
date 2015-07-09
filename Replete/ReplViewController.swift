@@ -28,7 +28,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 textView.layer.borderWidth = 0.5
                 textView.layer.cornerRadius = 5
                 textView.scrollsToTop = false
-                textView.textContainerInset = UIEdgeInsetsMake(4, 3, 3, 3)
+                textView.textContainerInset = UIEdgeInsetsMake(6, 3, 6, 3)
                 textView.autocorrectionType = UITextAutocorrectionType.No;
                 textView.autocapitalizationType = UITextAutocapitalizationType.None;
                 textView.delegate = self
@@ -48,7 +48,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 textView.setTranslatesAutoresizingMaskIntoConstraints(false)
                 evalButton.setTranslatesAutoresizingMaskIntoConstraints(false)
 
-                textFieldHeightLayoutConstraint = NSLayoutConstraint(item: textView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 28)
+                textFieldHeightLayoutConstraint = NSLayoutConstraint(item: textView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 1)
                 toolBar.addConstraint(textFieldHeightLayoutConstraint)
 
                 toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Left, relatedBy: .Equal, toItem: toolBar, attribute: .Left, multiplier: 1, constant: 8))
