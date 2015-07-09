@@ -40,7 +40,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 evalButton.setTitle("Eval", forState: .Normal)
                 evalButton.setTitleColor(UIColor(red: 142/255, green: 142/255, blue: 147/255, alpha: 1), forState: .Disabled)
                 evalButton.setTitleColor(UIColor(red: 1/255, green: 122/255, blue: 255/255, alpha: 1), forState: .Normal)
-                evalButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
+                evalButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 8)
                 evalButton.addTarget(self, action: "sendAction", forControlEvents: UIControlEvents.TouchUpInside)
                 toolBar.addSubview(evalButton)
                 
