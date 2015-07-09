@@ -68,9 +68,10 @@
     :repl-special-function true))
 
 (defn reflow [text]
-  (-> text
-    (s/replace #" \n  " "")
-    (s/replace #"\n  " " ")))
+  (and text
+    (-> text
+     (s/replace #" \n  " "")
+     (s/replace #"\n  " " "))))
 
 (defn ^:export read-eval-print [line]
   (binding [ana/*cljs-ns* @current-ns
