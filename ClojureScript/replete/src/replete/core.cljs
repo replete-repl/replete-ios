@@ -16,6 +16,8 @@
 
 (def cenv (env/default-compiler-env))
 
+
+
 (defn ^:export load-core-cache [core-transit]
   (let [r (t/reader :json)
         core-cache (t/read r core-transit)]
@@ -33,6 +35,19 @@
 (defn ^:export setup-cljs-user []
   (js/eval "goog.provide('cljs.user')")
   (js/eval "goog.require('cljs.core')"))
+
+(def app-env (atom nil))
+
+(defn map-keys [f m]
+  (reduce-kv (fn [r k v] (assoc r (f k) v)) {} m))
+
+(defn ^:export init-app-env [app-env]
+  (reset! replete.core/app-env (map-keys keyword (cljs.core/js->clj app-env))))
+
+(defn user-interface-idiom-ipad?
+  "Returns true iff the interface idiom is iPad."
+  []
+  (= "iPad" (:user-interface-idiom @app-env)))
 
 (defn repl-read-string [line]
   (r/read-string {:read-cond :allow :features #{:cljs}} line))
@@ -94,7 +109,9 @@
                                     (ensure
                                       (c/emit var-ast)))
                            var-ret (js/eval var-js)]
-                       (repl/print-doc (update (meta var-ret) :doc reflow)))))
+                       (repl/print-doc (update (meta var-ret) :doc (if (user-interface-idiom-ipad?)
+                                                                     identity
+                                                                     reflow))))))
               (let [_ (when DEBUG (prn "form:" form))
                     ast (ana/analyze env form)
                     _ (when DEBUG (prn "ast:" ast))

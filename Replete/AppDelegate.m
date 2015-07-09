@@ -88,6 +88,23 @@
     NSAssert(!setupCljsUser.isUndefined, @"Could not find the setup-cljs-user function");
     [setupCljsUser callWithArguments:@[]];
     
+#ifdef DEBUG
+    BOOL debugBuild = YES;
+#else
+    BOOL debugBuild = NO;
+#endif
+    
+#ifdef TARGET_IPHONE_SIMULATOR
+    BOOL targetSimulator = YES;
+#else
+    BOOL targetSimulator = NO;
+#endif
+    
+    JSValue* initAppEnvFn = [self getValue:@"init-app-env" inNamespace:@"replete.core" fromContext:context];
+    [initAppEnvFn callWithArguments:@[@{@"debug-build": @(debugBuild),
+                                        @"target-simulator": @(targetSimulator),
+                                        @"user-interface-idiom": (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad": @"iPhone")}]];
+    
     self.readEvalPrintFn = [self getValue:@"read-eval-print" inNamespace:@"replete.core" fromContext:context];
     NSAssert(!self.readEvalPrintFn.isUndefined, @"Could not find the read-eval-print function");
     
