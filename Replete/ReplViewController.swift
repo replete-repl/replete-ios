@@ -95,6 +95,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         tableView.delegate = self
         tableView.keyboardDismissMode = .Interactive
         tableView.estimatedRowHeight = 44
+        tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorStyle = .None
         view.addSubview(tableView)
         
@@ -183,6 +184,10 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // Reserve row selection #CopyMessage
     func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
         return nil
+    }
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return UITableViewAutomaticDimension
     }
     
     func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
