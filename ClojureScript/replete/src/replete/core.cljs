@@ -67,6 +67,11 @@
     :name name-symbol
     :repl-special-function true))
 
+(defn reflow [text]
+  (-> text
+    (s/replace #" \n  " "")
+    (s/replace #"\n  " " ")))
+
 (defn ^:export read-eval-print [line]
   (binding [ana/*cljs-ns* @current-ns
             *ns* (create-ns @current-ns)
@@ -88,7 +93,7 @@
                                     (ensure
                                       (c/emit var-ast)))
                            var-ret (js/eval var-js)]
-                       (repl/print-doc (meta var-ret)))))
+                       (repl/print-doc (update (meta var-ret) :doc reflow)))))
               (let [_ (when DEBUG (prn "form:" form))
                     ast (ana/analyze env form)
                     _ (when DEBUG (prn "ast:" ast))
