@@ -78,10 +78,10 @@
     
     [self requireAppNamespaces:context];
     
-    [self processFile:[[NSBundle mainBundle] pathForResource:@"core.cljs.cache.aot" ofType:@"transit"]
+    [self processFile:[[NSBundle mainBundle] pathForResource:@"out/cljs/core.cljs.cache.aot" ofType:@"edn"]
               calling:@"load-core-cache" inContext:context];
     
-    [self processFile:[[NSBundle mainBundle] pathForResource:@"core$macros.cljc.cache" ofType:@"transit"]
+    [self processFile:[[NSBundle mainBundle] pathForResource:@"out/cljs/core$macros.cljc.cache" ofType:@"edn"]
               calling:@"load-macros-cache" inContext:context];
     
     JSValue* setupCljsUser = [self getValue:@"setup-cljs-user" inNamespace:@"replete.core" fromContext:context];

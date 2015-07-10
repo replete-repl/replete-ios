@@ -1,9 +1,7 @@
 (ns script.bootstrap.build
   (:require [clojure.java.io :as io]
             [cljs.closure :as closure]
-            [cljs.env :as env]
-            [clojure.edn :as edn]
-            [cognitect.transit :as transit])
+            [cljs.env :as env])
   (:import [java.io FileOutputStream]))
 
 (defn compile1 [copts file]
@@ -18,12 +16,7 @@
 (defn build [dir file opts]
   ;; Used to generate core$macros
   (io/make-parents "resources/cljs/core.cljc")
-  ;; TODO: only do this if timestamps are newer
-  ;;(if (not (.exists (io/as-file "resources/cljs/core.cljc"))))
   (spit "resources/cljs/core.cljc" (slurp (io/resource "cljs/core.cljc")))
-  (spit "resources/cljs/core.cljs" (slurp (io/resource "cljs/core.cljs")))
-  ;; Compilation core.cljc below breaks if the cache file is present
-  (io/delete-file "resources/cljs/core.cljs.cache.aot.edn" true)
 
   (let [output-dir (io/file dir)
         copts (assoc opts
@@ -43,17 +36,7 @@
             :output-to (.getPath (io/file output-dir "deps.js")))
           (concat deps deps-macros)))))
 
-  (let [core-cache (edn/read-string (slurp (io/resource "cljs/core.cljs.cache.aot.edn")))
-        out (FileOutputStream. "./resources/cljs/core.cljs.cache.aot.transit")
-        writer (transit/writer out :json)
-        _ (transit/write writer core-cache)]
-    (.close out))
-
-  (let [core-macros-cache (edn/read-string (slurp "out/cljs/core$macros.cljc.cache.edn"))
-        out (FileOutputStream. "./resources/cljs/core$macros.cljc.cache.transit")
-        writer (transit/writer out :json)
-        _ (transit/write writer core-macros-cache)]
-    (.close out)))
+  (spit "out/cljs/core.cljs.cache.aot.edn" (slurp (io/resource "cljs/core.cljs.cache.aot.edn"))))
 
 (println "Building")
 (build "out" "replete/core.cljs" nil)
