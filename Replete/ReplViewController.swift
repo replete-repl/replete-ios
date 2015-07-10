@@ -28,7 +28,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 textView.layer.borderWidth = 0.5
                 textView.layer.cornerRadius = 5
                 textView.scrollsToTop = false
-                textView.textContainerInset = UIEdgeInsetsMake(4, 3, 3, 3)
+                textView.textContainerInset = UIEdgeInsetsMake(6, 3, 6, 3)
                 textView.autocorrectionType = UITextAutocorrectionType.No;
                 textView.autocapitalizationType = UITextAutocapitalizationType.None;
                 textView.delegate = self
@@ -40,7 +40,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 evalButton.setTitle("Eval", forState: .Normal)
                 evalButton.setTitleColor(UIColor(red: 142/255, green: 142/255, blue: 147/255, alpha: 1), forState: .Disabled)
                 evalButton.setTitleColor(UIColor(red: 1/255, green: 122/255, blue: 255/255, alpha: 1), forState: .Normal)
-                evalButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
+                evalButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 8)
                 evalButton.addTarget(self, action: "sendAction", forControlEvents: UIControlEvents.TouchUpInside)
                 toolBar.addSubview(evalButton)
                 
@@ -48,7 +48,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 textView.setTranslatesAutoresizingMaskIntoConstraints(false)
                 evalButton.setTranslatesAutoresizingMaskIntoConstraints(false)
 
-                textFieldHeightLayoutConstraint = NSLayoutConstraint(item: textView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 28)
+                textFieldHeightLayoutConstraint = NSLayoutConstraint(item: textView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 1)
                 toolBar.addConstraint(textFieldHeightLayoutConstraint)
 
                 toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Left, relatedBy: .Equal, toItem: toolBar, attribute: .Left, multiplier: 1, constant: 8))
@@ -95,6 +95,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         tableView.delegate = self
         tableView.keyboardDismissMode = .Interactive
         tableView.estimatedRowHeight = 44
+        tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorStyle = .None
         view.addSubview(tableView)
         
@@ -183,6 +184,10 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // Reserve row selection #CopyMessage
     func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
         return nil
+    }
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return UITableViewAutomaticDimension
     }
     
     func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {

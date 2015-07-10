@@ -30,6 +30,19 @@
   (js/eval "goog.provide('cljs.user')")
   (js/eval "goog.require('cljs.core')"))
 
+(def app-env (atom nil))
+
+(defn map-keys [f m]
+  (reduce-kv (fn [r k v] (assoc r (f k) v)) {} m))
+
+(defn ^:export init-app-env [app-env]
+  (reset! replete.core/app-env (map-keys keyword (cljs.core/js->clj app-env))))
+
+(defn user-interface-idiom-ipad?
+  "Returns true iff the interface idiom is iPad."
+  []
+  (= "iPad" (:user-interface-idiom @app-env)))
+
 (defn repl-read-string [line]
   (r/read-string {:read-cond :allow :features #{:cljs}} line))
 
@@ -63,6 +76,12 @@
     :name name-symbol
     :repl-special-function true))
 
+(defn reflow [text]
+  (and text
+    (-> text
+     (s/replace #" \n  " "")
+     (s/replace #"\n  " " "))))
+
 (defn ^:export read-eval-print [line]
   (binding [ana/*cljs-ns* @current-ns
             *ns* (create-ns @current-ns)
@@ -84,7 +103,9 @@
                                     (ensure
                                       (c/emit var-ast)))
                            var-ret (js/eval var-js)]
-                       (repl/print-doc (meta var-ret)))))
+                       (repl/print-doc (update (meta var-ret) :doc (if (user-interface-idiom-ipad?)
+                                                                     identity
+                                                                     reflow))))))
               (let [_ (when DEBUG (prn "form:" form))
                     ast (ana/analyze env form)
                     _ (when DEBUG (prn "ast:" ast))
