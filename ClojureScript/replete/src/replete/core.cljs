@@ -81,6 +81,18 @@
      (s/replace #" \n  " "")
      (s/replace #"\n  " " "))))
 
+;; Copied from cljs.analyzer.api (which hasn't yet been converted to cljc)
+(defn resolve
+  "Given an analysis environment resolve a var. Analogous to
+   clojure.core/resolve"
+  [env sym]
+  {:pre [(map? env) (symbol? sym)]}
+  (try
+    (ana/resolve-var env sym
+      (ana/confirm-var-exists-throw))
+    (catch :default _
+      (ana/resolve-macro-var env sym))))
+
 (defn ^:export read-eval-print [line]
   (binding [ana/*cljs-ns* @current-ns
             *ns* (create-ns @current-ns)
@@ -99,7 +111,7 @@
                       (repl/print-doc (repl-special-doc (second form)))
                       (repl/print-doc
                         (let [sym (second form)
-                              var (ana/resolve-var env sym (ana/confirm-var-exists-throw))]
+                              var (resolve env sym)]
                           (update (:meta var)
                             :doc (if (user-interface-idiom-ipad?)
                                    identity
