@@ -9,28 +9,22 @@
             [cljs.compiler :as c]
             [cljs.env :as env]
             [cljs.repl :as repl]
-            [cognitect.transit :as t]
+            [cljs.reader :as edn]
             [clojure.string :as s]))
 
 (def DEBUG false)
 
 (def cenv (env/default-compiler-env))
 
+(defn load-cache [cache where]
+  (swap! cenv assoc-in [::ana/namespaces where] cache)
+  nil)
 
+(defn ^:export load-core-js [code]
+  (load-cache (js/eval code) 'cljs.core))
 
-(defn ^:export load-core-cache [core-transit]
-  (let [r (t/reader :json)
-        core-cache (t/read r core-transit)]
-    (swap! cenv assoc-in [::ana/namespaces 'cljs.core]
-      core-cache)
-    nil))
-
-(defn ^:export load-macros-cache [macros-transit]
-  (let [r (t/reader :json)
-        macros-cache (t/read r macros-transit)]
-    (swap! cenv assoc-in [::ana/namespaces 'cljs.core$macros]
-      macros-cache)
-    nil))
+(defn ^:export load-macros-js [code]
+  (load-cache (js/eval code) 'cljs.core$macros))
 
 (defn ^:export setup-cljs-user []
   (js/eval "goog.provide('cljs.user')")

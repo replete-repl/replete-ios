@@ -14,12 +14,10 @@
 		ED06DC321B3F62E800100331 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED06DC311B3F62E800100331 /* Images.xcassets */; };
 		ED06DC351B3F62E800100331 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED06DC331B3F62E800100331 /* LaunchScreen.xib */; };
 		ED06DC411B3F62E800100331 /* RepleteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED06DC401B3F62E800100331 /* RepleteTests.m */; };
-		ED1B77241B3F7ADE00854598 /* core.cljs.cache.aot.transit in Resources */ = {isa = PBXBuildFile; fileRef = ED1B77231B3F7ADE00854598 /* core.cljs.cache.aot.transit */; };
 		ED93310C1B4013F0004B09FD /* ReplViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED93310B1B4013F0004B09FD /* ReplViewController.swift */; };
 		ED93310F1B401411004B09FD /* HistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED93310D1B401411004B09FD /* HistoryTableViewCell.swift */; };
 		ED9331131B40151A004B09FD /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9331111B40151A004B09FD /* History.swift */; };
 		ED9331141B40151A004B09FD /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9331121B40151A004B09FD /* Message.swift */; };
-		EDB316A71B45B93E00809C8D /* core$macros.cljc.cache.transit in Resources */ = {isa = PBXBuildFile; fileRef = EDB316A61B45B93E00809C8D /* core$macros.cljc.cache.transit */; };
 		EDE7D6CB1B3F79AB00710B50 /* out in Resources */ = {isa = PBXBuildFile; fileRef = EDE7D6CA1B3F79AB00710B50 /* out */; };
 /* End PBXBuildFile section */
 
@@ -48,13 +46,11 @@
 		ED06DC3A1B3F62E800100331 /* RepleteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RepleteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED06DC3F1B3F62E800100331 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ED06DC401B3F62E800100331 /* RepleteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RepleteTests.m; sourceTree = "<group>"; };
-		ED1B77231B3F7ADE00854598 /* core.cljs.cache.aot.transit */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = core.cljs.cache.aot.transit; path = ClojureScript/replete/resources/cljs/core.cljs.cache.aot.transit; sourceTree = SOURCE_ROOT; };
 		ED93310A1B4013EF004B09FD /* Replete-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Replete-Bridging-Header.h"; sourceTree = "<group>"; };
 		ED93310B1B4013F0004B09FD /* ReplViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplViewController.swift; sourceTree = "<group>"; };
 		ED93310D1B401411004B09FD /* HistoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HistoryTableViewCell.swift; sourceTree = "<group>"; };
 		ED9331111B40151A004B09FD /* History.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
 		ED9331121B40151A004B09FD /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
-		EDB316A61B45B93E00809C8D /* core$macros.cljc.cache.transit */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = core$macros.cljc.cache.transit; path = ClojureScript/replete/resources/cljs/core$macros.cljc.cache.transit; sourceTree = SOURCE_ROOT; };
 		EDE7D6CA1B3F79AB00710B50 /* out */ = {isa = PBXFileReference; lastKnownFileType = folder; name = out; path = ClojureScript/replete/out; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -117,8 +113,6 @@
 		ED06DC231B3F62E800100331 /* Replete */ = {
 			isa = PBXGroup;
 			children = (
-				ED1B77231B3F7ADE00854598 /* core.cljs.cache.aot.transit */,
-				EDB316A61B45B93E00809C8D /* core$macros.cljc.cache.transit */,
 				EDE7D6CA1B3F79AB00710B50 /* out */,
 				ED06DC281B3F62E800100331 /* AppDelegate.h */,
 				ED06DC291B3F62E800100331 /* AppDelegate.m */,
@@ -245,8 +239,6 @@
 			files = (
 				ED06DC301B3F62E800100331 /* Main.storyboard in Resources */,
 				ED06DC351B3F62E800100331 /* LaunchScreen.xib in Resources */,
-				ED1B77241B3F7ADE00854598 /* core.cljs.cache.aot.transit in Resources */,
-				EDB316A71B45B93E00809C8D /* core$macros.cljc.cache.transit in Resources */,
 				ED06DC321B3F62E800100331 /* Images.xcassets in Resources */,
 				EDE7D6CB1B3F79AB00710B50 /* out in Resources */,
 			);

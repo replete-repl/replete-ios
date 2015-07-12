@@ -2,8 +2,9 @@
   (:require [clojure.java.io :as io]
             [cljs.closure :as closure]
             [cljs.env :as env]
-            [clojure.edn :as edn]
-            [cognitect.transit :as transit])
+            [cljs.analyzer :as ana]
+            [cljs.compiler :as c]
+            [clojure.edn :as edn])
   (:import [java.io FileOutputStream]))
 
 (defn compile1 [copts file]
@@ -15,15 +16,20 @@
         deps    (closure/add-dependencies copts core-js)]
     deps))
 
+(defn edn->js [e]
+  (env/with-compiler-env (env/default-compiler-env)
+    (let [env (assoc (ana/empty-env) :context :expr
+                                 :ns {:name 'cljs.core}
+                                 :def-emits-var true)
+        form (edn/read-string (str "(quote " e ")"))
+        ast (ana/analyze env form)
+        js (with-out-str (c/emit ast))]
+        js)))
+
 (defn build [dir file opts]
   ;; Used to generate core$macros
   (io/make-parents "resources/cljs/core.cljc")
-  ;; TODO: only do this if timestamps are newer
-  ;;(if (not (.exists (io/as-file "resources/cljs/core.cljc"))))
   (spit "resources/cljs/core.cljc" (slurp (io/resource "cljs/core.cljc")))
-  (spit "resources/cljs/core.cljs" (slurp (io/resource "cljs/core.cljs")))
-  ;; Compilation core.cljc below breaks if the cache file is present
-  (io/delete-file "resources/cljs/core.cljs.cache.aot.edn" true)
 
   (let [output-dir (io/file dir)
         copts (assoc opts
@@ -43,17 +49,8 @@
             :output-to (.getPath (io/file output-dir "deps.js")))
           (concat deps deps-macros)))))
 
-  (let [core-cache (edn/read-string (slurp (io/resource "cljs/core.cljs.cache.aot.edn")))
-        out (FileOutputStream. "./resources/cljs/core.cljs.cache.aot.transit")
-        writer (transit/writer out :json)
-        _ (transit/write writer core-cache)]
-    (.close out))
-
-  (let [core-macros-cache (edn/read-string (slurp "out/cljs/core$macros.cljc.cache.edn"))
-        out (FileOutputStream. "./resources/cljs/core$macros.cljc.cache.transit")
-        writer (transit/writer out :json)
-        _ (transit/write writer core-macros-cache)]
-    (.close out)))
+  (spit "out/cljs/core.cljs.cache.aot.js" (edn->js (slurp (io/resource "cljs/core.cljs.cache.aot.edn"))))
+  (spit "out/cljs/core$macros.cljc.cache.js" (edn->js (slurp "out/cljs/core$macros.cljc.cache.edn"))))
 
 (println "Building")
 (build "out" "replete/core.cljs" nil)

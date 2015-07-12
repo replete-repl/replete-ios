@@ -78,11 +78,11 @@
     
     [self requireAppNamespaces:context];
     
-    [self processFile:[[NSBundle mainBundle] pathForResource:@"core.cljs.cache.aot" ofType:@"transit"]
-              calling:@"load-core-cache" inContext:context];
+    [self processFile:[[NSBundle mainBundle] pathForResource:@"out/cljs/core.cljs.cache.aot" ofType:@"js"]
+              calling:@"load-core-js" inContext:context];
     
-    [self processFile:[[NSBundle mainBundle] pathForResource:@"core$macros.cljc.cache" ofType:@"transit"]
-              calling:@"load-macros-cache" inContext:context];
+    [self processFile:[[NSBundle mainBundle] pathForResource:@"out/cljs/core$macros.cljc.cache" ofType:@"js"]
+              calling:@"load-macros-js" inContext:context];
     
     JSValue* setupCljsUser = [self getValue:@"setup-cljs-user" inNamespace:@"replete.core" fromContext:context];
     NSAssert(!setupCljsUser.isUndefined, @"Could not find the setup-cljs-user function");
@@ -113,6 +113,7 @@
 
     
     context[@"REPLETE_PRINT_FN"] = ^(NSString *message) {
+//        NSLog(@"repl out: %@", message);
         if (self.myPrintCallback) {
             self.myPrintCallback(message);
         } else {
