@@ -19,8 +19,7 @@
 (defn edn->js [e]
   (env/with-compiler-env (env/default-compiler-env)
     (let [env (assoc (ana/empty-env) :context :expr
-                                 :ns {:name 'cljs.core}
-                                 :def-emits-var true)
+                                 :ns {:name 'cljs.core})
         form (edn/read-string (str "(quote " e ")"))
         ast (ana/analyze env form)
         js (with-out-str (c/emit ast))]
@@ -49,8 +48,14 @@
             :output-to (.getPath (io/file output-dir "deps.js")))
           (concat deps deps-macros)))))
 
-  (spit "out/cljs/core.cljs.cache.aot.js" (edn->js (slurp (io/resource "cljs/core.cljs.cache.aot.edn"))))
-  (spit "out/cljs/core$macros.cljc.cache.js" (edn->js (slurp "out/cljs/core$macros.cljc.cache.edn"))))
+  (spit "out/cljs/core.caches.js"
+    (edn->js (str 
+      "{cljs.core " (edn/read-string (slurp (io/resource "cljs/core.cljs.cache.aot.edn")))
+      " cljs.core$macros " (edn/read-string (slurp "out/cljs/core$macros.cljc.cache.edn")) "}")))
+
+  (spit "out/deps.js" 
+    (str (slurp "out/deps.js")
+          "\n var CORE_CACHES = " (prn-str (slurp "out/cljs/core.caches.js")) ";")))
 
 (println "Building")
 (build "out" "replete/core.cljs" nil)

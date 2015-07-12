@@ -9,22 +9,15 @@
             [cljs.compiler :as c]
             [cljs.env :as env]
             [cljs.repl :as repl]
-            [cljs.reader :as edn]
             [clojure.string :as s]))
 
 (def DEBUG false)
 
-(def cenv (env/default-compiler-env))
-
-(defn load-cache [cache where]
-  (swap! cenv assoc-in [::ana/namespaces where] cache)
-  nil)
-
-(defn ^:export load-core-js [code]
-  (load-cache (js/eval code) 'cljs.core))
-
-(defn ^:export load-macros-js [code]
-  (load-cache (js/eval code) 'cljs.core$macros))
+(def cenv (let [e (env/default-compiler-env)
+                caches (js/eval (js/eval "CORE_CACHES"))] 
+                (doseq [[where cache] caches] 
+                  (swap! e assoc-in [::ana/namespaces where] cache))
+                e))
 
 (defn ^:export setup-cljs-user []
   (js/eval "goog.provide('cljs.user')")
@@ -82,6 +75,18 @@
      (s/replace #" \n  " "")
      (s/replace #"\n  " " "))))
 
+;; Copied from cljs.analyzer.api (which hasn't yet been converted to cljc)
+(defn resolve
+  "Given an analysis environment resolve a var. Analogous to
+   clojure.core/resolve"
+  [env sym]
+  {:pre [(map? env) (symbol? sym)]}
+  (try
+    (ana/resolve-var env sym
+      (ana/confirm-var-exists-throw))
+    (catch :default _
+      (ana/resolve-macro-var env sym))))
+
 (defn ^:export read-eval-print [line]
   (binding [ana/*cljs-ns* @current-ns
             *ns* (create-ns @current-ns)
@@ -98,14 +103,13 @@
                 in-ns (reset! current-ns (second (second form)))
                 doc (if (repl-specials (second form))
                       (repl/print-doc (repl-special-doc (second form)))
-                      (let [var-ast (ana/analyze env `(var ~(second form)))
-                           var-js (with-out-str
-                                    (ensure
-                                      (c/emit var-ast)))
-                           var-ret (js/eval var-js)]
-                       (repl/print-doc (update (meta var-ret) :doc (if (user-interface-idiom-ipad?)
-                                                                     identity
-                                                                     reflow))))))
+                      (repl/print-doc
+                        (let [sym (second form)
+                              var (resolve env sym)]
+                          (update (:meta var)
+                            :doc (if (user-interface-idiom-ipad?)
+                                   identity
+                                   reflow))))))
               (let [_ (when DEBUG (prn "form:" form))
                     ast (ana/analyze env form)
                     _ (when DEBUG (prn "ast:" ast))
