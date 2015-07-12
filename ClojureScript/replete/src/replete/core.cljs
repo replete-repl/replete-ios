@@ -99,7 +99,7 @@
                       (repl/print-doc (repl-special-doc (second form)))
                       (repl/print-doc
                         (let [sym (second form)
-                              var (ana/resolve-var env sym)]
+                              var (ana/resolve-var env sym (ana/confirm-var-exists-throw))]
                           (update (:meta var)
                             :doc (if (user-interface-idiom-ipad?)
                                    identity
