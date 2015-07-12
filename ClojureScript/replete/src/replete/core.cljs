@@ -9,7 +9,6 @@
             [cljs.compiler :as c]
             [cljs.env :as env]
             [cljs.repl :as repl]
-            [cljs.reader :as edn]
             [clojure.string :as s]))
 
 (def DEBUG false)
