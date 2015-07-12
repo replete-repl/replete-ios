@@ -97,14 +97,13 @@
                 in-ns (reset! current-ns (second (second form)))
                 doc (if (repl-specials (second form))
                       (repl/print-doc (repl-special-doc (second form)))
-                      (let [var-ast (ana/analyze env `(var ~(second form)))
-                           var-js (with-out-str
-                                    (ensure
-                                      (c/emit var-ast)))
-                           var-ret (js/eval var-js)]
-                       (repl/print-doc (update (meta var-ret) :doc (if (user-interface-idiom-ipad?)
-                                                                     identity
-                                                                     reflow))))))
+                      (repl/print-doc
+                        (let [sym (second form)
+                              var (ana/resolve-var env sym)]
+                          (update (:meta var)
+                            :doc (if (user-interface-idiom-ipad?)
+                                   identity
+                                   reflow))))))
               (let [_ (when DEBUG (prn "form:" form))
                     ast (ana/analyze env form)
                     _ (when DEBUG (prn "ast:" ast))
