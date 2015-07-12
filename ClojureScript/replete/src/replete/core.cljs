@@ -20,11 +20,11 @@
   (swap! cenv assoc-in [::ana/namespaces where] cache)
   nil)
 
-(defn ^:export load-core-cache [core-edn]
-    (load-cache (edn/read-string core-edn) 'cljs.core))
+(defn ^:export load-core-js [code]
+  (load-cache (js/eval code) 'cljs.core))
 
-(defn ^:export load-macros-cache [macros-edn]
-    (load-cache (edn/read-string macros-edn) 'cljs.core$macros))
+(defn ^:export load-macros-js [code]
+  (load-cache (js/eval code) 'cljs.core$macros))
 
 (defn ^:export setup-cljs-user []
   (js/eval "goog.provide('cljs.user')")
