@@ -19,8 +19,7 @@
 (defn edn->js [e]
   (env/with-compiler-env (env/default-compiler-env)
     (let [env (assoc (ana/empty-env) :context :expr
-                                 :ns {:name 'cljs.core}
-                                 :def-emits-var true)
+                                 :ns {:name 'cljs.core})
         form (edn/read-string (str "(quote " e ")"))
         ast (ana/analyze env form)
         js (with-out-str (c/emit ast))]
