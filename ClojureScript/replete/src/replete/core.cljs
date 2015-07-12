@@ -13,17 +13,11 @@
 
 (def DEBUG false)
 
-(def cenv (env/default-compiler-env))
-
-(defn load-cache [cache where]
-  (swap! cenv assoc-in [::ana/namespaces where] cache)
-  nil)
-
-(defn ^:export load-core-js [code]
-  (load-cache (js/eval code) 'cljs.core))
-
-(defn ^:export load-macros-js [code]
-  (load-cache (js/eval code) 'cljs.core$macros))
+(def cenv (let [e (env/default-compiler-env)
+                caches (js/eval (js/eval "CORE_CACHES"))] 
+                (doseq [[where cache] caches] 
+                  (swap! e assoc-in [::ana/namespaces where] cache))
+                e))
 
 (defn ^:export setup-cljs-user []
   (js/eval "goog.provide('cljs.user')")
