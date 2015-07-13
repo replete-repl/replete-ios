@@ -152,7 +152,6 @@
 
 -(void)requireAppNamespaces:(JSContext*)context
 {
-    [context evaluateScript:[NSString stringWithFormat:@"goog.require('%@');", [self munge:@"replete.ui"]]];
     [context evaluateScript:[NSString stringWithFormat:@"goog.require('%@');", [self munge:@"replete.core"]]];
 }
 
