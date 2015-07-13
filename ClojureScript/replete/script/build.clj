@@ -48,14 +48,15 @@
             :output-to (.getPath (io/file output-dir "deps.js")))
           (concat deps deps-macros)))))
 
-  (spit "out/cljs/core.caches.js"
-    (edn->js (str 
-      "{cljs.core " (edn/read-string (slurp (io/resource "cljs/core.cljs.cache.aot.edn")))
-      " cljs.core$macros " (edn/read-string (slurp "out/cljs/core$macros.cljc.cache.edn")) "}")))
+  (spit "out/cljs/core.cache.js" 
+    (str 
+      "goog.provide('cljs.cache');\ngoog.require('cljs.core');\n\n"
+      "cljs.cache.core = " (edn->js (edn/read-string (slurp (io/resource "cljs/core.cljs.cache.aot.edn")))) ";\n\n"
+      "cljs.cache.core$macros = " (edn->js (edn/read-string (slurp "out/cljs/core$macros.cljc.cache.edn"))))) ";\n\n"
 
   (spit "out/deps.js" 
     (str (slurp "out/deps.js")
-          "\n var CORE_CACHES = " (prn-str (slurp "out/cljs/core.caches.js")) ";")))
+          "goog.addDependency(\"../cljs/core.cache.js\", ['cljs.cache'], ['cljs.core']);\n")))
 
 (println "Building")
 (build "out" "replete/core.cljs" nil)
