@@ -6,6 +6,8 @@ Available for [beta testing](https://github.com/mfikes/replete/wiki/Beta).
 
 Read more in blog post: [Replete: A Standalone iOS CLJS REPL](http://blog.fikesfarm.com/posts/2015-06-27-replete-a-standalone-ios-cljs-repl.html).
 
+Interested in Android instead? See [Replicator](http://tahmid.me).
+
 # Running
 
 1. Clone and build ClojureScript master (`script/build`).
