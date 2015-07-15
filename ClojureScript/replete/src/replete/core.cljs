@@ -17,8 +17,8 @@
   ;manually require as first stage comilation it doesn't exist
   (let [ _ (js/eval "goog.require('cljs.cache')")
         env (env/default-compiler-env)] 
-    (swap! env assoc-in [::ana/namespaces 'cljs.core] cljs.cache/core)
-    (swap! env assoc-in [::ana/namespaces 'cljs.core$macros] cljs.cache/core$macros)
+    (swap! env assoc-in [::ana/namespaces 'cljs.core] js/cljs.cache.core)
+    (swap! env assoc-in [::ana/namespaces 'cljs.core$macros] js/cljs.cache.core$macros)
     env))
 
 (defn ^:export setup-cljs-user []
