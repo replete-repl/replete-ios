@@ -2,9 +2,11 @@
 
 ClojureScript REPL iOS app.
 
-Available for [beta testing](https://github.com/mfikes/replete/wiki/Beta).
+Available [on the App Store](https://itunes.apple.com/us/app/replete/id1013465639?ls=1&mt=8).
 
-Read more in blog post: [Replete: A Standalone iOS CLJS REPL](http://blog.fikesfarm.com/posts/2015-06-27-replete-a-standalone-ios-cljs-repl.html).
+[Announcement post](http://blog.fikesfarm.com/posts/2015-07-20-ios-clojurescript-repl-available-in-app-store.html)
+
+Earlier post: [Replete: A Standalone iOS CLJS REPL](http://blog.fikesfarm.com/posts/2015-06-27-replete-a-standalone-ios-cljs-repl.html).
 
 Interested in Android instead? See [Replicator](https://github.com/tahmidsadik112/Replicator).
 
