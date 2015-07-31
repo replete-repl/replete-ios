@@ -116,6 +116,7 @@
         //self.outputTextView.text = [self.outputTextView.text stringByAppendingString:message];
     };
     [context evaluateScript:@"cljs.core.set_print_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
+    [context evaluateScript:@"cljs.core.set_print_err_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
     
     // TODO look into this. Without it thngs won't work.
     [context evaluateScript:@"var window = global;"];
