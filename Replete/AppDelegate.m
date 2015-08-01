@@ -208,15 +208,12 @@
                                                            error: &err];
         if (urlContent != nil) {
 
-            NSString *urlContentWrappedInDo = [NSString stringWithFormat: @"(do %@\n)",
-                                               urlContent];
-            
             if ([self initialized]) {
-                NSLog(@"Evaluating code: %@", urlContentWrappedInDo);
-                [self evaluate: urlContentWrappedInDo];
+                NSLog(@"Evaluating code: %@", urlContent);
+                [self evaluate: urlContent];
             } else {
-                NSLog(@"Code to be evaluated when ready: %@", urlContentWrappedInDo);
-                self.codeToBeEvaluatedWhenReady = urlContentWrappedInDo;
+                NSLog(@"Code to be evaluated when ready: %@", urlContent);
+                self.codeToBeEvaluatedWhenReady = urlContent;
             }
 
         } else {

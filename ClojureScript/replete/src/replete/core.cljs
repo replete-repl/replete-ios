@@ -89,7 +89,41 @@
     (catch :default _
       (ana/resolve-macro-var env sym))))
 
-(defn ^:export read-eval-print [line]
+(defn read-eval-print-form [form env]
+  (let [_ (when DEBUG (prn "form:" form))]
+    (if (repl-special? form)
+      (case (first form)
+        in-ns (reset! current-ns (second (second form)))
+        doc (if (repl-specials (second form))
+              (repl/print-doc (repl-special-doc (second form)))
+              (repl/print-doc
+               (let [sym (second form)
+                     var (resolve env sym)]
+                 (update (:meta var)
+                         :doc (if (user-interface-idiom-ipad?)
+                                identity
+                                reflow))))))
+      (let [_ (when DEBUG (prn "form:" form))
+            ast (ana/analyze env form)
+            _ (when DEBUG (prn "ast:" ast))
+            js (with-out-str
+                 (ensure
+                  (c/emit ast)))
+            _ (when DEBUG (prn "js:" js))]
+        (try (prn (let [ret (js/eval js)]
+                    (when-not
+                        (or ('#{*1 *2 *3 *e} form)
+                            (ns-form? form))
+                      (set! *3 *2)
+                      (set! *2 *1)
+                      (set! *1 ret))
+                    (reset! current-ns ana/*cljs-ns*)
+                    ret))
+             (catch js/Error e
+               (set! *e e)
+               (print (.-message e) "\n" (first (s/split (.-stack e) #"eval code")))))))))
+
+(defn ^:export read-eval-print [lines]
   (binding [ana/*cljs-ns* @current-ns
             *ns* (create-ns @current-ns)
             r/*data-readers* tags/*cljs-data-readers*]
@@ -98,38 +132,12 @@
                                        :ns {:name @current-ns}
                                        :def-emits-var true)]
         (try
-          (let [_ (when DEBUG (prn "line:" line))
-                form (repl-read-string line)]
-            (if (repl-special? form)
-              (case (first form)
-                in-ns (reset! current-ns (second (second form)))
-                doc (if (repl-specials (second form))
-                      (repl/print-doc (repl-special-doc (second form)))
-                      (repl/print-doc
-                        (let [sym (second form)
-                              var (resolve env sym)]
-                          (update (:meta var)
-                            :doc (if (user-interface-idiom-ipad?)
-                                   identity
-                                   reflow))))))
-              (let [_ (when DEBUG (prn "form:" form))
-                    ast (ana/analyze env form)
-                    _ (when DEBUG (prn "ast:" ast))
-                    js (with-out-str
-                         (ensure
-                           (c/emit ast)))
-                    _ (when DEBUG (prn "js:" js))]
-                (try (prn (let [ret (js/eval js)]
-                            (when-not
-                              (or ('#{*1 *2 *3 *e} form)
-                                (ns-form? form))
-                              (set! *3 *2)
-                              (set! *2 *1)
-                              (set! *1 ret))
-                            (reset! current-ns ana/*cljs-ns*)
-                            ret))
-                     (catch js/Error e
-                       (set! *e e)
-                       (print (.-message e) "\n" (first (s/split (.-stack e) #"eval code"))))))))
+          (let [infile (string-push-back-reader lines)
+                eof (js-obj)]
+            (loop []
+              (let [form (r/read {:eof eof :read-cond :allow :features #{:cljs}} infile)]
+                (when-not (identical? eof form)
+                  (read-eval-print-form form env)
+                  (recur)))))
           (catch js/Error e
             (println (.-message e))))))))
