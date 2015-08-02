@@ -10,7 +10,10 @@
             [cljs.compiler :as c]
             [cljs.env :as env]
             [cljs.repl :as repl]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [cljs.stacktrace :as st]
+            [cljs.source-map :as sm]
+            [tailrecursion.cljson :refer [cljson->clj]]))
 
 (def DEBUG false)
 
@@ -74,8 +77,8 @@
 (defn reflow [text]
   (and text
     (-> text
-     (s/replace #" \n  " "")
-     (s/replace #"\n  " " "))))
+      (s/replace #" \n  " "")
+      (s/replace #"\n  " " "))))
 
 ;; Copied from cljs.analyzer.api (which hasn't yet been converted to cljc)
 (defn resolve
@@ -127,10 +130,27 @@
   (let [[[_ sym] reload] args]
     (require macros-ns? sym reload)))
 
+(defn load-core-source-maps! []
+  (when-not (get (:source-maps @st) 'cljs.core)
+    (swap! st update-in [:source-maps] merge {'cljs.core
+                                              (sm/decode
+                                                (cljson->clj
+                                                  (js/REPLETE_LOAD "cljs/core.js.map")))})))
+
 (defn print-error [error]
   (let [cause (.-cause error)]
     (println (.-message cause))
-    (println (.-stack cause))))
+    (load-core-source-maps!)
+    (let [canonical-stacktrace (st/parse-stacktrace
+                                 {}
+                                 (.-stack cause)
+                                 {:ua-product :safari}
+                                 {:output-dir "file://(/goog/..)?"})]
+      (println
+        (st/mapped-stacktrace-str
+          canonical-stacktrace
+          (or (:source-maps @st) {})
+          nil)))))
 
 (defn ^:export read-eval-print
   ([source]

@@ -126,7 +126,7 @@
         // Now try in the outPath
         if (!rv) {
             fullPath = [NSURL URLWithString:path
-                                  relativeToURL:[NSURL URLWithString:outPath]].path;
+                                  relativeToURL:[NSURL URLWithString:[outPath stringByAppendingString:@"/"]]].path;
                 rv = [NSString stringWithContentsOfFile:fullPath
                                                encoding:NSUTF8StringEncoding error:nil];
         }
