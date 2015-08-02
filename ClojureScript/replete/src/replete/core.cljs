@@ -137,6 +137,24 @@
                                                 (cljson->clj
                                                   (js/REPLETE_LOAD "cljs/core.js.map")))})))
 
+(defn unmunge-core-fn [munged-name]
+  (s/replace munged-name #"^cljs\$core\$" "cljs.core/"))
+
+(defn mapped-stacktrace-str
+  "Given a vector representing the canonicalized JavaScript stacktrace and a map
+  of library names to decoded source maps, print the ClojureScript stacktrace .
+  See mapped-stacktrace."
+  ([stacktrace sms]
+   (mapped-stacktrace-str stacktrace sms nil))
+  ([stacktrace sms opts]
+   (with-out-str
+     (doseq [{:keys [function file line column]}
+             (st/mapped-stacktrace stacktrace sms opts)]
+       (println 
+         (str (when function (str (unmunge-core-fn function) " "))
+           "(" file (when line (str ":" line))
+           (when column (str ":" column)) ")"))))))
+
 (defn print-error [error]
   (let [cause (.-cause error)]
     (println (.-message cause))
@@ -147,7 +165,7 @@
                                  {:ua-product :safari}
                                  {:output-dir "file://(/goog/..)?"})]
       (println
-        (st/mapped-stacktrace-str
+        (mapped-stacktrace-str
           canonical-stacktrace
           (or (:source-maps @st) {})
           nil)))))
