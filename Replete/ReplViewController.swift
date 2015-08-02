@@ -106,9 +106,9 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         
-        appDelegate.setPrintCallback { (message: String!) -> Void in
+        appDelegate.setPrintCallback { (incoming: Bool, message: String!) -> Void in
             dispatch_async(dispatch_get_main_queue()) {
-                self.loadMessage(true, text: message)
+                self.loadMessage(incoming, text: message)
             }
         }
 

@@ -150,7 +150,7 @@
    (with-out-str
      (doseq [{:keys [function file line column]}
              (st/mapped-stacktrace stacktrace sms opts)]
-       (println 
+       (println
          (str (when function (str (unmunge-core-fn function) " "))
            "(" file (when line (str ":" line))
            (when column (str ":" column)) ")"))))))

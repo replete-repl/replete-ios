@@ -14,7 +14,7 @@
 @property (strong, nonatomic) ABYContextManager* contextManager;
 @property (strong, nonatomic) JSValue* readEvalPrintFn;
 @property (strong, nonatomic) JSValue* isReadableFn;
-@property (nonatomic, copy) void (^myPrintCallback)(NSString*);
+@property (nonatomic, copy) void (^myPrintCallback)(BOOL, NSString*);
 @property BOOL initialized;
 @property NSString *codeToBeEvaluatedWhenReady;
 
@@ -106,7 +106,7 @@
     context[@"REPLETE_PRINT_FN"] = ^(NSString *message) {
 //        NSLog(@"repl out: %@", message);
         if (self.myPrintCallback) {
-            self.myPrintCallback(message);
+            self.myPrintCallback(true, message);
         } else {
             NSLog(@"printed without callback set: %@", message);
         }
@@ -146,6 +146,9 @@
     if ([self codeToBeEvaluatedWhenReady]) {
         NSLog(@"Delayed code to be evaluated: %@", [self codeToBeEvaluatedWhenReady]);
         [self evaluate:[self codeToBeEvaluatedWhenReady] asExpression:NO];
+        if (self.myPrintCallback) {
+            self.myPrintCallback(NO, @"(Loaded Code)");
+        }
     }
 
 }
@@ -176,7 +179,7 @@
             stringByReplacingOccurrencesOfString:@"?" withString:@"_QMARK_"];
 }
 
--(void)setPrintCallback:(void (^)(NSString*))thePrintCallback
+-(void)setPrintCallback:(void (^)(BOOL, NSString*))thePrintCallback
 {
     self.myPrintCallback = thePrintCallback;
 }
@@ -215,6 +218,9 @@
             if ([self initialized]) {
                 NSLog(@"Evaluating code: %@", urlContent);
                 [self evaluate:urlContent asExpression:NO];
+                if (self.myPrintCallback) {
+                    self.myPrintCallback(NO, @"(Loaded Code)");
+                }
             } else {
                 NSLog(@"Code to be evaluated when ready: %@", urlContent);
                 self.codeToBeEvaluatedWhenReady = urlContent;
