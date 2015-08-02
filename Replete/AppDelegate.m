@@ -54,13 +54,16 @@
     NSString *outPath = [[NSBundle mainBundle] pathForResource:@"out" ofType:nil];
     NSURL* outURL = [NSURL URLWithString:outPath];
     
+    NSURL* srcURL = [[AppDelegate applicationDocumentsDirectory] URLByAppendingPathComponent:@"src/" isDirectory:YES];
+    NSString* srcPath = srcURL.path;
+    
     self.contextManager = [[ABYContextManager alloc] initWithContext:JSGlobalContextCreate(NULL)
                                              compilerOutputDirectory:outURL];
     [self.contextManager setUpConsoleLog];
     [self.contextManager setupGlobalContext];
     [self.contextManager setUpAmblyImportScript];
     
-    NSString* mainJsFilePath = [[outURL URLByAppendingPathComponent:@"deps" isDirectory:NO]
+    NSString* mainJsFilePath = [[outURL URLByAppendingPathComponent:@"main" isDirectory:NO]
                                 URLByAppendingPathExtension:@"js"].path;
     
     NSURL* googDirectory = [outURL URLByAppendingPathComponent:@"goog"];
@@ -69,12 +72,6 @@
                                       googBasePath:[[googDirectory URLByAppendingPathComponent:@"base" isDirectory:NO] URLByAppendingPathExtension:@"js"].path];
     
     JSContext* context = [JSContext contextWithJSGlobalContextRef:self.contextManager.context];
-    
-    NSURL* outCljsURL = [outURL URLByAppendingPathComponent:@"cljs"];
-    NSString* macrosJsPath = [[outCljsURL URLByAppendingPathComponent:@"core$macros"]
-                              URLByAppendingPathExtension:@"js"].path;
-    
-    [self processFile:macrosJsPath calling:nil inContext:context];
     
     [self requireAppNamespaces:context];
     
@@ -118,6 +115,26 @@
     [context evaluateScript:@"cljs.core.set_print_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
     [context evaluateScript:@"cljs.core.set_print_err_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
     
+    context[@"REPLETE_LOAD"] = ^(NSString *path) {
+        // First try in the srcPath
+        
+        NSString* fullPath = [NSURL URLWithString:path
+                                    relativeToURL:[NSURL URLWithString:srcPath]].path;
+        
+        NSString* rv = [NSString stringWithContentsOfFile:fullPath
+                                                 encoding:NSUTF8StringEncoding error:nil];
+        // Now try in the outPath
+        if (!rv) {
+            fullPath = [NSURL URLWithString:path
+                                  relativeToURL:[NSURL URLWithString:outPath]].path;
+                rv = [NSString stringWithContentsOfFile:fullPath
+                                               encoding:NSUTF8StringEncoding error:nil];
+        }
+        
+        return rv;
+    };
+
+    
     // TODO look into this. Without it thngs won't work.
     [context evaluateScript:@"var window = global;"];
     
@@ -128,27 +145,9 @@
 
     if ([self codeToBeEvaluatedWhenReady]) {
         NSLog(@"Delayed code to be evaluated: %@", [self codeToBeEvaluatedWhenReady]);
-        [self evaluate: [self codeToBeEvaluatedWhenReady]];
+        [self evaluate:[self codeToBeEvaluatedWhenReady] asExpression:NO];
     }
 
-}
-
-- (void)processFile:(NSString*)path calling:(NSString*)fn inContext:(JSContext*)context
-{
-    NSError* error = nil;
-    NSString* contents = [NSString stringWithContentsOfFile:path
-                                                   encoding:NSUTF8StringEncoding error:&error];
-    
-    if (!fn) {
-        [context evaluateScript:contents];
-    } else {
-        JSValue* processFileFn = [self getValue:fn inNamespace:@"replete.core" fromContext:context];
-        NSAssert(!processFileFn.isUndefined, @"Could not find the process file function");
-        
-        if (!error && contents) {
-            [processFileFn callWithArguments:@[contents]];
-        }
-    }
 }
 
 -(void)requireAppNamespaces:(JSContext*)context
@@ -184,8 +183,13 @@
 
 -(void)evaluate:(NSString*)text
 {
+    [self evaluate:text asExpression:YES];
+}
+
+-(void)evaluate:(NSString*)text asExpression:(BOOL)expression
+{
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        [self.readEvalPrintFn callWithArguments:@[text]];
+        [self.readEvalPrintFn callWithArguments:@[text, @(expression)]];
     });
 }
 
@@ -210,7 +214,7 @@
 
             if ([self initialized]) {
                 NSLog(@"Evaluating code: %@", urlContent);
-                [self evaluate: urlContent];
+                [self evaluate:urlContent asExpression:NO];
             } else {
                 NSLog(@"Code to be evaluated when ready: %@", urlContent);
                 self.codeToBeEvaluatedWhenReady = urlContent;
@@ -228,6 +232,11 @@
         }
     }
     return YES;
+}
+
++ (NSURL *)applicationDocumentsDirectory
+{
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 
 @end
