@@ -64,6 +64,12 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
+    
+    func textFieldShouldReturn(textField: UITextField!) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
     required init(coder aDecoder: NSCoder) {
         self.history = History()
         
