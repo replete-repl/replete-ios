@@ -201,6 +201,8 @@
 		ED06DC191B3F62E800100331 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftMigration = 0700;
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = FikesFarm;
 				TargetAttributes = {

@@ -34,7 +34,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 textView.delegate = self
                 toolBar.addSubview(textView)
                 
-                evalButton = UIButton.buttonWithType(.System) as! UIButton
+                evalButton = UIButton(type: .System)
                 evalButton.enabled = false
                 evalButton.titleLabel?.font = UIFont.boldSystemFontOfSize(17)
                 evalButton.setTitle("Eval", forState: .Normal)
@@ -44,9 +44,9 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 evalButton.addTarget(self, action: "sendAction", forControlEvents: UIControlEvents.TouchUpInside)
                 toolBar.addSubview(evalButton)
                 
-                toolBar.setTranslatesAutoresizingMaskIntoConstraints(false)
-                textView.setTranslatesAutoresizingMaskIntoConstraints(false)
-                evalButton.setTranslatesAutoresizingMaskIntoConstraints(false)
+                toolBar.translatesAutoresizingMaskIntoConstraints = false
+                textView.translatesAutoresizingMaskIntoConstraints = false
+                evalButton.translatesAutoresizingMaskIntoConstraints = false
 
                 textFieldHeightLayoutConstraint = NSLayoutConstraint(item: textView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 1)
                 toolBar.addConstraint(textFieldHeightLayoutConstraint)
@@ -64,7 +64,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         self.history = History()
         
         super.init(nibName: nil, bundle: nil)
@@ -87,7 +87,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         view.backgroundColor = whiteColor
         
         tableView = UITableView(frame: CGRect(x: 0, y: 20, width: view.bounds.width, height: view.bounds.height-20), style: .Plain)
-        tableView.autoresizingMask = .FlexibleWidth | .FlexibleHeight
+        tableView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
         tableView.backgroundColor = whiteColor
         let edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: toolBarMinHeight, right: 0)
         tableView.contentInset = edgeInsets
@@ -191,7 +191,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
-        if (text == "\n" && range.location == count(textView.text) && self.initialized) {
+        if (text == "\n" && range.location == textView.text.characters.count && self.initialized) {
             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
             if (appDelegate.isReadable(textView.text)) {
                 dispatch_async(dispatch_get_main_queue()) {
@@ -232,7 +232,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
             }
         }
         if duration > 0 {
-            let options = UIViewAnimationOptions(UInt((userInfo[UIKeyboardAnimationCurveUserInfoKey] as! NSNumber).integerValue << 16)) // http://stackoverflow.com/a/18873820/242933
+            let options = UIViewAnimationOptions(rawValue: UInt((userInfo[UIKeyboardAnimationCurveUserInfoKey] as! NSNumber).integerValue << 16)) // http://stackoverflow.com/a/18873820/242933
             UIView.animateWithDuration(duration, delay: 0, options: options, animations: animations, completion: nil)
         } else {
             animations()
@@ -259,7 +259,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func updateTextViewHeight() {
         let oldHeight = textView.frame.height
         let newText = textView.text
-        let newSize = (newText as NSString).boundingRectWithSize(CGSize(width: textView.frame.width - textView.textContainerInset.right - textView.textContainerInset.left - 10, height: CGFloat.max), options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName: textView.font], context: nil)
+        let newSize = (newText as NSString).boundingRectWithSize(CGSize(width: textView.frame.width - textView.textContainerInset.right - textView.textContainerInset.left - 10, height: CGFloat.max), options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName: textView.font!], context: nil)
         let heightChange = newSize.height + textView.textContainerInset.top + textView.textContainerInset.bottom - oldHeight
         
         let maxHeight = self.view.frame.height
@@ -275,7 +275,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
             self.textFieldHeightLayoutConstraint.constant = ceil(heightChange + oldHeight)
             
             //In order to ensure correct placement of text inside the textfield:
-            self.textView.setContentOffset(CGPoint.zeroPoint, animated: false)
+            self.textView.setContentOffset(CGPoint.zero, animated: false)
             //To ensure update of placement happens immediately
             self.textView.layoutIfNeeded()
             
@@ -293,7 +293,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
             
             history.loadedMessages.append([Message(incoming: incoming, text: text)])
             
-            let lastSection = tableView.numberOfSections()
+            let lastSection = tableView.numberOfSections
             tableView.beginUpdates()
             tableView.insertSections(NSIndexSet(index: lastSection), withRowAnimation: .Automatic)
             tableView.insertRowsAtIndexPaths([
@@ -330,7 +330,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableViewScrollToBottomAnimated(animated: Bool) {
-        let numberOfSections = tableView.numberOfSections();
+        let numberOfSections = tableView.numberOfSections;
         let numberOfRows = tableView.numberOfRowsInSection(numberOfSections-1)
         if numberOfRows > 0 {
             tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: numberOfRows-1, inSection: numberOfSections-1), atScrollPosition: .Bottom, animated: animated)
@@ -356,19 +356,19 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     // 2. Copy text to pasteboard
     func messageCopyTextAction(menuController: UIMenuController) {
-        let selectedIndexPath = tableView.indexPathForSelectedRow()
+        let selectedIndexPath = tableView.indexPathForSelectedRow
         let selectedMessage = history.loadedMessages[selectedIndexPath!.section][selectedIndexPath!.row]
         UIPasteboard.generalPasteboard().string = selectedMessage.text
     }
     // 3. Deselect row
     func menuControllerWillHide(notification: NSNotification) {
-        if let selectedIndexPath = tableView.indexPathForSelectedRow() {
+        if let selectedIndexPath = tableView.indexPathForSelectedRow {
             tableView.deselectRowAtIndexPath(selectedIndexPath, animated: false)
         }
         (notification.object as! UIMenuController).menuItems = nil
     }
     
-    override var keyCommands: [AnyObject]? {
+    override var keyCommands: [UIKeyCommand]? {
         get {
             let commandEnter = UIKeyCommand(input: "\r", modifierFlags: .Command, action: Selector("sendAction"))
             return [commandEnter]
@@ -379,7 +379,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
 // Only show "Copy" when editing `textView` #CopyMessage
 class InputTextView: UITextView {
     override func canPerformAction(action: Selector, withSender sender: AnyObject!) -> Bool {
-        if (delegate as! ReplViewController).tableView.indexPathForSelectedRow() != nil {
+        if (delegate as! ReplViewController).tableView.indexPathForSelectedRow != nil {
             return action == "messageCopyTextAction:"
         } else {
             return super.canPerformAction(action, withSender: sender)

@@ -20,7 +20,7 @@ class HistoryTableViewCell: UITableViewCell {
 
         contentView.addSubview(messageLabel)
         
-        messageLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
         
         contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Left, relatedBy: .Equal, toItem: contentView, attribute: .Left, multiplier: 1, constant: 10))
         contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Right, relatedBy: .Equal, toItem: contentView, attribute: .Right, multiplier: 1, constant: -10))
@@ -31,7 +31,7 @@ class HistoryTableViewCell: UITableViewCell {
         contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Bottom, relatedBy: .Equal, toItem: contentView, attribute: .Bottom, multiplier: 1, constant: -4))
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 

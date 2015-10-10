@@ -170,6 +170,18 @@
           (or (:source-maps @st) {})
           nil)))))
 
+(defn get-var
+  [env sym]
+  (let [var (with-compiler-env st (resolve env sym))
+        var (or var
+                (if-let [macro-var (with-compiler-env st
+                                                      (resolve env (symbol "cljs.core$macros" (name sym))))]
+                  (update (assoc macro-var :ns 'cljs.core)
+                          :name #(symbol "cljs.core" (name %)))))]
+    (if (= (namespace (:name var)) (str (:ns var)))
+      (update var :name #(symbol (name %)))
+      var)))
+
 (defn ^:export read-eval-print
   ([source]
    (read-eval-print source true))
@@ -189,9 +201,8 @@
                    (repl/print-doc (repl-special-doc (second expression-form)))
                    (repl/print-doc
                      (let [sym (second expression-form)
-                           var (with-compiler-env st
-                                 (resolve env sym))]
-                       (update (:meta var)
+                           var (get-var env sym)]
+                       (update var
                          :doc (if (user-interface-idiom-ipad?)
                                 identity
                                 reflow))))))
