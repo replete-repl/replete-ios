@@ -19,6 +19,10 @@
 
 (defonce st (cljs/empty-state))
 
+(defn- known-namespaces
+  []
+  (keys (:cljs.analyzer/namespaces @st)))
+
 (defn ^:export setup-cljs-user []
   (js/eval "goog.provide('cljs.user')")
   (js/eval "goog.require('cljs.core')"))
@@ -155,20 +159,24 @@
            "(" file (when line (str ":" line))
            (when column (str ":" column)) ")"))))))
 
-(defn print-error [error]
-  (let [cause (.-cause error)]
-    (println (.-message cause))
-    (load-core-source-maps!)
-    (let [canonical-stacktrace (st/parse-stacktrace
-                                 {}
-                                 (.-stack cause)
-                                 {:ua-product :safari}
-                                 {:output-dir "file://(/goog/..)?"})]
-      (println
-        (mapped-stacktrace-str
-          canonical-stacktrace
-          (or (:source-maps @st) {})
-          nil)))))
+(defn print-error
+  ([error]
+    (print-error error true))
+  ([error include-stacktrace?]
+   (let [cause (.-cause error)]
+     (println (.-message cause))
+     (when include-stacktrace?
+       (load-core-source-maps!)
+       (let [canonical-stacktrace (st/parse-stacktrace
+                                    {}
+                                    (.-stack cause)
+                                    {:ua-product :safari}
+                                    {:output-dir "file://(/goog/..)?"})]
+         (println
+           (mapped-stacktrace-str
+             canonical-stacktrace
+             (or (:source-maps @st) {})
+             nil)))))))
 
 (defn get-var
   [env sym]
@@ -182,6 +190,36 @@
       (update var :name #(symbol (name %)))
       var)))
 
+(defn- make-base-eval-opts
+  []
+  {:ns      @current-ns
+   :context :expr
+   :eval    cljs/js-eval})
+
+(defn- process-in-ns
+  [argument]
+  (cljs/eval
+    st
+    argument
+    (make-base-eval-opts)
+    (fn [result]
+      (if (and (map? result) (:error result))
+        (print-error (:error result) false)
+        (let [ns-name result]
+          (if-not (symbol? ns-name)
+            (println "Argument to in-ns must be a symbol.")
+            (if (some (partial = ns-name) (known-namespaces))
+              (reset! current-ns ns-name)
+              (let [ns-form `(~'ns ~ns-name)]
+                (cljs/eval
+                  st
+                  ns-form
+                  (make-base-eval-opts)
+                  (fn [{e :error}]
+                    (if e
+                      (print-error e false)
+                      (reset! current-ns ns-name))))))))))))
+
 (defn ^:export read-eval-print
   ([source]
    (read-eval-print source true))
@@ -192,15 +230,16 @@
      (let [expression-form (and expression? (repl-read-string source))]
        (if (repl-special? expression-form)
          (let [env (assoc (ana/empty-env) :context :expr
-                                          :ns {:name @current-ns})]
+                                          :ns {:name @current-ns})
+               argument (second expression-form)]
            (case (first expression-form)
-             in-ns (reset! current-ns (second (second expression-form)))
+             in-ns (process-in-ns argument)
              require (require-destructure false (rest expression-form))
              require-macros (require-destructure true (rest expression-form))
-             doc (if (repl-specials (second expression-form))
-                   (repl/print-doc (repl-special-doc (second expression-form)))
+             doc (if (repl-specials argument)
+                   (repl/print-doc (repl-special-doc argument))
                    (repl/print-doc
-                     (let [sym (second expression-form)
+                     (let [sym argument
                            var (get-var env sym)]
                        (update var
                          :doc (if (user-interface-idiom-ipad?)
