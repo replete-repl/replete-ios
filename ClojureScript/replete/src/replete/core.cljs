@@ -13,7 +13,9 @@
             [clojure.string :as s]
             [cljs.stacktrace :as st]
             [cljs.source-map :as sm]
-            [tailrecursion.cljson :refer [cljson->clj]]))
+            [tailrecursion.cljson :refer [cljson->clj]]
+            [parinfer.indent-mode :as indent-mode]
+            [parinfer.paren-mode :as paren-mode]))
 
 (def DEBUG false)
 
@@ -51,6 +53,29 @@
         true
         (catch :default _
           false)))))
+
+(defn calc-x-line [text pos line]
+  (let [x (s/index-of text "\n")]
+    (if (or (nil? x)
+          (< pos (inc x)))
+      {:cursor-x    pos
+       :cursor-line line}
+      (recur (subs text (inc x)) (- pos (inc x)) (inc line)))))
+
+(defn first-non-space-pos-after [text pos]
+  (if (= " " (subs text pos (inc pos)))
+    (recur text (inc pos))
+    pos))
+
+(defn ^:export format [text pos enter-pressed?]
+  (let [formatted-text (:text ((if enter-pressed?
+                                 paren-mode/format-text
+                                 indent-mode/format-text)
+                                text (calc-x-line text pos 0)))
+        formatted-pos  (if enter-pressed?
+                         (first-non-space-pos-after formatted-text pos)
+                         pos)]
+    #js [formatted-text formatted-pos]))
 
 (def current-ns (atom 'cljs.user))
 
@@ -161,7 +186,7 @@
 
 (defn print-error
   ([error]
-    (print-error error true))
+   (print-error error true))
   ([error include-stacktrace?]
    (let [cause (.-cause error)]
      (println (.-message cause))
@@ -182,10 +207,10 @@
   [env sym]
   (let [var (with-compiler-env st (resolve env sym))
         var (or var
-                (if-let [macro-var (with-compiler-env st
-                                                      (resolve env (symbol "cljs.core$macros" (name sym))))]
-                  (update (assoc macro-var :ns 'cljs.core)
-                          :name #(symbol "cljs.core" (name %)))))]
+              (if-let [macro-var (with-compiler-env st
+                                   (resolve env (symbol "cljs.core$macros" (name sym))))]
+                (update (assoc macro-var :ns 'cljs.core)
+                  :name #(symbol "cljs.core" (name %)))))]
     (if (= (namespace (:name var)) (str (:ns var)))
       (update var :name #(symbol (name %)))
       var)))
@@ -229,8 +254,8 @@
              r/*data-readers* tags/*cljs-data-readers*]
      (let [expression-form (and expression? (repl-read-string source))]
        (if (repl-special? expression-form)
-         (let [env (assoc (ana/empty-env) :context :expr
-                                          :ns {:name @current-ns})
+         (let [env      (assoc (ana/empty-env) :context :expr
+                                               :ns {:name @current-ns})
                argument (second expression-form)]
            (case (first expression-form)
              in-ns (process-in-ns argument)

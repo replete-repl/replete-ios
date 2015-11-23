@@ -15,6 +15,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var textFieldHeightLayoutConstraint: NSLayoutConstraint!
     var currentKeyboardHeight: CGFloat!
     var initialized = false;
+    var enterPressed = false;
     
     override var inputAccessoryView: UIView! {
         get {
@@ -121,7 +122,11 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 // mark ready
                 NSLog("Ready");
                 self.initialized = true;
-                self.evalButton.enabled = self.textView.hasText()
+                let hasText = self.textView.hasText()
+                self.evalButton.enabled = hasText
+                if (hasText) {
+                    self.runParinfer()
+                }
             }
         }
         
@@ -200,10 +205,58 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 return false;
             }
         }
+        
+        if (text == "\n") {
+            enterPressed = true;
+        }
         return true;
     }
     
+    func runParinfer() {
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        
+        let currentText = textView.text
+        let currentSelectedRange = textView.selectedRange
+        
+        if (currentText != "") {
+            
+            let result: Array = appDelegate.parinferFormat(currentText, pos:Int32(currentSelectedRange.location), enterPressed:enterPressed)
+            textView.text = result[0] as! String
+            textView.selectedRange = NSMakeRange(result[1] as! Int, 0)
+        }
+        enterPressed = false;
+    }
+    
+    // This is a native profile of Parinfer, meant for use when 
+    // ClojureScript hasn't yet initialized, but yet the user 
+    // is already typing. It covers extremely simple cases that
+    // could be typed immediately.
+    func runPoorMansParinfer() {
+        
+        let currentText = textView.text
+        let currentSelectedRange = textView.selectedRange
+        
+        if (currentText != "") {
+            if (currentSelectedRange.location == 1) {
+                if (currentText == "(") {
+                    textView.text = "()";
+                } else if (currentText == "[") {
+                    textView.text = "[]";
+                } else if (currentText == "{") {
+                    textView.text = "{}";
+                }
+                textView.selectedRange = currentSelectedRange;
+            }
+            
+        }
+    }
+    
     func textViewDidChange(textView: UITextView) {
+        if (initialized) {
+            runParinfer()
+        } else {
+            runPoorMansParinfer()
+        }
         updateTextViewHeight()
         evalButton.enabled = self.initialized && textView.hasText()
     }
