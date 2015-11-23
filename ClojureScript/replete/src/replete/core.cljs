@@ -72,9 +72,9 @@
                                  paren-mode/format-text
                                  indent-mode/format-text)
                                 text (calc-x-line text pos 0)))
-        formatted-pos  (if enter-pressed?
-                         (first-non-space-pos-after formatted-text pos)
-                         pos)]
+        formatted-pos (if enter-pressed?
+                        (first-non-space-pos-after formatted-text pos)
+                        pos)]
     #js [formatted-text formatted-pos]))
 
 (def current-ns (atom 'cljs.user))
@@ -254,8 +254,8 @@
              r/*data-readers* tags/*cljs-data-readers*]
      (let [expression-form (and expression? (repl-read-string source))]
        (if (repl-special? expression-form)
-         (let [env      (assoc (ana/empty-env) :context :expr
-                                               :ns {:name @current-ns})
+         (let [env (assoc (ana/empty-env) :context :expr
+                                          :ns {:name @current-ns})
                argument (second expression-form)]
            (case (first expression-form)
              in-ns (process-in-ns argument)
