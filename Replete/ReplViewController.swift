@@ -196,16 +196,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
-        if (text == "\n" && range.location == textView.text.characters.count && self.initialized) {
-            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-            if (appDelegate.isReadable(textView.text)) {
-                dispatch_async(dispatch_get_main_queue()) {
-                  self.sendAction();
-                }
-                return false;
-            }
-        }
-        
+     
         if (text == "\n") {
             enterPressed = true;
         }
