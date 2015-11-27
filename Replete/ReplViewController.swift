@@ -197,6 +197,16 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
      
+        // Disable default keyboard shortcut where two spaces inserts a '.'
+        let currentText = textView.text
+        if (range.location > 0 &&
+            text == " " &&
+            currentText.substringWithRange(currentText.startIndex.advancedBy(range.location-1)...currentText.startIndex.advancedBy(range.location-1)) == " ") {
+            textView.text = (textView.text as NSString).stringByReplacingCharactersInRange(range, withString: " ")
+            textView.selectedRange = NSMakeRange(range.location+1, 0);
+            return false;
+        }
+        
         if (text == "\n") {
             enterPressed = true;
         }
