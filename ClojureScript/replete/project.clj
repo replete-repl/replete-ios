@@ -2,7 +2,7 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "1.7.170"]
                  [tailrecursion/cljson "1.0.7"]
-                 [parinfer "0.2.0"]]
+                 [parinfer "0.2.3"]]
   :clean-targets ["out" "target"]
   :plugins [[lein-cljsbuild "1.1.1"]]
   :cljsbuild {:builds {:test {:source-paths ["src" "test"]
