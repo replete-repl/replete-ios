@@ -7,6 +7,8 @@
    :output-to          "out/main.js"
    :optimizations      :none
    :static-fns         true
-   :optimize-constants false})
+   :optimize-constants false
+   :foreign-libs [{:file "https://raw.githubusercontent.com/shaunlebron/parinfer/1.1.0/lib/parinfer.js"
+                   :provides ["parinfer"]}]})
 (println "Done building")
 (System/exit 0)

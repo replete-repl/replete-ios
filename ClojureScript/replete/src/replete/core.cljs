@@ -14,8 +14,7 @@
             [cljs.stacktrace :as st]
             [cljs.source-map :as sm]
             [tailrecursion.cljson :refer [cljson->clj]]
-            [parinfer.indent-mode :as indent-mode]
-            [parinfer.paren-mode :as paren-mode]))
+            [parinfer]))
 
 (def DEBUG false)
 
@@ -58,8 +57,8 @@
   (let [x (s/index-of text "\n")]
     (if (or (nil? x)
           (< pos (inc x)))
-      {:cursor-x    pos
-       :cursor-line line}
+      {:cursorX    pos
+       :cursorLine line}
       (recur (subs text (inc x)) (- pos (inc x)) (inc line)))))
 
 (defn first-non-space-pos-after [text pos]
@@ -68,13 +67,15 @@
     pos))
 
 (defn ^:export format [text pos enter-pressed?]
-  (let [formatted-text (:text ((if enter-pressed?
-                                 paren-mode/format-text
-                                 indent-mode/format-text)
-                                text (calc-x-line text pos 0)))
-        formatted-pos (if enter-pressed?
-                        (first-non-space-pos-after formatted-text pos)
-                        pos)]
+  (let [formatted-text (:text (js->clj
+                                ((if enter-pressed?
+                                   js/parinfer.parenMode
+                                   js/parinfer.indentMode)
+                                  text (clj->js (calc-x-line text pos 0)))
+                                :keywordize-keys true))
+        formatted-pos  (if enter-pressed?
+                         (first-non-space-pos-after formatted-text pos)
+                         pos)]
     #js [formatted-text formatted-pos]))
 
 (def current-ns (atom 'cljs.user))
