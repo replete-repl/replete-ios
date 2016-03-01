@@ -8,7 +8,7 @@
                               :compiler {:output-to "test/resources/compiled.js"
                                          :optimizations :whitespace
                                          :pretty-print true
-                                         :foreign-libs [{:file "https://raw.githubusercontent.com/shaunlebron/parinfer/1.1.0/lib/parinfer.js"
+                                         :foreign-libs [{:file "https://raw.githubusercontent.com/shaunlebron/parinfer/1.4.0/lib/parinfer.js"
                                                          :provides ["parinfer"]}]}}}
               :test-commands {"test" ["phantomjs"
                                       "test/resources/test.js"
