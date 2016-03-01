@@ -14,7 +14,7 @@
             [cljs.stacktrace :as st]
             [cljs.source-map :as sm]
             [tailrecursion.cljson :refer [cljson->clj]]
-            [parinfer]))
+            [cljsjs.parinfer]))
 
 (def DEBUG false)
 
