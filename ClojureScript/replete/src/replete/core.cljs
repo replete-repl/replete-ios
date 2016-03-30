@@ -143,22 +143,91 @@
         (recur (next extensions)))
       (cb nil))))
 
-(defn require [macros-ns? sym reload]
-  (cljs.js/require
-    {:*compiler*     st
-     :*data-readers* tags/*cljs-data-readers*
-     :*load-fn*      load
-     :*eval-fn*      cljs/js-eval}
-    sym
-    reload
-    {:macros-ns macros-ns?
-     :verbose   (:verbose @app-env)}
-    (fn [res]
-      #_(println "require result:" res))))
+(defn- canonicalize-specs
+  [specs]
+  (letfn [(canonicalize [quoted-spec-or-kw]
+            (if (keyword? quoted-spec-or-kw)
+              quoted-spec-or-kw
+              (as-> (second quoted-spec-or-kw) spec
+                (if (vector? spec) spec [spec]))))]
+    (map canonicalize specs)))
 
-(defn require-destructure [macros-ns? args]
-  (let [[[_ sym] reload] args]
-    (require macros-ns? sym reload)))
+(defn- purge-analysis-cache!
+  [state ns]
+  (swap! state (fn [m]
+                 (assoc m ::ana/namespaces (dissoc (::ana/namespaces m) ns)))))
+
+(defn- purge!
+  [names]
+  (doseq [name names]
+    (purge-analysis-cache! st name))
+  (apply swap! cljs.js/*loaded* disj names))
+
+(defn- process-reloads!
+  [specs]
+  (if-let [k (some #{:reload :reload-all} specs)]
+    (let [specs (->> specs (remove #{k}))]
+      (if (= k :reload-all)
+        (purge! @cljs.js/*loaded*)
+        (purge! (map first specs)))
+      specs)
+    specs))
+
+(defn- self-require?
+  [specs]
+  (some
+    (fn [quoted-spec-or-kw]
+      (and (not (keyword? quoted-spec-or-kw))
+        (let [spec (second quoted-spec-or-kw)
+              ns   (if (sequential? spec)
+                     (first spec)
+                     spec)]
+          (= ns @current-ns))))
+    specs))
+
+(defn- make-ns-form
+  [kind specs target-ns]
+  (if (= kind :import)
+    (with-meta `(~'ns ~target-ns
+                  (~kind
+                    ~@(map (fn [quoted-spec-or-kw]
+                             (if (keyword? quoted-spec-or-kw)
+                               quoted-spec-or-kw
+                               (second quoted-spec-or-kw)))
+                        specs)))
+      {:merge true :line 1 :column 1})
+    (with-meta `(~'ns ~target-ns
+                  (~kind
+                    ~@(-> specs canonicalize-specs process-reloads!)))
+      {:merge true :line 1 :column 1})))
+
+(declare make-base-eval-opts)
+(declare print-error)
+
+(defn- process-require
+  [kind cb specs]
+  (let [current-st @st]
+    (try
+      (let [is-self-require? (and (= :kind :require) (self-require? specs))
+            [target-ns restore-ns]
+            (if-not is-self-require?
+              [@current-ns nil]
+              ['cljs.user @current-ns])]
+        (cljs/eval
+          st
+          (make-ns-form kind specs target-ns)
+          (merge (make-base-eval-opts)
+            {:load load})
+          (fn [{e :error}]
+            (when is-self-require?
+              (reset! current-ns restore-ns))
+            (when e
+              (print-error e false)
+              (reset! st current-st))
+            (cb))))
+      (catch :default e
+        (print-error e true)
+        (reset! st current-st)))))
 
 (defn load-core-source-maps! []
   (when-not (get (:source-maps @st) 'cljs.core)
@@ -264,8 +333,9 @@
                argument (second expression-form)]
            (case (first expression-form)
              in-ns (process-in-ns argument)
-             require (require-destructure false (rest expression-form))
-             require-macros (require-destructure true (rest expression-form))
+             require (process-require :require identity (rest expression-form))
+             require-macros (process-require :require-macros identity (rest expression-form))
+             import (process-require :import identity (rest expression-form))
              doc (if (repl-specials argument)
                    (repl/print-doc (repl-special-doc argument))
                    (repl/print-doc
