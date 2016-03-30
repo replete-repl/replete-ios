@@ -1,6 +1,6 @@
 (defproject replete "0.1.0"
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.8.34"]
+                 [org.clojure/clojurescript "1.8.40"]
                  [tailrecursion/cljson "1.0.7"]
                  [cljsjs/parinfer "1.5.1-0"]]
   :clean-targets ["out" "target"]
