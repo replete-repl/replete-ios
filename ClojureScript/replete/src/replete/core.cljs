@@ -80,6 +80,10 @@
 
 (def current-ns (atom 'cljs.user))
 
+(defn- current-alias-map
+  []
+  (get-in @st [::ana/namespaces @current-ns :requires]))
+
 (defn ns-form? [form]
   (and (seq? form) (= 'ns (first form))))
 
@@ -325,7 +329,9 @@
   ([source expression?]
    (binding [ana/*cljs-ns* @current-ns
              *ns* (create-ns @current-ns)
-             r/*data-readers* tags/*cljs-data-readers*]
+             r/*data-readers* tags/*cljs-data-readers*
+             r/resolve-symbol ana/resolve-symbol
+             r/*alias-map* (current-alias-map)]
      (let [expression-form (and expression? (repl-read-string source))]
        (if (repl-special? expression-form)
          (let [env (assoc (ana/empty-env) :context :expr
