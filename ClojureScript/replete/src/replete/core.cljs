@@ -262,24 +262,8 @@
   ([error]
    (print-error error true))
   ([error include-stacktrace?]
-   (let [cause (.-cause error)]
-     (println (.-message cause))
-     ;; For now, disable stack traces because they take too long to load and
-     ;; when paired with Parinfer (which requires calls into ClojureScript)
-     ;; things can more easily appear to be locked up to the user.
-     (comment
-       (when include-stacktrace?
-         (load-core-source-maps!)
-         (let [canonical-stacktrace (st/parse-stacktrace
-                                      {}
-                                      (.-stack cause)
-                                      {:ua-product :safari}
-                                      {:output-dir "file://(/goog/..)?"})]
-           (println
-             (mapped-stacktrace-str
-               canonical-stacktrace
-               (or (:source-maps @st) {})
-               nil))))))))
+   (let [e (or (.-cause error) error)]
+     (println (.-message e)))))
 
 (defn get-var
   [env sym]
