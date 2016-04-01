@@ -87,7 +87,7 @@
 (defn ns-form? [form]
   (and (seq? form) (= 'ns (first form))))
 
-(def repl-specials '#{in-ns require require-macros doc})
+(def repl-specials '#{in-ns require require-macros import doc})
 
 (defn repl-special? [form]
   (and (seq? form) (repl-specials (first form))))
@@ -100,6 +100,12 @@
     require-macros {:arglists ([& args])
                     :doc      "Similar to the require REPL special function but
                     only for macros."}
+    import         {:arglists ([& import-symbols-or-lists])
+                    :doc      "import-list => (closure-namespace constructor-name-symbols*)
+
+  For each name in constructor-name-symbols, adds a mapping from name to the
+  constructor named by closure-namespace to the current namespace. Use :import in the ns
+  macro in preference to calling this directly."}
     doc            {:arglists ([name])
                     :doc      "Prints documentation for a var or special form given its name"}})
 
@@ -137,15 +143,50 @@
          :source source})
     :loaded))
 
+(defn- closure-index
+  []
+  (let [paths-to-provides
+        (map (fn [[_ path provides]]
+               [path (map second
+                       (re-seq #"'(.*?)'" provides))])
+          (re-seq #"\ngoog\.addDependency\('(.*)', \[(.*?)\].*"
+            (js/REPLETE_LOAD "goog/deps.js")))]
+    (into {}
+      (for [[path provides] paths-to-provides
+            provide provides]
+        [(symbol provide) (str "goog/" (second (re-find #"(.*)\.js$" path)))]))))
+
+(def ^:private closure-index-mem (memoize closure-index))
+
+;; Represents code for which the goog JS is already loaded
+(defn- skip-load-goog-js?
+  [name]
+  ('#{goog.object
+      goog.string
+      goog.string.StringBuffer
+      goog.math.Long} name))
+
+(defn- do-load-goog
+  [name cb]
+  (if (skip-load-goog-js? name)
+    (cb {:lang   :js
+         :source ""})
+    (if-let [goog-path (get (closure-index-mem) name)]
+      (when-not (load-and-callback! goog-path ".js" cb)
+        (cb nil))
+      (cb nil))))
+
 (defn load [{:keys [name macros path] :as full} cb]
   #_(prn full)
-  (loop [extensions (if macros
-                      [".clj" ".cljc"]
-                      [".cljs" ".cljc" ".js"])]
-    (if extensions
-      (when-not (load-and-callback! path (first extensions) cb)
-        (recur (next extensions)))
-      (cb nil))))
+  (if (re-matches #"^goog/.*" path)
+    (do-load-goog name cb)
+    (loop [extensions (if macros
+                        [".clj" ".cljc"]
+                        [".cljs" ".cljc" ".js"])]
+      (if extensions
+        (when-not (load-and-callback! path (first extensions) cb)
+          (recur (next extensions)))
+        (cb nil)))))
 
 (defn- canonicalize-specs
   [specs]
