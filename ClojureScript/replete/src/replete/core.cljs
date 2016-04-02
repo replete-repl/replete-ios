@@ -303,11 +303,11 @@
             (when is-self-require?
               (reset! current-ns restore-ns))
             (when e
-              (print-error e false)
+              (print-error e)
               (reset! st current-st))
             (cb))))
       (catch :default e
-        (print-error e true)
+        (print-error e)
         (reset! st current-st)))))
 
 (defn- resolve-var
@@ -348,10 +348,12 @@
 
 (defn print-error
   ([error]
-   (print-error error true))
+   (print-error error false))
   ([error include-stacktrace?]
    (let [e (or (.-cause error) error)]
-     (println (.-message e)))))
+     (println (.-message e)
+       (when include-stacktrace?
+         (str "\n" (.-stack e)))))))
 
 (defn- get-macro-var
   [env sym macros-ns]
@@ -417,7 +419,7 @@
     (make-base-eval-opts)
     (fn [result]
       (if (and (map? result) (:error result))
-        (print-error (:error result) false)
+        (print-error (:error result))
         (let [ns-name result]
           (if-not (symbol? ns-name)
             (println "Argument to in-ns must be a symbol.")
@@ -430,7 +432,7 @@
                   (make-base-eval-opts)
                   (fn [{e :error}]
                     (if e
-                      (print-error e false)
+                      (print-error e)
                       (reset! current-ns ns-name))))))))))))
 
 (defn- dir*
@@ -524,7 +526,7 @@
           (make-base-eval-opts)
           (fn [{:keys [value]}]
             (when value
-              (print-error value :pst))))
+              (print-error value true))))
         (catch js/Error e (prn :caught e)))))
 
 (defn ^:export read-eval-print

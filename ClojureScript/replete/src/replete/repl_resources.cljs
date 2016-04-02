@@ -166,7 +166,7 @@ itself (not its value) is returned. The reader macro #'x expands to (var x)."}})
   namespace for which the source is available.
 
   Example: (source filter)"}
-    #_#_pst            {:arglists ([] [e])
+    pst            {:arglists ([] [e])
                     :doc      "Prints a stack trace of the exception.
 
   If none supplied, uses the root cause of the most recent repl exception (*e)"}})
