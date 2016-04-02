@@ -149,6 +149,20 @@
 
 (def ^:private closure-index-mem (memoize closure-index))
 
+(defn- skip-load?
+  [{:keys [name macros]}]
+  (or
+    (= name 'cljsjs.parinfer)
+    (= name 'cljs.core)
+    (and (= name 'cljs.env.macros) macros)
+    (and (= name 'cljs.analyzer.macros) macros)
+    (and (= name 'cljs.compiler.macros) macros)
+    (and (= name 'cljs.repl) macros)
+    (and (= name 'cljs.js) macros)
+    (and (= name 'cljs.pprint) macros)
+    (and (= name 'clojure.template) macros)
+    (and (= name 'tailrecursion.cljson) macros)))
+
 ;; Represents code for which the goog JS is already loaded
 (defn- skip-load-goog-js?
   [name]
@@ -168,16 +182,17 @@
       (cb nil))))
 
 (defn load [{:keys [name macros path] :as full} cb]
-  #_(prn full)
-  (if (re-matches #"^goog/.*" path)
-    (do-load-goog name cb)
-    (loop [extensions (if macros
-                        [".clj" ".cljc"]
-                        [".cljs" ".cljc" ".js"])]
-      (if extensions
-        (when-not (load-and-callback! path (first extensions) cb)
-          (recur (next extensions)))
-        (cb nil)))))
+  (cond
+    (skip-load? full) (cb {:lang   :js
+                           :source ""})
+    (re-matches #"^goog/.*" path) (do-load-goog name cb)
+    :else (loop [extensions (if macros
+                              [".clj" ".cljc"]
+                              [".cljs" ".cljc" ".js"])]
+            (if extensions
+              (when-not (load-and-callback! path (first extensions) cb)
+                (recur (next extensions)))
+              (cb nil)))))
 
 (defn- canonicalize-specs
   [specs]
