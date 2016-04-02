@@ -350,7 +350,6 @@
   ([error]
    (print-error error true))
   ([error include-stacktrace?]
-   (prn 'error)
    (let [e (or (.-cause error) error)]
      (println (.-message e)))))
 
@@ -538,24 +537,24 @@
              r/*data-readers* tags/*cljs-data-readers*
              r/resolve-symbol ana/resolve-symbol
              r/*alias-map* (current-alias-map)]
-     (let [expression-form (and expression? (repl-read-string source))]
-       (if (repl-special? expression-form)
-         (let [argument (second expression-form)]
-           (case (first expression-form)
-             in-ns (process-in-ns argument)
-             require (process-require :require identity (rest expression-form))
-             require-macros (process-require :require-macros identity (rest expression-form))
-             import (process-require :import identity (rest expression-form))
-             dir (dir* argument)
-             apropos (apropos* argument)
-             doc (doc* argument)
-             find-doc (find-doc* argument)
-             source (source* argument)
-             pst (if argument
-                   (pst* argument)
-                   (pst*)))
-           (prn nil))
-         (try
+     (try
+       (let [expression-form (and expression? (repl-read-string source))]
+         (if (repl-special? expression-form)
+           (let [argument (second expression-form)]
+             (case (first expression-form)
+               in-ns (process-in-ns argument)
+               require (process-require :require identity (rest expression-form))
+               require-macros (process-require :require-macros identity (rest expression-form))
+               import (process-require :import identity (rest expression-form))
+               dir (dir* argument)
+               apropos (apropos* argument)
+               doc (doc* argument)
+               find-doc (find-doc* argument)
+               source (source* argument)
+               pst (if argument
+                     (pst* argument)
+                     (pst*)))
+             (prn nil))
            (cljs/eval-str
              st
              source
@@ -585,6 +584,6 @@
                    (do
                      (set! *e error))))
                (when error
-                 (print-error error))))
-           (catch :default e
-             (print-error e))))))))
+                 (print-error error))))))
+       (catch :default e
+         (print-error e))))))
