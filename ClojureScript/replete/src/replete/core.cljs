@@ -128,10 +128,24 @@
     :js
     :clj))
 
-(defn load-and-callback! [path extension cb]
+(defn- pre-compiled-callaback-data [path]
+  (prn path)
+  (when-let [js-source (js/REPLETE_LOAD (str path ".js"))]
+    (when-let [cache (js/REPLETE_LOAD (str path ".cljs.cache.edn"))]
+      {:lang   :js
+       :source js-source
+       :cache (r/read-string cache)})))
+
+(defn- source-callback-data [path extension]
   (when-let [source (js/REPLETE_LOAD (str path extension))]
-    (cb {:lang   (extension->lang extension)
-         :source source})
+    {:lang   (extension->lang extension)
+     :source source}))
+
+(defn load-and-callback! [path extension cb]
+  (when-let [cb-data (or (and (= ".cljs" extension)
+                              (pre-compiled-callaback-data path))
+                         (source-callback-data path extension))]
+    (cb cb-data)
     :loaded))
 
 (defn- closure-index
