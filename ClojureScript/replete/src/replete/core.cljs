@@ -345,6 +345,7 @@
    (read-eval-print source true))
   ([source expression?]
    (binding [ana/*cljs-ns* @current-ns
+             env/*compiler* st
              *ns* (create-ns @current-ns)
              r/*data-readers* tags/*cljs-data-readers*
              r/resolve-symbol ana/resolve-symbol
