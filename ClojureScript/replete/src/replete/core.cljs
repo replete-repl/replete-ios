@@ -5,7 +5,7 @@
             [cljs.pprint :refer [pprint]]
             [cljs.tagged-literals :as tags]
             [cljs.tools.reader :as r]
-            [cljs.tools.reader.reader-types :refer [string-push-back-reader]]
+            [cljs.tools.reader.reader-types :as rt :refer [string-push-back-reader]]
             [cljs.analyzer :as ana]
             [cljs.compiler :as c]
             [cljs.env :as env]
@@ -14,7 +14,8 @@
             [cljs.stacktrace :as st]
             [cljs.source-map :as sm]
             [tailrecursion.cljson :refer [cljson->clj]]
-            [cljsjs.parinfer]))
+            [cljsjs.parinfer]
+            [replete.repl-resources :refer [special-doc-map repl-special-doc-map]]))
 
 (def DEBUG false)
 
@@ -75,32 +76,47 @@
   []
   (get-in @st [::ana/namespaces @current-ns :requires]))
 
+(defn- all-ns
+  "Returns a sequence of all namespaces."
+  []
+  (keys (::ana/namespaces @st)))
+
+(defn- get-namespace
+  "Gets the AST for a given namespace."
+  [ns]
+  {:pre [(symbol? ns)]}
+  (get-in @st [::ana/namespaces ns]))
+
+(defn- public-syms
+  "Returns a sequence of the public symbols in a namespace."
+  [ns]
+  {:pre [(symbol? ns)]}
+  (->> (get-namespace ns)
+    :defs
+    (filter (comp not :private second))
+    (map key)))
+
+(defn- get-aenv
+  []
+  (assoc (ana/empty-env)
+    :ns (get-namespace @current-ns)
+    :context :expr))
+
 (defn ns-form? [form]
   (and (seq? form) (= 'ns (first form))))
 
-(def repl-specials '#{in-ns require require-macros import doc})
+(defn- repl-special?
+  [form]
+  (and (seq? form) (repl-special-doc-map (first form))))
 
-(defn repl-special? [form]
-  (and (seq? form) (repl-specials (first form))))
+(defn- special-doc
+  [name-symbol]
+  (assoc (special-doc-map name-symbol)
+    :name name-symbol
+    :special-form true))
 
-(def repl-special-doc-map
-  '{in-ns          {:arglists ([name])
-                    :doc      "Sets *cljs-ns* to the namespace named by the symbol, creating it if needed."}
-    require        {:arglists ([& args])
-                    :doc      "Loads libs, skipping any that are already loaded."}
-    require-macros {:arglists ([& args])
-                    :doc      "Similar to the require REPL special function but
-                    only for macros."}
-    import         {:arglists ([& import-symbols-or-lists])
-                    :doc      "import-list => (closure-namespace constructor-name-symbols*)
-
-  For each name in constructor-name-symbols, adds a mapping from name to the
-  constructor named by closure-namespace to the current namespace. Use :import in the ns
-  macro in preference to calling this directly."}
-    doc            {:arglists ([name])
-                    :doc      "Prints documentation for a var or special form given its name"}})
-
-(defn- repl-special-doc [name-symbol]
+(defn- repl-special-doc
+  [name-symbol]
   (assoc (repl-special-doc-map name-symbol)
     :name name-symbol
     :repl-special-function true))
@@ -294,6 +310,17 @@
         (print-error e true)
         (reset! st current-st)))))
 
+(defn- resolve-var
+  "Given an analysis environment resolve a var. Analogous to
+   clojure.core/resolve"
+  [env sym]
+  {:pre [(map? env) (symbol? sym)]}
+  (try
+    (ana/resolve-var env sym
+      (ana/confirm-var-exists-throw))
+    (catch :default _
+      (ana/resolve-macro-var env sym))))
+
 (defn load-core-source-maps! []
   (when-not (get (:source-maps @st) 'cljs.core)
     (swap! st update-in [:source-maps] merge {'cljs.core
@@ -327,17 +354,55 @@
    (let [e (or (.-cause error) error)]
      (println (.-message e)))))
 
-(defn get-var
+(defn- get-macro-var
+  [env sym macros-ns]
+  {:pre [(symbol? macros-ns)]}
+  (let [macros-ns-str (str macros-ns)
+        base-ns-str   (subs macros-ns-str 0 (- (count macros-ns-str) 7))
+        base-ns       (symbol base-ns-str)]
+    (if-let [macro-var (with-compiler-env st
+                         (resolve-var env (symbol macros-ns-str (name sym))))]
+      (update (assoc macro-var :ns base-ns)
+        :name #(symbol base-ns-str (name %))))))
+
+(defn- all-macros-ns
+  []
+  (->> (all-ns)
+    (filter #(s/ends-with? (str %) "$macros"))))
+
+(defn- get-var
   [env sym]
-  (let [var (with-compiler-env st (resolve env sym))
-        var (or var
-              (if-let [macro-var (with-compiler-env st
-                                   (resolve env (symbol "cljs.core$macros" (name sym))))]
-                (update (assoc macro-var :ns 'cljs.core)
-                  :name #(symbol "cljs.core" (name %)))))]
-    (if (= (namespace (:name var)) (str (:ns var)))
-      (update var :name #(symbol (name %)))
-      var)))
+  (let [var (or (with-compiler-env st (resolve-var env sym))
+                (some #(get-macro-var env sym %) (all-macros-ns)))]
+    (when var
+      (if (= (namespace (:name var)) (str (:ns var)))
+        (update var :name #(symbol (name %)))
+        var))))
+
+(defn- get-file-source
+  [filepath]
+  (if (symbol? filepath)
+    (let [without-extension (s/replace
+                              (s/replace (name filepath) #"\." "/")
+                              #"-" "_")]
+      (or
+        (js/REPLETE_LOAD (str without-extension ".clj"))
+        (js/REPLETE_LOAD (str without-extension ".cljc"))
+        (js/REPLETE_LOAD (str without-extension ".cljs"))))
+    (let [file-source (js/REPLETE_LOAD filepath)]
+      (or file-source
+          (js/REPLETE_LOAD (s/replace filepath #"^out/" ""))
+          (js/REPLETE_LOAD (s/replace filepath #"^src/" ""))
+        (js/REPLETE_LOAD (s/replace filepath #"^/.*/planck-cljs/src/" ""))))))
+
+(defn- fetch-source
+  [var]
+  (when-let [filepath (or (:file var) (:file (:meta var)))]
+    (when-let [file-source (get-file-source filepath)]
+      (let [rdr (rt/source-logging-push-back-reader file-source)]
+        (dotimes [_ (dec (:line var))] (rt/read-line rdr))
+        (-> (r/read {:read-cond :allow :features #{:cljs}} rdr)
+          meta :source)))))
 
 (defn- make-base-eval-opts
   []
@@ -369,6 +434,100 @@
                       (print-error e false)
                       (reset! current-ns ns-name))))))))))))
 
+(defn- dir*
+  [nsname]
+  (run! prn
+    (distinct (sort (concat
+                      (public-syms nsname)
+                      (public-syms (symbol (str (name nsname) "$macros"))))))))
+
+(defn- apropos*
+  [str-or-pattern]
+  (let [matches? (if (instance? js/RegExp str-or-pattern)
+                   #(re-find str-or-pattern (str %))
+                   #(s/includes? (str %) (str str-or-pattern)))]
+    (sort (mapcat (fn [ns]
+                    (let [ns-name (str ns)
+                          ns-name (if (s/ends-with? ns-name "$macros")
+                                    (apply str (drop-last 7 ns-name))
+                                    ns-name)]
+                      (map #(symbol ns-name (str %))
+                        (filter matches? (public-syms ns)))))
+            (all-ns)))))
+
+(defn- doc*
+  [sym]
+  (if-let [special-sym ('{&       fn
+                          catch   try
+                          finally try} sym)]
+    (doc* special-sym)
+    (cond
+
+      (special-doc-map sym)
+      (repl/print-doc (special-doc sym))
+
+      (repl-special-doc-map sym)
+      (repl/print-doc (repl-special-doc sym))
+
+      (get-namespace sym)
+      (cljs.repl/print-doc
+        (select-keys (get-namespace sym) [:name :doc]))
+
+      (get-var (get-aenv) sym)
+      (repl/print-doc
+        (let [var (get-var (get-aenv) sym)
+              var (update var
+                    :doc (if (user-interface-idiom-ipad?)
+                           identity
+                           reflow))
+              var (assoc var :forms (-> var :meta :forms second)
+                             :arglists (-> var :meta :arglists second))
+              m   (select-keys var
+                    [:ns :name :doc :forms :arglists :macro :url])]
+          (cond-> (update-in m [:name] name)
+            (:protocol-symbol var)
+            (assoc :protocol true
+                   :methods
+                   (->> (get-in var [:protocol-info :methods])
+                     (map (fn [[fname sigs]]
+                            [fname {:doc      (:doc
+                                                (get-var (get-aenv)
+                                                  (symbol (str (:ns var)) (str fname))))
+                                    :arglists (seq sigs)}]))
+                     (into {})))))))))
+
+(defn- find-doc*
+  [re-string-or-pattern]
+  (let [re       (re-pattern re-string-or-pattern)
+        sym-docs (sort-by first
+                   (mapcat (fn [ns]
+                             (map (juxt first (comp :doc second))
+                               (get-in @st [::ana/namespaces ns :defs])))
+                     (all-ns)))]
+    (doseq [[sym doc] sym-docs
+            :when (and doc
+                       (name sym)
+                       (or (re-find re doc)
+                           (re-find re (name sym))))]
+      (doc* sym))))
+
+(defn- source*
+  [sym]
+  (println (or (fetch-source (get-var (get-aenv) sym))
+               "Source not found")))
+
+(defn- pst*
+  ([]
+   (pst* '*e))
+  ([expr]
+   (try (cljs/eval st
+          expr
+          (make-base-eval-opts)
+          (fn [{:keys [value]}]
+            (when value
+              (print-error value :pst))))
+        (catch js/Error e (prn :caught e)))))
+
 (defn ^:export read-eval-print
   ([source]
    (read-eval-print source true))
@@ -381,23 +540,20 @@
              r/*alias-map* (current-alias-map)]
      (let [expression-form (and expression? (repl-read-string source))]
        (if (repl-special? expression-form)
-         (let [env (assoc (ana/empty-env) :context :expr
-                                          :ns {:name @current-ns})
-               argument (second expression-form)]
+         (let [argument (second expression-form)]
            (case (first expression-form)
              in-ns (process-in-ns argument)
              require (process-require :require identity (rest expression-form))
              require-macros (process-require :require-macros identity (rest expression-form))
              import (process-require :import identity (rest expression-form))
-             doc (if (repl-specials argument)
-                   (repl/print-doc (repl-special-doc argument))
-                   (repl/print-doc
-                     (let [sym argument
-                           var (get-var env sym)]
-                       (update var
-                         :doc (if (user-interface-idiom-ipad?)
-                                identity
-                                reflow))))))
+             dir (dir* argument)
+             apropos (apropos* argument)
+             doc (doc* argument)
+             find-doc (find-doc* argument)
+             source (source* argument)
+             pst (if argument
+                   (pst* argument)
+                   (pst*)))
            (prn nil))
          (try
            (cljs/eval-str
