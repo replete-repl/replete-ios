@@ -48,7 +48,7 @@
 (defn calc-x-line [text pos line]
   (let [x (s/index-of text "\n")]
     (if (or (nil? x)
-          (< pos (inc x)))
+            (< pos (inc x)))
       {:cursorX    pos
        :cursorLine line}
       (recur (subs text (inc x)) (- pos (inc x)) (inc line)))))
@@ -123,9 +123,9 @@
 
 (defn reflow [text]
   (and text
-    (-> text
-      (s/replace #" \n  " "")
-      (s/replace #"\n  " " "))))
+       (-> text
+         (s/replace #" \n  " "")
+         (s/replace #"\n  " " "))))
 
 ;; Copied from cljs.analyzer.api (which hasn't yet been converted to cljc)
 (defn resolve
@@ -150,7 +150,7 @@
     (when-let [cache (js/REPLETE_LOAD (str path ".cljs.cache.edn"))]
       {:lang   :js
        :source js-source
-       :cache (r/read-string cache)})))
+       :cache  (r/read-string cache)})))
 
 (defn- source-callback-data [path extension]
   (when-let [source (js/REPLETE_LOAD (str path extension))]
@@ -259,11 +259,11 @@
   (some
     (fn [quoted-spec-or-kw]
       (and (not (keyword? quoted-spec-or-kw))
-        (let [spec (second quoted-spec-or-kw)
-              ns   (if (sequential? spec)
-                     (first spec)
-                     spec)]
-          (= ns @current-ns))))
+           (let [spec (second quoted-spec-or-kw)
+                 ns   (if (sequential? spec)
+                        (first spec)
+                        spec)]
+             (= ns @current-ns))))
     specs))
 
 (defn- make-ns-form
@@ -575,7 +575,7 @@
                      (prn value)
                      (when-not
                        (or ('#{*1 *2 *3 *e} expression-form)
-                         (ns-form? expression-form))
+                           (ns-form? expression-form))
                        (set! *3 *2)
                        (set! *2 *1)
                        (set! *1 value))
