@@ -529,6 +529,15 @@
               (print-error value true))))
         (catch js/Error e (prn :caught e)))))
 
+(defn- process-1-2-3
+  [expression-form value]
+  (when-not
+    (or ('#{*1 *2 *3 *e} expression-form)
+        (ns-form? expression-form))
+    (set! *3 *2)
+    (set! *2 *1)
+    (set! *1 value)))
+
 (defn ^:export read-eval-print
   ([source]
    (read-eval-print source true))
@@ -542,21 +551,25 @@
      (try
        (let [expression-form (and expression? (repl-read-string source))]
          (if (repl-special? expression-form)
-           (let [argument (second expression-form)]
-             (case (first expression-form)
+           (let [special-form (first expression-form)
+                 argument (second expression-form)]
+             (case special-form
                in-ns (process-in-ns argument)
                require (process-require :require identity (rest expression-form))
                require-macros (process-require :require-macros identity (rest expression-form))
                import (process-require :import identity (rest expression-form))
                dir (dir* argument)
-               apropos (apropos* argument)
+               apropos (let [value (apropos* argument)]
+                         (prn value)
+                         (process-1-2-3 expression-form value))
                doc (doc* argument)
                find-doc (find-doc* argument)
                source (source* argument)
                pst (if argument
                      (pst* argument)
                      (pst*)))
-             (prn nil))
+             (when-not (#{'apropos} special-form)
+               (prn nil)))
            (cljs/eval-str
              st
              source
@@ -575,12 +588,7 @@
                  (if-not error
                    (do
                      (prn value)
-                     (when-not
-                       (or ('#{*1 *2 *3 *e} expression-form)
-                           (ns-form? expression-form))
-                       (set! *3 *2)
-                       (set! *2 *1)
-                       (set! *1 value))
+                     (process-1-2-3 expression-form value)
                      (reset! current-ns ns)
                      nil)
                    (do

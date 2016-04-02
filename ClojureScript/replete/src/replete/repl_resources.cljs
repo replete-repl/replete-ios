@@ -151,7 +151,7 @@ itself (not its value) is returned. The reader macro #'x expands to (var x)."}})
   macro in preference to calling this directly."}
     dir            {:arglists ([nsname])
                     :doc      "Prints a sorted directory of public vars in a namespace"}
-    #_#_apropos        {:arglists ([str-or-pattern])
+    apropos        {:arglists ([str-or-pattern])
                     :doc      "Given a regular expression or stringable thing, return a seq of all
   public definitions in all currently-loaded namespaces that match the
   str-or-pattern."}
