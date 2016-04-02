@@ -44,15 +44,6 @@
 (defn repl-read-string [line]
   (r/read-string {:read-cond :allow :features #{:cljs}} line))
 
-(defn ^:export is-readable? [line]
-  (binding [r/*data-readers* tags/*cljs-data-readers*]
-    (with-compiler-env st
-      (try
-        (repl-read-string line)
-        true
-        (catch :default _
-          false)))))
-
 (defn calc-x-line [text pos line]
   (let [x (s/index-of text "\n")]
     (if (or (nil? x)
@@ -303,6 +294,7 @@
   ([error]
    (print-error error true))
   ([error include-stacktrace?]
+   (prn 'error)
    (let [e (or (.-cause error) error)]
      (println (.-message e)))))
 

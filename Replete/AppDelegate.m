@@ -13,7 +13,6 @@
 
 @property (strong, nonatomic) ABYContextManager* contextManager;
 @property (strong, nonatomic) JSValue* readEvalPrintFn;
-@property (strong, nonatomic) JSValue* isReadableFn;
 @property (strong, nonatomic) JSValue* formatFn;
 @property (nonatomic, copy) void (^myPrintCallback)(BOOL, NSString*);
 @property BOOL initialized;
@@ -100,9 +99,6 @@
     self.readEvalPrintFn = [self getValue:@"read-eval-print" inNamespace:@"replete.core" fromContext:context];
     NSAssert(!self.readEvalPrintFn.isUndefined, @"Could not find the read-eval-print function");
     
-    self.isReadableFn = [self getValue:@"is-readable?" inNamespace:@"replete.core" fromContext:context];
-    NSAssert(!self.isReadableFn.isUndefined, @"Could not find the is-readable? function");
-
     self.formatFn = [self getValue:@"format" inNamespace:@"replete.core" fromContext:context];
     NSAssert(!self.formatFn.isUndefined, @"Could not find the format function");
     
@@ -197,11 +193,6 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
         [self.readEvalPrintFn callWithArguments:@[text, @(expression)]];
     });
-}
-
--(BOOL)isReadable:(NSString*)text
-{
-    return [self.isReadableFn callWithArguments:@[text]].toBool;
 }
 
 -(NSArray*)parinferFormat:(NSString*)text pos:(int)pos enterPressed:(BOOL)enterPressed
