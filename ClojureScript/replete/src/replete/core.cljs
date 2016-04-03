@@ -456,6 +456,12 @@
                         (filter matches? (public-syms ns)))))
             (all-ns)))))
 
+(defn- print-doc
+  [m]
+  (repl/print-doc (update m :doc (if (user-interface-idiom-ipad?)
+                                   identity
+                                   reflow))))
+
 (defn- doc*
   [sym]
   (if-let [special-sym ('{&       fn
@@ -465,22 +471,18 @@
     (cond
 
       (special-doc-map sym)
-      (repl/print-doc (special-doc sym))
+      (print-doc (special-doc sym))
 
       (repl-special-doc-map sym)
-      (repl/print-doc (repl-special-doc sym))
+      (print-doc (repl-special-doc sym))
 
       (get-namespace sym)
-      (cljs.repl/print-doc
+      (print-doc
         (select-keys (get-namespace sym) [:name :doc]))
 
       (get-var (get-aenv) sym)
-      (repl/print-doc
+      (print-doc
         (let [var (get-var (get-aenv) sym)
-              var (update var
-                    :doc (if (user-interface-idiom-ipad?)
-                           identity
-                           reflow))
               var (assoc var :forms (-> var :meta :forms second)
                              :arglists (-> var :meta :arglists second))
               m   (select-keys var
