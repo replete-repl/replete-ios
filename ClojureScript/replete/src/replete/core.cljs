@@ -145,7 +145,6 @@
     :clj))
 
 (defn- pre-compiled-callaback-data [path]
-  (prn path)
   (when-let [js-source (js/REPLETE_LOAD (str path ".js"))]
     (when-let [cache (js/REPLETE_LOAD (str path ".cljs.cache.edn"))]
       {:lang   :js
