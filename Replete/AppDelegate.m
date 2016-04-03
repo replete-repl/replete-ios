@@ -91,6 +91,25 @@
     BOOL targetSimulator = NO;
 #endif
     
+    context[@"REPLETE_LOAD"] = ^(NSString *path) {
+        // First try in the srcPath
+        
+        NSString* fullPath = [NSURL URLWithString:path
+                                    relativeToURL:[NSURL URLWithString:srcPath]].path;
+        
+        NSString* rv = [NSString stringWithContentsOfFile:fullPath
+                                                 encoding:NSUTF8StringEncoding error:nil];
+        // Now try in the outPath
+        if (!rv) {
+            fullPath = [NSURL URLWithString:path
+                              relativeToURL:[NSURL URLWithString:[outPath stringByAppendingString:@"/"]]].path;
+            rv = [NSString stringWithContentsOfFile:fullPath
+                                           encoding:NSUTF8StringEncoding error:nil];
+        }
+        
+        return rv;
+    };
+    
     JSValue* initAppEnvFn = [self getValue:@"init-app-env" inNamespace:@"replete.core" fromContext:context];
     [initAppEnvFn callWithArguments:@[@{@"debug-build": @(debugBuild),
                                         @"target-simulator": @(targetSimulator),
@@ -114,25 +133,6 @@
     [context evaluateScript:@"cljs.core.set_print_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
     [context evaluateScript:@"cljs.core.set_print_err_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
     
-    context[@"REPLETE_LOAD"] = ^(NSString *path) {
-        // First try in the srcPath
-        
-        NSString* fullPath = [NSURL URLWithString:path
-                                    relativeToURL:[NSURL URLWithString:srcPath]].path;
-        
-        NSString* rv = [NSString stringWithContentsOfFile:fullPath
-                                                 encoding:NSUTF8StringEncoding error:nil];
-        // Now try in the outPath
-        if (!rv) {
-            fullPath = [NSURL URLWithString:path
-                                  relativeToURL:[NSURL URLWithString:[outPath stringByAppendingString:@"/"]]].path;
-                rv = [NSString stringWithContentsOfFile:fullPath
-                                               encoding:NSUTF8StringEncoding error:nil];
-        }
-        
-        return rv;
-    };
-
     
     // TODO look into this. Without it thngs won't work.
     [context evaluateScript:@"var window = global;"];
