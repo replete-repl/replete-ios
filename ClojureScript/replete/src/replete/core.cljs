@@ -13,8 +13,10 @@
             [clojure.string :as s]
             [cljs.stacktrace :as st]
             [cljs.source-map :as sm]
+            [cognitect.transit :as transit]
             [tailrecursion.cljson :refer [cljson->clj]]
             [cljsjs.parinfer]
+            [lazy-map.core :refer-macros [lazy-map]]
             [replete.repl-resources :refer [special-doc-map repl-special-doc-map]]))
 
 (def DEBUG false)
@@ -34,7 +36,10 @@
 (defn map-keys [f m]
   (reduce-kv (fn [r k v] (assoc r (f k) v)) {} m))
 
+(declare load-core-analysis-caches)
+
 (defn ^:export init-app-env [app-env]
+  (load-core-analysis-caches false)
   (reset! replete.core/app-env (map-keys keyword (cljs.core/js->clj app-env))))
 
 (defn user-interface-idiom-ipad?
@@ -101,6 +106,47 @@
   (assoc (ana/empty-env)
     :ns (get-namespace @current-ns)
     :context :expr))
+
+(defn- transit-json->cljs
+  [json]
+  (let [rdr (transit/reader :json)]
+    (transit/read rdr json)))
+
+(defn- cljs->transit-json
+  [x]
+  (let [wtr (transit/writer :json)]
+    (transit/write wtr x)))
+
+(defn- load-core-analysis-cache
+  [eager ns-sym file-prefix]
+  (let [keys        [:use-macros :excludes :name :imports :requires :uses :defs :require-macros :cljs.analyzer/constants :doc]
+        load-single (fn [key]
+                      (transit-json->cljs (js/REPLETE_LOAD (str file-prefix (munge key) ".json"))))
+        load-all    (fn []
+                      (zipmap keys (map load-single keys)))
+        load        (fn [key]
+                      (let [cache (load-all)]
+                        (cljs/load-analysis-cache! st ns-sym cache)
+                        (key cache)))]
+    (cljs/load-analysis-cache! st ns-sym
+      (if eager
+        (load-all)
+        (lazy-map
+          {:use-macros              (load :use-macros)
+           :excludes                (load :excludes)
+           :name                    (load :name)
+           :imports                 (load :imports)
+           :requires                (load :requires)
+           :uses                    (load :uses)
+           :defs                    (load :defs)
+           :require-macros          (load :require-macros)
+           :cljs.analyzer/constants (load :cljs.analyzer/constants)
+           :doc                     (load :doc)})))))
+
+(defn- load-core-analysis-caches
+  [eager]
+  (load-core-analysis-cache eager 'cljs.core "cljs/core.cljs.cache.aot.")
+  (load-core-analysis-cache eager 'cljs.core$macros "cljs/core$macros.cljc.cache."))
 
 (defn ns-form? [form]
   (and (seq? form) (= 'ns (first form))))
