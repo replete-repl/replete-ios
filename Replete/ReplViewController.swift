@@ -112,7 +112,16 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 self.loadMessage(incoming, text: message)
             }
         }
-
+        
+        dispatch_async(dispatch_get_main_queue()) {
+            self.loadMessage(false, text:"ClojureScript 1.8.40\n" +
+            "    Docs: (doc function-name)\n" +
+            "          (find-doc \"part-of-name\")\n" +
+            "  Source: (source function-name)\n" +
+            " Results: Stored in *1, *2, *3,\n" +
+            "          an exception in *e");
+        };
+        
         NSLog("Initializing...");
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
