@@ -25,10 +25,10 @@ class HistoryTableViewCell: UITableViewCell {
         contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Left, relatedBy: .Equal, toItem: contentView, attribute: .Left, multiplier: 1, constant: 10))
         contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Right, relatedBy: .Equal, toItem: contentView, attribute: .Right, multiplier: 1, constant: -10))
         
-        self.topLayoutConstraint = NSLayoutConstraint(item: messageLabel, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .Top, multiplier: 1, constant: 10);
+        self.topLayoutConstraint = NSLayoutConstraint(item: messageLabel, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .Top, multiplier: 1, constant: 4);
         contentView.addConstraint(self.topLayoutConstraint)
         
-        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Bottom, relatedBy: .Equal, toItem: contentView, attribute: .Bottom, multiplier: 1, constant: -4))
+        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Bottom, relatedBy: .Equal, toItem: contentView, attribute: .Bottom, multiplier: 1, constant: -10))
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -49,9 +49,9 @@ class HistoryTableViewCell: UITableViewCell {
         }
                 
         if (message.incoming) {
-            self.topLayoutConstraint.constant = 4
+            self.topLayoutConstraint.constant = -2
         } else {
-            self.topLayoutConstraint.constant = 10
+            self.topLayoutConstraint.constant = 4
         }
         
     }
