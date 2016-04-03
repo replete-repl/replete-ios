@@ -39,7 +39,7 @@
 (declare load-core-analysis-caches)
 
 (defn ^:export init-app-env [app-env]
-  (load-core-analysis-caches false)
+  (load-core-analysis-caches true)
   (reset! replete.core/app-env (map-keys keyword (cljs.core/js->clj app-env))))
 
 (defn user-interface-idiom-ipad?
