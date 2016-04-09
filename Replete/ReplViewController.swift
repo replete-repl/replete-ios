@@ -353,13 +353,19 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
             
             history.loadedMessages.append([Message(incoming: incoming, text: text)])
             
-            let lastSection = tableView.numberOfSections
-            tableView.beginUpdates()
-            tableView.insertSections(NSIndexSet(index: lastSection), withRowAnimation: .Automatic)
-            tableView.insertRowsAtIndexPaths([
-                NSIndexPath(forRow: 0, inSection: lastSection)
-                ], withRowAnimation: .Automatic)
-            tableView.endUpdates()
+            if (history.loadedMessages.count > 64) {
+                history.loadedMessages.removeAtIndex(0);
+                tableView.reloadData();
+            } else {
+            
+                let lastSection = tableView.numberOfSections
+                tableView.beginUpdates()
+                tableView.insertSections(NSIndexSet(index: lastSection), withRowAnimation: .Automatic)
+                tableView.insertRowsAtIndexPaths([
+                    NSIndexPath(forRow: 0, inSection: lastSection)
+                    ], withRowAnimation: .Automatic)
+                tableView.endUpdates()
+            }
             
             scrollToBottom = true;
             
