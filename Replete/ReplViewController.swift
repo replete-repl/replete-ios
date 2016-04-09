@@ -16,6 +16,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var currentKeyboardHeight: CGFloat!
     var initialized = false;
     var enterPressed = false;
+    var scrollToBottom = false;
     
     override var inputAccessoryView: UIView! {
         get {
@@ -360,7 +361,16 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 ], withRowAnimation: .Automatic)
             tableView.endUpdates()
             
-            tableViewScrollToBottomAnimated(false)
+            scrollToBottom = true;
+            
+            let delayTime = dispatch_time(DISPATCH_TIME_NOW,
+                                          Int64(50 * Double(NSEC_PER_MSEC)))
+            dispatch_after(delayTime, dispatch_get_main_queue()) {
+                if (self.scrollToBottom) {
+                    self.scrollToBottom = false;
+                    self.tableViewScrollToBottomAnimated(false)
+                }
+            }
         }
     }
     
