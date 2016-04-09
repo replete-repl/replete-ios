@@ -482,10 +482,12 @@
 
 (defn- dir*
   [nsname]
-  (run! prn
-    (distinct (sort (concat
-                      (public-syms nsname)
-                      (public-syms (symbol (str (name nsname) "$macros"))))))))
+  (print
+    (with-out-str
+      (run! prn
+        (distinct (sort (concat
+                          (public-syms nsname)
+                          (public-syms (symbol (str (name nsname) "$macros"))))))))))
 
 (defn- apropos*
   [str-or-pattern]
@@ -503,9 +505,11 @@
 
 (defn- print-doc
   [m]
-  (repl/print-doc (update m :doc (if (user-interface-idiom-ipad?)
-                                   identity
-                                   reflow))))
+  (print
+    (with-out-str
+      (repl/print-doc (update m :doc (if (user-interface-idiom-ipad?)
+                                       identity
+                                       reflow))))))
 
 (defn- doc*
   [sym]
@@ -546,18 +550,20 @@
 
 (defn- find-doc*
   [re-string-or-pattern]
-  (let [re       (re-pattern re-string-or-pattern)
-        sym-docs (sort-by first
-                   (mapcat (fn [ns]
-                             (map (juxt first (comp :doc second))
-                               (get-in @st [::ana/namespaces ns :defs])))
-                     (all-ns)))]
-    (doseq [[sym doc] sym-docs
-            :when (and doc
-                       (name sym)
-                       (or (re-find re doc)
-                           (re-find re (name sym))))]
-      (doc* sym))))
+  (print
+    (with-out-str
+      (let [re       (re-pattern re-string-or-pattern)
+            sym-docs (sort-by first
+                       (mapcat (fn [ns]
+                                 (map (juxt first (comp :doc second))
+                                   (get-in @st [::ana/namespaces ns :defs])))
+                         (all-ns)))]
+        (doseq [[sym doc] sym-docs
+                :when (and doc
+                           (name sym)
+                           (or (re-find re doc)
+                               (re-find re (name sym))))]
+          (doc* sym))))))
 
 (defn- source*
   [sym]
