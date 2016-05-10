@@ -463,9 +463,9 @@
     argument
     (make-base-eval-opts)
     (fn [result]
-      (if (and (map? result) (:error result))
+      (if (:error result)
         (print-error (:error result))
-        (let [ns-name result]
+        (let [ns-name (:value result)]
           (if-not (symbol? ns-name)
             (println "Argument to in-ns must be a symbol.")
             (if (some (partial = ns-name) (known-namespaces))
