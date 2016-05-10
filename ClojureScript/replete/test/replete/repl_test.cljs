@@ -1,7 +1,7 @@
-(ns replete.core-test
+(ns replete.repl-test
   (:require-macros [cljs.test :refer [use-fixtures deftest is]])
   (:require [cljs.test]
-            [replete.core :refer [setup-cljs-user
+            [replete.repl :refer [setup-cljs-user
                                   read-eval-print]]))
 
 (deftest test-literal

@@ -75,7 +75,7 @@
     
     [self requireAppNamespaces:context];
     
-    JSValue* setupCljsUser = [self getValue:@"setup-cljs-user" inNamespace:@"replete.core" fromContext:context];
+    JSValue* setupCljsUser = [self getValue:@"setup-cljs-user" inNamespace:@"replete.repl" fromContext:context];
     NSAssert(!setupCljsUser.isUndefined, @"Could not find the setup-cljs-user function");
     [setupCljsUser callWithArguments:@[]];
     
@@ -110,16 +110,18 @@
         return rv;
     };
     
-    JSValue* initAppEnvFn = [self getValue:@"init-app-env" inNamespace:@"replete.core" fromContext:context];
+    JSValue* initAppEnvFn = [self getValue:@"init-app-env" inNamespace:@"replete.repl" fromContext:context];
     [initAppEnvFn callWithArguments:@[@{@"debug-build": @(debugBuild),
                                         @"target-simulator": @(targetSimulator),
                                         @"user-interface-idiom": (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad": @"iPhone")}]];
     
-    self.readEvalPrintFn = [self getValue:@"read-eval-print" inNamespace:@"replete.core" fromContext:context];
+    self.readEvalPrintFn = [self getValue:@"read-eval-print" inNamespace:@"replete.repl" fromContext:context];
     NSAssert(!self.readEvalPrintFn.isUndefined, @"Could not find the read-eval-print function");
     
-    self.formatFn = [self getValue:@"format" inNamespace:@"replete.core" fromContext:context];
+    self.formatFn = [self getValue:@"format" inNamespace:@"replete.repl" fromContext:context];
     NSAssert(!self.formatFn.isUndefined, @"Could not find the format function");
+    
+    [self.readEvalPrintFn callWithArguments:@[@"(ns cljs.user (:require [replete.core :refer [eval]]))"]];
     
     context[@"REPLETE_PRINT_FN"] = ^(NSString *message) {
 //        NSLog(@"repl out: %@", message);
@@ -133,13 +135,9 @@
     [context evaluateScript:@"cljs.core.set_print_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
     [context evaluateScript:@"cljs.core.set_print_err_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
     
-    
     // TODO look into this. Without it thngs won't work.
     [context evaluateScript:@"var window = global;"];
     
-    //JSValue* response = [readEvalPrintFn callWithArguments:@[@"(def a 3)"]];
-    //NSLog(@"%@", [response toString]);
-
     self.initialized = true;
 
     if ([self codeToBeEvaluatedWhenReady]) {
@@ -154,7 +152,7 @@
 
 -(void)requireAppNamespaces:(JSContext*)context
 {
-    [context evaluateScript:[NSString stringWithFormat:@"goog.require('%@');", [self munge:@"replete.core"]]];
+    [context evaluateScript:[NSString stringWithFormat:@"goog.require('%@');", [self munge:@"replete.repl"]]];
 }
 
 - (JSValue*)getValue:(NSString*)name inNamespace:(NSString*)namespace fromContext:(JSContext*)context
