@@ -5,6 +5,8 @@
     clojure.data
     cljs.pprint
     cljs.test
+    cljs.core.async
+    cljs.core.async.impl.ioc-macros-runtime
     goog.Delay
     goog.Disposable
     goog.Promise

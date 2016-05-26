@@ -179,21 +179,24 @@
     :js
     :clj))
 
-(defn- pre-compiled-callaback-data [path]
+(defn- pre-compiled-callaback-data [path extension]
   (when-let [js-source (js/REPLETE_LOAD (str path ".js"))]
-    (when-let [cache (js/REPLETE_LOAD (str path ".cljs.cache.edn"))]
+    (if-let [cache-edn (js/REPLETE_LOAD (str path extension ".cache.edn"))]
       {:lang   :js
        :source js-source
-       :cache  (r/read-string cache)})))
+       :cache  (r/read-string cache-edn)}
+      (when-let [cache-json (js/REPLETE_LOAD (str path extension ".cache.json"))]
+        {:lang   :js
+         :source js-source
+         :cache  (transit-json->cljs cache-json)}))))
 
 (defn- source-callback-data [path extension]
   (when-let [source (js/REPLETE_LOAD (str path extension))]
     {:lang   (extension->lang extension)
      :source source}))
 
-(defn load-and-callback! [path extension cb]
-  (when-let [cb-data (or (and (= ".cljs" extension)
-                              (pre-compiled-callaback-data path))
+(defn load-and-callback! [path extension macros cb]
+  (when-let [cb-data (or (pre-compiled-callaback-data (str path (when macros "$macros")) extension)
                          (source-callback-data path extension))]
     (cb cb-data)
     :loaded))
@@ -218,15 +221,18 @@
   (or
     (= name 'cljsjs.parinfer)
     (= name 'cljs.core)
+    (= name 'cljs.env)
     (= name 'replete.repl)
     (and (= name 'cljs.env.macros) macros)
     (and (= name 'cljs.analyzer.macros) macros)
     (and (= name 'cljs.compiler.macros) macros)
     (and (= name 'cljs.repl) macros)
+    (and (= name 'cljs.tools.reader.reader-types) macros)
     (and (= name 'cljs.js) macros)
     (and (= name 'cljs.pprint) macros)
     (and (= name 'clojure.template) macros)
-    (and (= name 'tailrecursion.cljson) macros)))
+    (and (= name 'tailrecursion.cljson) macros)
+    (and (= name 'lazy-map.core) macros)))
 
 ;; Represents code for which the goog JS is already loaded
 (defn- skip-load-goog-js?
@@ -242,7 +248,7 @@
     (cb {:lang   :js
          :source ""})
     (if-let [goog-path (get (closure-index-mem) name)]
-      (when-not (load-and-callback! goog-path ".js" cb)
+      (when-not (load-and-callback! goog-path ".js" false cb)
         (cb nil))
       (cb nil))))
 
@@ -255,7 +261,7 @@
                               [".clj" ".cljc"]
                               [".cljs" ".cljc" ".js"])]
             (if extensions
-              (when-not (load-and-callback! path (first extensions) cb)
+              (when-not (load-and-callback! path (first extensions) macros cb)
                 (recur (next extensions)))
               (cb nil)))))
 

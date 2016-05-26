@@ -61,6 +61,7 @@
                                              compilerOutputDirectory:outURL];
     [self.contextManager setUpConsoleLog];
     [self.contextManager setupGlobalContext];
+    [self.contextManager setUpTimerFunctionality];
     [self.contextManager setUpAmblyImportScript];
     
     NSString* mainJsFilePath = [[outURL URLByAppendingPathComponent:@"main" isDirectory:NO]

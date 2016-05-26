@@ -25,6 +25,13 @@
    :dump-core          false})
 (println "Done building")
 
+(defn copy-source
+  [path]
+  (spit (str "out/" path)
+    (slurp (io/resource path))))
+
+(copy-source "cljs/core/async/macros.cljc")
+(copy-source "cljs/core/async/impl/ioc_macros.clj")
 
 (let [res (io/resource "cljs/core.cljs.cache.aot.edn")
       cache (read-string (slurp res))]
