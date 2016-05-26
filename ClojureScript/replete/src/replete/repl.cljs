@@ -387,14 +387,30 @@
            "(" file (when line (str ":" line))
            (when column (str ":" column)) ")"))))))
 
+(defn- is-reader-or-analysis?
+  "Indicates if an exception is a reader or analysis exception."
+  [e]
+  (and (instance? ExceptionInfo e)
+       (some #{[:type :reader-exception] [:tag :cljs/analysis-error]} (ex-data e))))
+
+(defn- get-error-column-indicator
+  [error]
+  (when (instance? ExceptionInfo error)
+    (when-let [cause (ex-cause error)]
+      (when (is-reader-or-analysis? cause)
+        (when-let [column (:column (ex-data cause))]
+          (str (apply str (take column (repeat " "))) "↑\n"))))))
+
 (defn print-error
   ([error]
    (print-error error false))
   ([error include-stacktrace?]
    (let [e (or (.-cause error) error)]
-     (println (.-message e)
-       (when include-stacktrace?
-         (str "\n" (.-stack e)))))))
+     (println
+       (str (get-error-column-indicator error)
+         (.-message e)
+         (when include-stacktrace?
+           (str "\n" (.-stack e))))))))
 
 (defn- get-macro-var
   [env sym macros-ns]
