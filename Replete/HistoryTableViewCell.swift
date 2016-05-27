@@ -37,13 +37,13 @@ class HistoryTableViewCell: UITableViewCell {
 
     func configureWithMessage(message: Message) {
         
-        messageLabel.text = message.text
+        messageLabel.attributedText = message.text
         
         var layoutAttribute: NSLayoutAttribute
         var layoutConstant: CGFloat
         
         if (message.incoming) {
-            messageLabel.textColor = UIColor.blackColor();
+            //messageLabel.textColor = UIColor.blackColor();
         } else {
             messageLabel.textColor = UIColor.grayColor();
         }

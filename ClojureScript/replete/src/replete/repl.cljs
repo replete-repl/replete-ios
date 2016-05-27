@@ -17,6 +17,7 @@
             [tailrecursion.cljson :refer [cljson->clj]]
             [cljsjs.parinfer]
             [lazy-map.core :refer-macros [lazy-map]]
+            [replete.pprint :as pprint]
             [replete.repl-resources :refer [special-doc-map repl-special-doc-map]]
             [cljs.compiler :as comp]))
 
@@ -75,6 +76,10 @@
                          (first-non-space-pos-after formatted-text pos)
                          pos)]
     #js [formatted-text formatted-pos]))
+
+
+(defn ^:export set-width [width]
+  (swap! app-env assoc :width width))
 
 (def current-ns (atom 'cljs.user))
 
@@ -410,7 +415,11 @@
   ([error include-stacktrace?]
    (let [e (or (.-cause error) error)]
      (println
-       (str (get-error-column-indicator error)
+       (str
+         (if (is-reader-or-analysis? e)
+           "\u001b[35m"
+           "\u001b[31m")
+         (get-error-column-indicator error)
          (.-message e)
          (when include-stacktrace?
            (str "\n" (.-stack e))))))))
@@ -706,7 +715,10 @@
                (if expression?
                  (if-not error
                    (do
-                     (prn value)
+                     (let [out-str (with-out-str (pprint/pprint value {:width (or (:width @app-env)
+                                                                                  35)}))
+                           out-str (subs out-str 0 (dec (count out-str)))]
+                       (print out-str))
                      (process-1-2-3 expression-form value)
                      (reset! current-ns ns)
                      nil)

@@ -14,6 +14,7 @@
 @property (strong, nonatomic) ABYContextManager* contextManager;
 @property (strong, nonatomic) JSValue* readEvalPrintFn;
 @property (strong, nonatomic) JSValue* formatFn;
+@property (strong, nonatomic) JSValue* setWidthFn;
 @property (nonatomic, copy) void (^myPrintCallback)(BOOL, NSString*);
 @property BOOL initialized;
 @property NSString *codeToBeEvaluatedWhenReady;
@@ -24,6 +25,10 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleDidChangeStatusBarOrientationNotification:)
+                                                 name:UIApplicationDidChangeStatusBarOrientationNotification
+                                               object:nil];
     return YES;
 }
 
@@ -122,6 +127,9 @@
     self.formatFn = [self getValue:@"format" inNamespace:@"replete.repl" fromContext:context];
     NSAssert(!self.formatFn.isUndefined, @"Could not find the format function");
     
+    self.setWidthFn = [self getValue:@"set-width" inNamespace:@"replete.repl" fromContext:context];
+    NSAssert(!self.setWidthFn.isUndefined, @"Could not find the set-width function");
+    
     [self.readEvalPrintFn callWithArguments:@[@"(ns cljs.user (:require [replete.core :refer [eval]]))"]];
     
     context[@"REPLETE_PRINT_FN"] = ^(NSString *message) {
@@ -140,6 +148,8 @@
     [context evaluateScript:@"var window = global;"];
     
     self.initialized = true;
+    
+    [self updateWidth];
 
     if ([self codeToBeEvaluatedWhenReady]) {
         NSLog(@"Delayed code to be evaluated: %@", [self codeToBeEvaluatedWhenReady]);
@@ -241,6 +251,24 @@
 + (NSURL *)applicationDocumentsDirectory
 {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+}
+
+- (void)updateWidth
+{
+    if (self.setWidthFn) {
+        
+        int width = ([[UIScreen mainScreen] applicationFrame].size.width - 10)/9;
+        
+        [self.setWidthFn callWithArguments:@[@(width)]];
+        
+    }
+}
+
+- (void)handleDidChangeStatusBarOrientationNotification:(NSNotification *)notification;
+{
+    // Do something interesting
+    NSLog(@"The orientation is %@", [notification.userInfo objectForKey: UIApplicationStatusBarOrientationUserInfoKey]);
+    [self updateWidth];
 }
 
 @end

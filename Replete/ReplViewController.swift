@@ -346,12 +346,44 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
     }
     
+    func markString(s: NSMutableAttributedString) -> Bool {
+        if (s.string.containsString("\u{001b}[")) {
+            
+            let text = s.string;
+            let range : Range<String.Index> = text.rangeOfString("\u{001b}[")!;
+            let index: Int = text.startIndex.distanceTo(range.startIndex);
+            let index2 = text.startIndex.advancedBy(index + 2);
+            var color : UIColor = UIColor.blackColor();
+            if (text.substringFromIndex(index2).hasPrefix("34m")){
+                color = UIColor.blueColor();
+            } else if (text.substringFromIndex(index2).hasPrefix("32m")){
+                color = UIColor.init(colorLiteralRed: 0.0, green: 0.75, blue: 0.0, alpha: 1.0);
+            } else if (text.substringFromIndex(index2).hasPrefix("35m")){
+                color = UIColor.init(colorLiteralRed: 0.75, green: 0.0, blue: 0.75, alpha: 1.0);
+            } else if (text.substringFromIndex(index2).hasPrefix("31m")){
+                color = UIColor.init(colorLiteralRed: 1, green: 0.33, blue: 0.33, alpha: 1.0);
+            }
+            
+            s.replaceCharactersInRange(NSMakeRange(index, 5), withString: "");
+            s.addAttribute(NSForegroundColorAttributeName,
+                           value: color,
+                           range: NSMakeRange(index, s.length-index));
+            return true;
+        }
+        
+        return false;
+    }
+    
     func loadMessage(incoming: Bool, text: String) {
         
         if (text != "\n") {
             // NSLog("load: %@", text);
             
-            history.loadedMessages.append([Message(incoming: incoming, text: text)])
+            var s = NSMutableAttributedString(string:text);
+            
+            while (markString(s)) {};
+            
+            history.loadedMessages.append([Message(incoming: incoming, text: s)])
             
             if (history.loadedMessages.count > 64) {
                 history.loadedMessages.removeAtIndex(0);
@@ -433,7 +465,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func messageCopyTextAction(menuController: UIMenuController) {
         let selectedIndexPath = tableView.indexPathForSelectedRow
         let selectedMessage = history.loadedMessages[selectedIndexPath!.section][selectedIndexPath!.row]
-        UIPasteboard.generalPasteboard().string = selectedMessage.text
+        UIPasteboard.generalPasteboard().string = selectedMessage.text.string
     }
     // 3. Deselect row
     func menuControllerWillHide(notification: NSNotification) {
