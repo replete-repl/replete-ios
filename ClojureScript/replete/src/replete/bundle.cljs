@@ -3,6 +3,7 @@
   (:require
     clojure.zip
     clojure.data
+    cljs.analyzer.api
     cljs.pprint
     cljs.test
     cljs.core.async

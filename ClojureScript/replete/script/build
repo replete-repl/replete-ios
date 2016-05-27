@@ -7,7 +7,15 @@ planck -q -k aot-cache -c ~/.m2/repository/andare/andare/0.1.0/andare-0.1.0.jar 
   'cljs.core.async.macros)
 REPL_INPUT
 
+mkdir -p out/clojure
+mkdir -p out/cljs/analyzer
 mkdir -p out/cljs/core/async/impl
+
+# Complete Hack: Copy AOT'd macros from sibling Planck build tree
+# (We can't easily get Planck to build these for us because Planck bunles them)
+cp ../../../planck/planck-cljs/out/clojure/template* out/clojure
+cp ../../../planck/planck-cljs/out/cljs/test\$macros.cache.json out/cljs/test\$macros.cljc.cache.json
+cp ../../../planck/planck-cljs/out/cljs/test\$macros.js out/cljs/test\$macros.js
 
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.cache.json out/cljs/core/async/impl/ioc_macros\$macros.clj.cache.json
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.js out/cljs/core/async/impl/ioc_macros\$macros.js

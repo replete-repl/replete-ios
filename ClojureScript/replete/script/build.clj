@@ -30,6 +30,9 @@
   (spit (str "out/" path)
     (slurp (io/resource path))))
 
+(copy-source "cljs/test.cljc")
+(copy-source "cljs/analyzer/api.cljc")
+(copy-source "clojure/template.clj")
 (copy-source "cljs/core/async/macros.cljc")
 (copy-source "cljs/core/async/impl/ioc_macros.clj")
 

@@ -192,6 +192,9 @@
 
 (defn- source-callback-data [path extension]
   (when-let [source (js/REPLETE_LOAD (str path extension))]
+    ;; Emit a diagnostic if loading source
+    (when-not (= ".js" extension)
+      (prn 'source path extension))
     {:lang   (extension->lang extension)
      :source source}))
 
