@@ -37,17 +37,14 @@ class HistoryTableViewCell: UITableViewCell {
 
     func configureWithMessage(message: Message) {
         
-        messageLabel.attributedText = message.text
-        
-        var layoutAttribute: NSLayoutAttribute
-        var layoutConstant: CGFloat
-        
         if (message.incoming) {
-            //messageLabel.textColor = UIColor.blackColor();
+            messageLabel.textColor = UIColor.blackColor();
         } else {
             messageLabel.textColor = UIColor.grayColor();
         }
-                
+
+        messageLabel.attributedText = message.text
+
         if (message.incoming) {
             self.topLayoutConstraint.constant = -2
         } else {
