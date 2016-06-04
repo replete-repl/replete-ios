@@ -1,10 +1,16 @@
 ;; A namespace used to cause additional libs to be included in out for bundling.
 (ns replete.bundle
   (:require
-    clojure.zip
+    clojure.core.reducers
     clojure.data
+    clojure.test.check
+    clojure.test.check.clojure-test
+    clojure.test.check.generators
+    clojure.test.check.properties
+    clojure.zip
     cljs.analyzer.api
     cljs.pprint
+    cljs.spec
     cljs.test
     cljs.core.async
     cljs.core.async.impl.ioc-macros-runtime

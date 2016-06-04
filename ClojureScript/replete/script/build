@@ -2,21 +2,37 @@
 
 mkdir -p aot-cache
 lein deps
-planck -q -k aot-cache -c ~/.m2/repository/andare/andare/0.1.0/andare-0.1.0.jar <<REPL_INPUT
+M2_REPO=~/.m2/repository
+echo "AOT compiling macros"
+planck -q -k aot-cache -c $M2_REPO/andare/andare/0.1.0/andare-0.1.0.jar:$M2_REPO/org/clojure/test.check/0.9.1-SNAPSHOT/test.check-0.9.1-SNAPSHOT.jar <<REPL_INPUT
+(require '[clojure.test.check.clojure-test :include-macros true])
 (require-macros
+  'clojure.test.check.properties
   'cljs.core.async.macros)
 REPL_INPUT
 
 mkdir -p out/clojure
+mkdir -p out/clojure/test/check
 mkdir -p out/cljs/analyzer
+mkdir -p out/cljs/spec/impl
 mkdir -p out/cljs/core/async/impl
 
 # Complete Hack: Copy AOT'd macros from sibling Planck build tree
-# (We can't easily get Planck to build these for us because Planck bunles them)
+# (We can't easily get Planck to build these for us because Planck bundles them)
 cp ../../../planck/planck-cljs/out/clojure/template* out/clojure
+cp ../../../planck/planck-cljs/out/cljs/spec\$macros.cache.json out/cljs/spec\$macros.cljc.cache.json
+cp ../../../planck/planck-cljs/out/cljs/spec\$macros.js out/cljs/spec\$macros.js
+cp ../../../planck/planck-cljs/out/cljs/spec/impl/gen\$macros.cache.json out/cljs/spec/impl/gen\$macros.cljc.cache.json
+cp ../../../planck/planck-cljs/out/cljs/spec/impl/gen\$macros.js out/cljs/spec/impl/gen\$macros.js
 cp ../../../planck/planck-cljs/out/cljs/test\$macros.cache.json out/cljs/test\$macros.cljc.cache.json
 cp ../../../planck/planck-cljs/out/cljs/test\$macros.js out/cljs/test\$macros.js
 
+cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_clojure_test\$macros.cache.json out/clojure/test/check/clojure_test\$macros.cljc.cache.json
+cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_clojure_test\$macros.js out/clojure/test/check/clojure_test\$macros.js
+cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_clojure_test\$macros.js.map.json out/clojure/test/check/clojure_test\$macros.cljc.map.json
+cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_properties\$macros.cache.json out/clojure/test/check/properties\$macros.cljc.cache.json
+cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_properties\$macros.js out/clojure/test/check/properties\$macros.js
+cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_properties\$macros.js.map.json out/clojure/test/check/properties\$macros.cljc.map.json
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.cache.json out/cljs/core/async/impl/ioc_macros\$macros.clj.cache.json
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.js out/cljs/core/async/impl/ioc_macros\$macros.js
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.js.map.json out/cljs/core/async/impl/ioc_macros\$macros.clj.map.json
@@ -24,4 +40,5 @@ cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_macros\$macros.cache.json out/clj
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_macros\$macros.js out/cljs/core/async/macros\$macros.js
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_macros\$macros.js.map.json out/cljs/core/async/macros\$macros.cljc.map.json
 
+echo "Compiling ClojureScript"
 lein run -m clojure.main script/build.clj

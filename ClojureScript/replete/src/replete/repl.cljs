@@ -39,9 +39,12 @@
   (reduce-kv (fn [r k v] (assoc r (f k) v)) {} m))
 
 (declare load-core-analysis-caches)
+(declare prime-analysis-cache-for-implicit-macro-loading)
 
 (defn ^:export init-app-env [app-env]
   (load-core-analysis-caches true)
+  (prime-analysis-cache-for-implicit-macro-loading 'cljs.spec)
+  (prime-analysis-cache-for-implicit-macro-loading 'cljs.spec.test)
   (reset! replete.repl/app-env (map-keys keyword (cljs.core/js->clj app-env))))
 
 (defn user-interface-idiom-ipad?
@@ -154,6 +157,13 @@
   (load-core-analysis-cache eager 'cljs.core "cljs/core.cljs.cache.aot.")
   (load-core-analysis-cache eager 'cljs.core$macros "cljs/core$macros.cljc.cache."))
 
+(defn- prime-analysis-cache-for-implicit-macro-loading
+  "Supports priming analysis cache in order to work around 
+  http://dev.clojure.org/jira/browse/CLJS-1657 for commonly used
+  namespaces that we cannot AOT compile."
+  [ns-sym]
+  (swap! st assoc-in [::ana/namespaces ns-sym :require-macros] {ns-sym ns-sym}))
+
 (defn ns-form? [form]
   (and (seq? form) (= 'ns (first form))))
 
@@ -186,14 +196,10 @@
 
 (defn- pre-compiled-callaback-data [path extension]
   (when-let [js-source (js/REPLETE_LOAD (str path ".js"))]
-    (if-let [cache-edn (js/REPLETE_LOAD (str path extension ".cache.edn"))]
+    (when-let [cache-json (js/REPLETE_LOAD (str path extension ".cache.json"))]
       {:lang   :js
        :source js-source
-       :cache  (r/read-string cache-edn)}
-      (when-let [cache-json (js/REPLETE_LOAD (str path extension ".cache.json"))]
-        {:lang   :js
-         :source js-source
-         :cache  (transit-json->cljs cache-json)}))))
+       :cache  (transit-json->cljs cache-json)})))
 
 (defn- source-callback-data [path extension]
   (when-let [source (js/REPLETE_LOAD (str path extension))]
