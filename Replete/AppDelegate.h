@@ -17,6 +17,7 @@
 -(void)evaluate:(NSString*)text;
 -(void)evaluate:(NSString*)text asExpression:(BOOL)expression;
 -(NSArray*)parinferFormat:(NSString*)text pos:(int)pos enterPressed:(BOOL)enterPressed;
+-(NSString*)getClojureScriptVersion;
 
 @end
 

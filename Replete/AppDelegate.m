@@ -273,4 +273,18 @@
     [self updateWidth];
 }
 
+-(NSString*)getClojureScriptVersion
+{
+    NSString *outPath = [[NSBundle mainBundle] pathForResource:@"out" ofType:nil];
+   
+    // Grab bundle.js; it is relatively small
+    NSString* bundleJs = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/replete/bundle.js", outPath]
+                                                   encoding:NSUTF8StringEncoding error:nil];
+    if (bundleJs) {
+        return [[bundleJs substringFromIndex:29] componentsSeparatedByString:@" "][0];
+    } else {
+        return @"(Unknown)";
+    }
+}
+
 @end

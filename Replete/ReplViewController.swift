@@ -115,7 +115,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
         
         dispatch_async(dispatch_get_main_queue()) {
-            self.loadMessage(false, text:"\nClojureScript 1.9.2\n" +
+            self.loadMessage(false, text:"\nClojureScript " + appDelegate.getClojureScriptVersion() + "\n" +
             "    Docs: (doc function-name)\n" +
             "          (find-doc \"part-of-name\")\n" +
             "  Source: (source function-name)\n" +
