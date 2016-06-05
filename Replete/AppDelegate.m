@@ -112,7 +112,7 @@
             rv = [NSString stringWithContentsOfFile:fullPath
                                            encoding:NSUTF8StringEncoding error:nil];
             
-            if (rv) NSLog(fullPath);
+            //if (rv) NSLog(fullPath);
         }
         
         return rv;
