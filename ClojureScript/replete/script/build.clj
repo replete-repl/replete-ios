@@ -89,4 +89,13 @@
 (extract-analysis-cache "out/fipp/engine.cljc.cache.edn" "out/fipp/engine.cljc.cache.json")
 (extract-analysis-cache "out/fipp/visit.cljc.cache.edn" "out/fipp/visit.cljc.cache.json")
 
+(extract-analysis-cache "out/cljs/core/async.cljs.cache.edn" "out/cljs/core/async.cljs.cache.json")
+(extract-analysis-cache "out/cljs/core/async/impl/ioc_macros_runtime.cljc.cache.edn" "out/cljs/core/async/impl/ioc_macros_runtime.cljc.cache.json")
+(extract-analysis-cache "out/cljs/core/async/impl/protocols.cljs.cache.edn" "out/cljs/core/async/impl/protocols.cljs.cache.json")
+(extract-analysis-cache "out/cljs/core/async/impl/channels.cljs.cache.edn" "out/cljs/core/async/impl/channels.cljs.cache.json")
+(extract-analysis-cache "out/cljs/core/async/impl/dispatch.cljs.cache.edn" "out/cljs/core/async/impl/dispatch.cljs.cache.json")
+(extract-analysis-cache "out/cljs/core/async/impl/buffers.cljs.cache.edn" "out/cljs/core/async/impl/buffers.cljs.cache.json")
+(extract-analysis-cache "out/cljs/core/async/impl/timers.cljs.cache.edn" "out/cljs/core/async/impl/timers.cljs.cache.json")
+(extract-analysis-cache "out/cljs/core/async/impl/ioc_helpers.cljs.cache.edn" "out/cljs/core/async/impl/ioc_helpers.cljs.cache.json")
+
 (System/exit 0)
