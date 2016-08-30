@@ -8,7 +8,7 @@
                  [malabarba/lazy-map "1.1"]
                  [org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.14"]
-                 [org.clojure/test.check "0.9.1-SNAPSHOT"]]
+                 [org.clojure/test.check "0.9.0"]]
   :clean-targets ["out" "target"]
   :plugins [[lein-cljsbuild "1.1.1"]]
   :cljsbuild {:builds {:test {:source-paths ["src" "test"]
