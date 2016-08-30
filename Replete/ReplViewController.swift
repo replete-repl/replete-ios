@@ -43,7 +43,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 evalButton.setTitleColor(UIColor(red: 142/255, green: 142/255, blue: 147/255, alpha: 1), forState: .Disabled)
                 evalButton.setTitleColor(UIColor(red: 1/255, green: 122/255, blue: 255/255, alpha: 1), forState: .Normal)
                 evalButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 8)
-                evalButton.addTarget(self, action: "sendAction", forControlEvents: UIControlEvents.TouchUpInside)
+                evalButton.addTarget(self, action: #selector(sendAction), forControlEvents: UIControlEvents.TouchUpInside)
                 toolBar.addSubview(evalButton)
                 
                 toolBar.translatesAutoresizingMaskIntoConstraints = false
@@ -102,9 +102,9 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         view.addSubview(tableView)
         
         let notificationCenter = NSNotificationCenter.defaultCenter()
-        notificationCenter.addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
-        notificationCenter.addObserver(self, selector: "keyboardDidShow:", name: UIKeyboardDidShowNotification, object: nil)
-        notificationCenter.addObserver(self, selector: "menuControllerWillHide:", name: UIMenuControllerWillHideMenuNotification, object: nil) // #CopyMessage
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(keyboardDidShow(_:)), name: UIKeyboardDidShowNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(menuControllerWillHide(_:)), name: UIMenuControllerWillHideMenuNotification, object: nil) // #CopyMessage
         
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         
@@ -184,7 +184,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 cell = HistoryTableViewCell(style: .Default, reuseIdentifier: cellIdentifier)
                 
                 // Add gesture recognizers #CopyMessage
-                let action: Selector = "messageShowMenuAction:"
+                let action: Selector = #selector(messageShowMenuAction(_:))
                 let doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: action)
                 doubleTapGestureRecognizer.numberOfTapsRequired = 2
                 cell.messageLabel.addGestureRecognizer(doubleTapGestureRecognizer)
@@ -379,7 +379,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if (text != "\n") {
             // NSLog("load: %@", text);
             
-            var s = NSMutableAttributedString(string:text);
+            let s = NSMutableAttributedString(string:text)
             
             while (markString(s)) {};
             
@@ -457,7 +457,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
             let menuController = UIMenuController.sharedMenuController()
             let bubbleImageView = gestureRecognizer.view!
             menuController.setTargetRect(bubbleImageView.frame, inView: bubbleImageView.superview!)
-            menuController.menuItems = [UIMenuItem(title: "Copy", action: "messageCopyTextAction:")]
+            menuController.menuItems = [UIMenuItem(title: "Copy", action: #selector(messageCopyTextAction(_:)))]
             menuController.setMenuVisible(true, animated: true)
         }
     }
@@ -477,7 +477,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     override var keyCommands: [UIKeyCommand]? {
         get {
-            let commandEnter = UIKeyCommand(input: "\r", modifierFlags: .Command, action: Selector("sendAction"))
+            let commandEnter = UIKeyCommand(input: "\r", modifierFlags: .Command, action: #selector(sendAction))
             return [commandEnter]
         }
     }
@@ -487,7 +487,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
 class InputTextView: UITextView {
     override func canPerformAction(action: Selector, withSender sender: AnyObject!) -> Bool {
         if (delegate as! ReplViewController).tableView.indexPathForSelectedRow != nil {
-            return action == "messageCopyTextAction:"
+            return action == #selector(messageCopyTextAction(_:))
         } else {
             return super.canPerformAction(action, withSender: sender)
         }
