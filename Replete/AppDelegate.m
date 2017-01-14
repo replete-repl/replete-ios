@@ -216,6 +216,8 @@
  sourceApplication:(NSString *)sourceApplication
         annotation:(id)annotation
 {
+    NSLog(@"this is passed in: %@", [url absoluteString]);
+
     if (url != nil && [url isFileURL]) {
 
         NSLog(@"Accepting file URL for evaluation: %@", [url absoluteString]);
