@@ -79,7 +79,7 @@
 			<key>UTTypeDescription</key>
 			<string>ClojureScript Source Code</string>
 			<key>UTTypeIdentifier</key>
-			<string>org.clojure.cljs</string>
+			<string>org.clojurescript</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.source-code</key>
@@ -97,7 +97,7 @@
 			<key>UTTypeDescription</key>
 			<string>ClojureScript Source Code</string>
 			<key>UTTypeIdentifier</key>
-			<string>org.clojure.cljs</string>
+			<string>org.clojurescript</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.source-code</key>
