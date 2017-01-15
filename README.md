@@ -14,8 +14,8 @@ Interested in Android instead? See [Replicator](https://github.com/tahmidsadik11
 
 1. Install `planck`: brew install planck
 1. In the `ClojureScript/replete` directory, do `script/build`
-2. Do a `pod install` in the top level.
-3. `open Replete.xcworkspace` and run the app on a device or in the simulator.
+1. Do a `pod install` in the top level.
+1. `open Replete.xcworkspace` and run the app on a device or in the simulator.
 
 # Contributing
 
