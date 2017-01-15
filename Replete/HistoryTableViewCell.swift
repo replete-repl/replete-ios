@@ -9,38 +9,38 @@ class HistoryTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         
-        messageLabel = UILabel(frame: CGRectZero)
+        messageLabel = UILabel(frame: CGRect.zero)
         messageLabel.font = UIFont(name: "Menlo", size: messageFontSize)
         messageLabel.numberOfLines = 0
-        messageLabel.lineBreakMode = NSLineBreakMode.ByWordWrapping
-        messageLabel.userInteractionEnabled = true   // #CopyMessage
+        messageLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+        messageLabel.isUserInteractionEnabled = true   // #CopyMessage
 
-        super.init(style: .Default, reuseIdentifier: reuseIdentifier)
-        selectionStyle = .None
+        super.init(style: .default, reuseIdentifier: reuseIdentifier)
+        selectionStyle = .none
 
         contentView.addSubview(messageLabel)
         
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Left, relatedBy: .Equal, toItem: contentView, attribute: .Left, multiplier: 1, constant: 10))
-        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Right, relatedBy: .Equal, toItem: contentView, attribute: .Right, multiplier: 1, constant: -10))
+        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .left, relatedBy: .equal, toItem: contentView, attribute: .left, multiplier: 1, constant: 10))
+        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1, constant: -10))
         
-        self.topLayoutConstraint = NSLayoutConstraint(item: messageLabel, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .Top, multiplier: 1, constant: 4);
+        self.topLayoutConstraint = NSLayoutConstraint(item: messageLabel, attribute: .top, relatedBy: .equal, toItem: contentView, attribute: .top, multiplier: 1, constant: 4);
         contentView.addConstraint(self.topLayoutConstraint)
         
-        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .Bottom, relatedBy: .Equal, toItem: contentView, attribute: .Bottom, multiplier: 1, constant: -10))
+        contentView.addConstraint(NSLayoutConstraint(item: messageLabel, attribute: .bottom, relatedBy: .equal, toItem: contentView, attribute: .bottom, multiplier: 1, constant: -10))
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configureWithMessage(message: Message) {
+    func configureWithMessage(_ message: Message) {
         
         if (message.incoming) {
-            messageLabel.textColor = UIColor.blackColor();
+            messageLabel.textColor = UIColor.black;
         } else {
-            messageLabel.textColor = UIColor.grayColor();
+            messageLabel.textColor = UIColor.gray;
         }
 
         messageLabel.attributedText = message.text
@@ -54,8 +54,8 @@ class HistoryTableViewCell: UITableViewCell {
     }
     
     // Highlight cell #CopyMessage
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        messageLabel.backgroundColor = selected ? UIColor.blueColor().colorWithAlphaComponent(0.15) : UIColor.whiteColor()
+        messageLabel.backgroundColor = selected ? UIColor.blue.withAlphaComponent(0.15) : UIColor.white
     }
 }
