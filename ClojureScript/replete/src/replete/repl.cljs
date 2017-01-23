@@ -204,8 +204,8 @@
 (defn- source-callback-data [path extension]
   (when-let [source (js/REPLETE_LOAD (str path extension))]
     ;; Emit a diagnostic if loading source
-    #_(when-not (= ".js" extension)
-      (prn 'source path extension))
+    (when-not (= ".js" extension)
+      (prn "Warning: loading non-AOT source" path extension))
     {:lang   (extension->lang extension)
      :source source}))
 
