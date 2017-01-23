@@ -13,6 +13,7 @@ Interested in Android instead? See [Replicator](https://github.com/tahmidsadik11
 # Running
 
 1. Clone [planck](https://github.com/mfikes/planck) into a sibling directory and build it.
+1. Clone [test.check](https://github.com/clojure/test.check) master and `lein install` it.
 1. In the `ClojureScript/replete` directory, do `script/build`
 1. Do a `pod install` in the top level.
 1. `open Replete.xcworkspace` and run the app on a device or in the simulator.
