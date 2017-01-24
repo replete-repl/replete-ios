@@ -1,6 +1,7 @@
 (ns replete.repl
   (:require-macros [cljs.env.macros :refer [ensure with-compiler-env]]
-                   [cljs.analyzer.macros :refer [no-warn]])
+                   [cljs.analyzer.macros :refer [no-warn]]
+                   [replete.repl :refer [with-err-str]])
   (:require [cljs.js :as cljs]
             [cljs.pprint :refer [pprint]]
             [cljs.tagged-literals :as tags]
@@ -55,6 +56,9 @@
 (defn repl-read-string [line]
   (r/read-string {:read-cond :allow :features #{:cljs}} line))
 
+(def ^:private expression-name "Expression")
+(def ^:private could-not-eval-expr (str "Could not eval " expression-name))
+
 (defn calc-x-line [text pos line]
   (let [x (s/index-of text "\n")]
     (if (or (nil? x)
@@ -94,6 +98,22 @@
   "Returns a sequence of all namespaces."
   []
   (keys (::ana/namespaces @st)))
+
+(defn- drop-macros-suffix
+  [ns-name]
+  (if (s/ends-with? ns-name "$macros")
+    (apply str (drop-last 7 ns-name))
+    ns-name))
+
+(defn- add-macros-suffix
+  [sym]
+  (symbol (str (name sym) "$macros")))
+
+(defn- eliminate-macros-suffix
+  [x]
+  (if (symbol? x)
+    (symbol (drop-macros-suffix (namespace x)) (name x))
+    x))
 
 (defn- get-namespace
   "Gets the AST for a given namespace."
@@ -403,13 +423,37 @@
   (and (instance? ExceptionInfo e)
        (some #{[:type :reader-exception] [:tag :cljs/analysis-error]} (ex-data e))))
 
+(defonce ^:private can-show-indicator (atom false))
+
+(defn- reset-show-indicator!
+  []
+  (reset! can-show-indicator true))
+
+(defn- show-indicator?
+  []
+  (let [rv @can-show-indicator]
+    (reset! can-show-indicator false)
+    rv))
+
+(defn- form-indicator
+  [column]
+  (str (apply str (take (dec column) (repeat " "))) "^"))
+
 (defn- get-error-column-indicator
   [error]
-  (when (instance? ExceptionInfo error)
+  (when (and (instance? ExceptionInfo error)
+             (= could-not-eval-expr (ex-message error)))
     (when-let [cause (ex-cause error)]
       (when (is-reader-or-analysis? cause)
         (when-let [column (:column (ex-data cause))]
-          (str (apply str (take column (repeat " "))) "↑\n"))))))
+          (form-indicator column))))))
+
+(defn- get-error-column-indicator-guarded
+  [error]
+  (let [indicator (get-error-column-indicator error)]
+    (when (and indicator
+               (show-indicator?))
+      indicator)))
 
 (defn print-error
   ([error]
@@ -421,7 +465,7 @@
          (if (is-reader-or-analysis? e)
            "\u001b[35m"
            "\u001b[31m")
-         (get-error-column-indicator error)
+         (get-error-column-indicator-guarded error)
          (.-message e)
          (when include-stacktrace?
            (str "\n" (.-stack e))))))))
@@ -632,6 +676,17 @@
     (set! *2 *1)
     (set! *1 value)))
 
+(defn- warning-handler [warning-type env extra]
+  (let [warning-string (with-err-str
+                         (ana/default-warning-handler warning-type env
+                           (update extra :js-op eliminate-macros-suffix)))]
+    (binding [*print-fn* *print-err-fn*]
+      (when-not (empty? warning-string)
+        (when-let [column (:column env)]
+          (when (show-indicator?)
+            (println (form-indicator column))))
+        (print warning-string)))))
+
 ;; The following atoms and fns set up a scheme to
 ;; emit function values into JavaScript as numeric
 ;; references that are looked up.
@@ -672,7 +727,11 @@
    (read-eval-print source true))
   ([source expression?]
    (clear-fns!)
-   (binding [ana/*cljs-ns* @current-ns
+   (reset-show-indicator!)
+   (binding [ana/*cljs-warning-handlers* (if expression?
+                                           [warning-handler]
+                                           [ana/default-warning-handler])
+             ana/*cljs-ns* @current-ns
              env/*compiler* st
              *ns* (create-ns @current-ns)
              r/*data-readers* tags/*cljs-data-readers*
