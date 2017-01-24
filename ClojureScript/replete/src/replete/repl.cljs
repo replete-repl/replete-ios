@@ -513,12 +513,13 @@
 
 (defn- fetch-source
   [var]
-  (when-let [filepath (or (:file var) (:file (:meta var)))]
-    (when-let [file-source (get-file-source filepath)]
-      (let [rdr (rt/source-logging-push-back-reader file-source)]
-        (dotimes [_ (dec (:line var))] (rt/read-line rdr))
-        (-> (r/read {:read-cond :allow :features #{:cljs}} rdr)
-          meta :source)))))
+  (or (::repl-entered-source var)
+      (when-let [filepath (or (:file var) (:file (:meta var)))]
+        (when-let [file-source (get-file-source filepath)]
+          (let [rdr (rt/source-logging-push-back-reader file-source)]
+            (dotimes [_ (dec (:line var))] (rt/read-line rdr))
+            (-> (r/read {:read-cond :allow :features #{:cljs}} rdr)
+              meta :source))))))
 
 (defn- make-base-eval-opts
   []
@@ -722,6 +723,16 @@
   [f]
   (emit-fn f))
 
+(defn- call-form?
+  [expression-form allowed-operators]
+  (contains? allowed-operators (and (list? expression-form)
+                                    (first expression-form))))
+
+(defn- def-form?
+  "Determines if the expression is a def expression which returns a Var."
+  [expression-form]
+  (call-form? expression-form '#{def defn defn- defonce defmulti}))
+
 (defn ^:export read-eval-print
   ([source]
    (read-eval-print source true))
@@ -781,6 +792,9 @@
                            out-str (subs out-str 0 (dec (count out-str)))]
                        (print out-str))
                      (process-1-2-3 expression-form value)
+                     (when (def-form? expression-form)
+                       (let [{:keys [ns name]} (meta value)]
+                         (swap! st assoc-in [::ana/namespaces ns :defs name ::repl-entered-source] source)))
                      (reset! current-ns ns)
                      nil)
                    (do
