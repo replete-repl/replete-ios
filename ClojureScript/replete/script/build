@@ -4,7 +4,7 @@ mkdir -p aot-cache
 lein deps
 M2_REPO=~/.m2/repository
 echo "AOT compiling macros"
-../../../planck/planck-c/build/planck -q -k aot-cache -c $M2_REPO/andare/andare/0.1.0/andare-0.1.0.jar:$M2_REPO/org/clojure/test.check/0.9.1-SNAPSHOT/test.check-0.9.1-SNAPSHOT.jar <<REPL_INPUT
+../../../planck/planck-c/build/planck -q -k aot-cache -c $M2_REPO/andare/andare/0.4.0/andare-0.4.0.jar:$M2_REPO/org/clojure/test.check/0.9.1-SNAPSHOT/test.check-0.9.1-SNAPSHOT.jar <<REPL_INPUT
 (require '[clojure.test.check.clojure-test :include-macros true])
 (require-macros
   'clojure.test.check.properties
