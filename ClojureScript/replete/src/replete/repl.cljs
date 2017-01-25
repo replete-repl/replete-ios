@@ -295,91 +295,8 @@
                 (recur (next extensions)))
               (cb nil)))))
 
-(defn- canonicalize-specs
-  [specs]
-  (letfn [(canonicalize [quoted-spec-or-kw]
-            (if (keyword? quoted-spec-or-kw)
-              quoted-spec-or-kw
-              (as-> (second quoted-spec-or-kw) spec
-                (if (vector? spec) spec [spec]))))]
-    (map canonicalize specs)))
-
-(defn- purge-analysis-cache!
-  [state ns]
-  (swap! state (fn [m]
-                 (assoc m ::ana/namespaces (dissoc (::ana/namespaces m) ns)))))
-
-(defn- purge!
-  [names]
-  (doseq [name names]
-    (purge-analysis-cache! st name))
-  (apply swap! cljs.js/*loaded* disj names))
-
-(defn- process-reloads!
-  [specs]
-  (if-let [k (some #{:reload :reload-all} specs)]
-    (let [specs (->> specs (remove #{k}))]
-      (if (= k :reload-all)
-        (purge! @cljs.js/*loaded*)
-        (purge! (map first specs)))
-      specs)
-    specs))
-
-(defn- self-require?
-  [specs]
-  (some
-    (fn [quoted-spec-or-kw]
-      (and (not (keyword? quoted-spec-or-kw))
-           (let [spec (second quoted-spec-or-kw)
-                 ns   (if (sequential? spec)
-                        (first spec)
-                        spec)]
-             (= ns @current-ns))))
-    specs))
-
-(defn- make-ns-form
-  [kind specs target-ns]
-  (if (= kind :import)
-    (with-meta `(~'ns ~target-ns
-                  (~kind
-                    ~@(map (fn [quoted-spec-or-kw]
-                             (if (keyword? quoted-spec-or-kw)
-                               quoted-spec-or-kw
-                               (second quoted-spec-or-kw)))
-                        specs)))
-      {:merge true :line 1 :column 1})
-    (with-meta `(~'ns ~target-ns
-                  (~kind
-                    ~@(-> specs canonicalize-specs process-reloads!)))
-      {:merge true :line 1 :column 1})))
-
 (declare make-base-eval-opts)
 (declare print-error)
-
-(defn- process-require
-  [kind cb specs]
-  (let [current-st @st]
-    (try
-      (let [is-self-require? (and (= :kind :require) (self-require? specs))
-            [target-ns restore-ns]
-            (if-not is-self-require?
-              [@current-ns nil]
-              ['cljs.user @current-ns])]
-        (cljs/eval
-          st
-          (make-ns-form kind specs target-ns)
-          (merge (make-base-eval-opts)
-            {:load load})
-          (fn [{e :error}]
-            (when is-self-require?
-              (reset! current-ns restore-ns))
-            (when e
-              (print-error e)
-              (reset! st current-st))
-            (cb))))
-      (catch :default e
-        (print-error e)
-        (reset! st current-st)))))
 
 (defn- resolve-var
   "Given an analysis environment resolve a var. Analogous to
@@ -755,9 +672,6 @@
                  argument (second expression-form)]
              (case special-form
                in-ns (process-in-ns argument)
-               require (process-require :require identity (rest expression-form))
-               require-macros (process-require :require-macros identity (rest expression-form))
-               import (process-require :import identity (rest expression-form))
                dir (dir* argument)
                apropos (let [value (apropos* argument)]
                          (prn value)
