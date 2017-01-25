@@ -121,14 +121,24 @@
   {:pre [(symbol? ns)]}
   (get-in @st [::ana/namespaces ns]))
 
+(defn- ns-syms
+  "Returns a sequence of the symbols in a namespace."
+  ([ns]
+   (ns-syms ns (constantly true)))
+  ([ns pred]
+   {:pre [(symbol? ns)]}
+   (->> (get-namespace ns)
+     :defs
+     (filter pred)
+     (map key))))
+
 (defn- public-syms
   "Returns a sequence of the public symbols in a namespace."
   [ns]
   {:pre [(symbol? ns)]}
-  (->> (get-namespace ns)
-    :defs
-    (filter (comp not :private second))
-    (map key)))
+  (ns-syms ns (fn [[_ attrs]]
+                (and (not (:private attrs))
+                     (not (:anonymous attrs))))))
 
 (defn- get-aenv
   []
@@ -475,7 +485,7 @@
       (run! prn
         (distinct (sort (concat
                           (public-syms nsname)
-                          (public-syms (symbol (str (name nsname) "$macros"))))))))))
+                          (public-syms (add-macros-suffix nsname)))))))))
 
 (defn- apropos*
   [str-or-pattern]
