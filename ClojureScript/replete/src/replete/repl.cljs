@@ -270,6 +270,7 @@
     (and (= name 'cljs.tools.reader.reader-types) macros)
     (and (= name 'cljs.js) macros)
     (and (= name 'cljs.pprint) macros)
+    (and (= name 'cljs.reader) macros)
     (and (= name 'clojure.template) macros)
     (and (= name 'tailrecursion.cljson) macros)
     (and (= name 'lazy-map.core) macros)))
