@@ -43,6 +43,7 @@
 (declare prime-analysis-cache-for-implicit-macro-loading)
 
 (defn ^:export init-app-env [app-env]
+  (set! *print-namespace-maps* true)
   (load-core-analysis-caches true)
   (prime-analysis-cache-for-implicit-macro-loading 'cljs.spec)
   (prime-analysis-cache-for-implicit-macro-loading 'cljs.spec.test)
