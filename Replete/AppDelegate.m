@@ -132,8 +132,6 @@
     self.setWidthFn = [self getValue:@"set-width" inNamespace:@"replete.repl" fromContext:context];
     NSAssert(!self.setWidthFn.isUndefined, @"Could not find the set-width function");
     
-    [self.readEvalPrintFn callWithArguments:@[@"(ns cljs.user (:require [replete.core :refer [eval]]))"]];
-    
     context[@"REPLETE_PRINT_FN"] = ^(NSString *message) {
 //        NSLog(@"repl out: %@", message);
         if (self.myPrintCallback) {
@@ -145,6 +143,8 @@
     };
     [context evaluateScript:@"cljs.core.set_print_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
     [context evaluateScript:@"cljs.core.set_print_err_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
+    
+    [self.readEvalPrintFn callWithArguments:@[@"(ns cljs.user (:require [replete.core :refer [eval]]))"]];
     
     // TODO look into this. Without it thngs won't work.
     [context evaluateScript:@"var window = global;"];
