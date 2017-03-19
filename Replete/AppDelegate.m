@@ -134,10 +134,12 @@
     
     context[@"REPLETE_PRINT_FN"] = ^(NSString *message) {
 //        NSLog(@"repl out: %@", message);
-        if (self.myPrintCallback) {
-            self.myPrintCallback(true, message);
-        } else {
-            NSLog(@"printed without callback set: %@", message);
+        if (self.initialized) {
+            if (self.myPrintCallback) {
+                self.myPrintCallback(true, message);
+            } else {
+                NSLog(@"printed without callback set: %@", message);
+            }
         }
         //self.outputTextView.text = [self.outputTextView.text stringByAppendingString:message];
     };
