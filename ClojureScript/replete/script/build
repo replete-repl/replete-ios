@@ -22,6 +22,8 @@ mkdir -p out/cljs/core/async/impl
 cp ../../../planck/planck-cljs/out/clojure/template* out/clojure
 cp ../../../planck/planck-cljs/out/cljs/spec\$macros.cache.json out/cljs/spec\$macros.cljc.cache.json
 cp ../../../planck/planck-cljs/out/cljs/spec\$macros.js out/cljs/spec\$macros.js
+cp ../../../planck/planck-cljs/out/cljs/spec/test\$macros.cache.json out/cljs/spec/test\$macros.cljc.cache.json
+cp ../../../planck/planck-cljs/out/cljs/spec/test\$macros.js out/cljs/spec/test\$macros.js
 cp ../../../planck/planck-cljs/out/cljs/spec/impl/gen\$macros.cache.json out/cljs/spec/impl/gen\$macros.cljc.cache.json
 cp ../../../planck/planck-cljs/out/cljs/spec/impl/gen\$macros.js out/cljs/spec/impl/gen\$macros.js
 cp ../../../planck/planck-cljs/out/cljs/test\$macros.cache.json out/cljs/test\$macros.cljc.cache.json

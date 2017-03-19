@@ -236,10 +236,14 @@
     {:lang   (extension->lang extension)
      :source source}))
 
-(defn load-and-callback! [path extension macros cb]
+(declare inject-replete-eval)
+
+(defn load-and-callback! [name path extension macros cb]
   (when-let [cb-data (or (pre-compiled-callaback-data (str path (when macros "$macros")) extension)
                          (source-callback-data path extension))]
     (cb cb-data)
+    (when (and (= name 'cljs.spec.test) macros)
+      (inject-replete-eval 'cljs.spec.test$macros))
     :loaded))
 
 (defn- closure-index
@@ -290,7 +294,7 @@
     (cb {:lang   :js
          :source ""})
     (if-let [goog-path (get (closure-index-mem) name)]
-      (when-not (load-and-callback! goog-path ".js" false cb)
+      (when-not (load-and-callback! name goog-path ".js" false cb)
         (cb nil))
       (cb nil))))
 
@@ -303,7 +307,7 @@
                               [".clj" ".cljc"]
                               [".cljs" ".cljc" ".js"])]
             (if extensions
-              (when-not (load-and-callback! path (first extensions) macros cb)
+              (when-not (load-and-callback! name path (first extensions) macros cb)
                 (recur (next extensions)))
               (cb nil)))))
 
@@ -752,3 +756,15 @@
 (defn- resolve
   [sym]
   (ns-resolve @current-ns sym))
+
+(defn- intern
+  ([ns name]
+   (when-let [the-ns (find-ns (cond-> ns (instance? Namespace ns) ns-name))]
+     (eval `(def ~name) (ns-name the-ns))))
+  ([ns name val]
+   (when-let [the-ns (find-ns (cond-> ns (instance? Namespace ns) ns-name))]
+     (eval `(def ~name ~val) (ns-name the-ns)))))
+
+(defn- inject-replete-eval
+  [target-ns]
+  (intern target-ns 'eval eval))

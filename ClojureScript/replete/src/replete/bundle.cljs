@@ -11,6 +11,8 @@
     cljs.analyzer.api
     cljs.pprint
     cljs.spec
+    cljs.spec.test
+    cljs.spec.impl.gen
     cljs.test
     cljs.core.async
     cljs.core.async.impl.ioc-macros-runtime

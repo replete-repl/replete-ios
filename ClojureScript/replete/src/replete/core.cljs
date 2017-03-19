@@ -24,8 +24,6 @@
   to val if supplied. The namespace must exist. The var will adopt any
   metadata from the name symbol.  Returns the var."
   ([ns name]
-   (when-let [the-ns (find-ns (cond-> ns (instance? Namespace ns) ns-name))]
-     (repl/eval `(def ~name) (ns-name the-ns))))
+   (repl/intern ns name))
   ([ns name val]
-   (when-let [the-ns (find-ns (cond-> ns (instance? Namespace ns) ns-name))]
-     (repl/eval `(def ~name ~val) (ns-name the-ns)))))
+   (repl/intern ns name val)))
