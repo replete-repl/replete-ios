@@ -10,9 +10,9 @@
     clojure.zip
     cljs.analyzer.api
     cljs.pprint
-    cljs.spec
-    cljs.spec.test
-    cljs.spec.impl.gen
+    cljs.spec.alpha
+    cljs.spec.test.alpha
+    cljs.spec.gen.alpha
     cljs.test
     cljs.core.async
     cljs.core.async.impl.ioc-macros-runtime

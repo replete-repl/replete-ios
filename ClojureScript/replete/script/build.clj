@@ -27,9 +27,9 @@
     (slurp (io/resource path))))
 
 (copy-source "cljs/test.cljc")
-(copy-source "cljs/spec.cljc")
-(copy-source "cljs/spec/test.cljc")
-(copy-source "cljs/spec/impl/gen.cljc")
+(copy-source "cljs/spec/alpha.cljc")
+(copy-source "cljs/spec/test/alpha.cljc")
+(copy-source "cljs/spec/gen/alpha.cljc")
 (copy-source "cljs/analyzer/api.cljc")
 (copy-source "clojure/template.clj")
 (copy-source "cljs/core/async/macros.cljc")
