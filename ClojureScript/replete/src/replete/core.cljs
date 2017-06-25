@@ -1,4 +1,5 @@
 (ns replete.core
+  (:refer-clojure :exclude [resolve])
   (:require [replete.repl :as repl]))
 
 (defn eval

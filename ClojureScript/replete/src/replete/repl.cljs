@@ -1,4 +1,5 @@
 (ns replete.repl
+  (:refer-clojure :exclude [resolve])
   (:require-macros [cljs.env.macros :refer [ensure with-compiler-env]]
                    [cljs.analyzer.macros :refer [no-warn]]
                    [replete.repl :refer [with-err-str]])
