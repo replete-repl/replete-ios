@@ -46,8 +46,6 @@
 (defn ^:export init-app-env [app-env]
   (set! *print-namespace-maps* true)
   (load-core-analysis-caches true)
-  (prime-analysis-cache-for-implicit-macro-loading 'cljs.spec)
-  (prime-analysis-cache-for-implicit-macro-loading 'cljs.spec.test)
   (reset! replete.repl/app-env (map-keys keyword (cljs.core/js->clj app-env))))
 
 (defn user-interface-idiom-ipad?
@@ -184,13 +182,6 @@
   [eager]
   (load-core-analysis-cache eager 'cljs.core "cljs/core.cljs.cache.aot.")
   (load-core-analysis-cache eager 'cljs.core$macros "cljs/core$macros.cljc.cache."))
-
-(defn- prime-analysis-cache-for-implicit-macro-loading
-  "Supports priming analysis cache in order to work around 
-  http://dev.clojure.org/jira/browse/CLJS-1657 for commonly used
-  namespaces that we cannot AOT compile."
-  [ns-sym]
-  (swap! st assoc-in [::ana/namespaces ns-sym :require-macros] {ns-sym ns-sym}))
 
 (defn ns-form? [form]
   (and (seq? form) (= 'ns (first form))))
