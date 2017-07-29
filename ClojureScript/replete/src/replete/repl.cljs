@@ -46,7 +46,8 @@
 (defn ^:export init-app-env [app-env]
   (set! *print-namespace-maps* true)
   (load-core-analysis-caches true)
-  (reset! replete.repl/app-env (map-keys keyword (cljs.core/js->clj app-env))))
+  (reset! replete.repl/app-env (assoc (map-keys keyword (cljs.core/js->clj app-env))
+                                 :checked-arrays :warn)))
 
 (defn user-interface-idiom-ipad?
   "Returns true iff the interface idiom is iPad."
@@ -697,11 +698,13 @@
              source
              (if expression? source "File")
              (merge
-               {:ns         @current-ns
-                :load       load
-                :eval       cljs/js-eval
-                :source-map false
-                :verbose    (:verbose @app-env)}
+               {:ns             @current-ns
+                :load           load
+                :eval           cljs/js-eval
+                :source-map     false
+                :verbose        (:verbose @app-env)}
+               (when (:checked-arrays @app-env)
+                 {:checked-arrays (:checked-arrays @app-env)})
                (when expression?
                  {:context       :expr
                   :def-emits-var true}))
