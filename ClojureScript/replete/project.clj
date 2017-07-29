@@ -7,8 +7,9 @@
                  [tailrecursion/cljson "1.0.7"]
                  [malabarba/lazy-map "1.1"]
                  [org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.9.562"]
-                 [org.clojure/test.check "0.9.1-SNAPSHOT"]] ; Clone and build test.check master (ref'd in script/build)
+                 [org.clojure/clojurescript "1.9.854"]
+                 [org.clojure/tools.reader "1.0.0"]
+                 [org.clojure/test.check "0.10.0-alpha2"]] ; Clone and build test.check master (ref'd in script/build)
   :clean-targets ["out" "target"]
   :plugins [[lein-cljsbuild "1.1.5"]]
   :cljsbuild {:builds {:test {:source-paths ["src" "test"]
