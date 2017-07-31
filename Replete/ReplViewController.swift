@@ -21,45 +21,45 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override var inputAccessoryView: UIView! {
         get {
             if toolBar == nil {
-                toolBar = UIToolbar(frame: CGRectMake(0, 0, 0, toolBarMinHeight-0.5))
+                toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 0, height: toolBarMinHeight-0.5))
                 
-                textView = InputTextView(frame: CGRectZero)
+                textView = InputTextView(frame: CGRect.zero)
                 textView.backgroundColor = UIColor(white: 250/255, alpha: 1)
                 textView.font = UIFont(name: "Menlo", size: messageFontSize)
-                textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 205/255, alpha:1).CGColor
+                textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 205/255, alpha:1).cgColor
                 textView.layer.borderWidth = 0.5
                 textView.layer.cornerRadius = 5
                 textView.scrollsToTop = false
                 textView.textContainerInset = UIEdgeInsetsMake(6, 3, 6, 3)
-                textView.autocorrectionType = UITextAutocorrectionType.No;
-                textView.autocapitalizationType = UITextAutocapitalizationType.None;
+                textView.autocorrectionType = UITextAutocorrectionType.no;
+                textView.autocapitalizationType = UITextAutocapitalizationType.none;
                 textView.delegate = self
                 toolBar.addSubview(textView)
                 
-                evalButton = UIButton(type: .System)
-                evalButton.enabled = false
-                evalButton.titleLabel?.font = UIFont.boldSystemFontOfSize(17)
-                evalButton.setTitle("Eval", forState: .Normal)
-                evalButton.setTitleColor(UIColor(red: 142/255, green: 142/255, blue: 147/255, alpha: 1), forState: .Disabled)
-                evalButton.setTitleColor(UIColor(red: 1/255, green: 122/255, blue: 255/255, alpha: 1), forState: .Normal)
+                evalButton = UIButton(type: .system)
+                evalButton.isEnabled = false
+                evalButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+                evalButton.setTitle("Eval", for: UIControlState())
+                evalButton.setTitleColor(UIColor(red: 142/255, green: 142/255, blue: 147/255, alpha: 1), for: .disabled)
+                evalButton.setTitleColor(UIColor(red: 1/255, green: 122/255, blue: 255/255, alpha: 1), for: UIControlState())
                 evalButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 8)
-                evalButton.addTarget(self, action: "sendAction", forControlEvents: UIControlEvents.TouchUpInside)
+                evalButton.addTarget(self, action: #selector(ReplViewController.sendAction), for: UIControlEvents.touchUpInside)
                 toolBar.addSubview(evalButton)
                 
                 toolBar.translatesAutoresizingMaskIntoConstraints = false
                 textView.translatesAutoresizingMaskIntoConstraints = false
                 evalButton.translatesAutoresizingMaskIntoConstraints = false
 
-                textFieldHeightLayoutConstraint = NSLayoutConstraint(item: textView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 1)
+                textFieldHeightLayoutConstraint = NSLayoutConstraint(item: textView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 1)
                 toolBar.addConstraint(textFieldHeightLayoutConstraint)
 
-                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Left, relatedBy: .Equal, toItem: toolBar, attribute: .Left, multiplier: 1, constant: 8))
-                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Top, relatedBy: .Equal, toItem: toolBar, attribute: .Top, multiplier: 1, constant: 7.5))
-                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Right, relatedBy: .Equal, toItem: evalButton, attribute: .Left, multiplier: 1, constant: -2))
-                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .Bottom, relatedBy: .Equal, toItem: toolBar, attribute: .Bottom, multiplier: 1, constant: -8))
+                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .left, relatedBy: .equal, toItem: toolBar, attribute: .left, multiplier: 1, constant: 8))
+                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .top, relatedBy: .equal, toItem: toolBar, attribute: .top, multiplier: 1, constant: 7.5))
+                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .right, relatedBy: .equal, toItem: evalButton, attribute: .left, multiplier: 1, constant: -2))
+                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .bottom, relatedBy: .equal, toItem: toolBar, attribute: .bottom, multiplier: 1, constant: -8))
 
-                toolBar.addConstraint(NSLayoutConstraint(item: evalButton, attribute: .Right, relatedBy: .Equal, toItem: toolBar, attribute: .Right, multiplier: 1, constant: 0))
-                toolBar.addConstraint(NSLayoutConstraint(item: evalButton, attribute: .Bottom, relatedBy: .Equal, toItem: toolBar, attribute: .Bottom, multiplier: 1, constant: -4.5))
+                toolBar.addConstraint(NSLayoutConstraint(item: evalButton, attribute: .right, relatedBy: .equal, toItem: toolBar, attribute: .right, multiplier: 1, constant: 0))
+                toolBar.addConstraint(NSLayoutConstraint(item: evalButton, attribute: .bottom, relatedBy: .equal, toItem: toolBar, attribute: .bottom, multiplier: 1, constant: -4.5))
                 
             }
             return toolBar
@@ -75,7 +75,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         self.currentKeyboardHeight = 0.0;
     }
     
-    override func canBecomeFirstResponder() -> Bool {
+    override var canBecomeFirstResponder : Bool {
         return true
     }
     
@@ -85,36 +85,36 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         history.loadedMessages = [
         ]
         
-        let whiteColor = UIColor.whiteColor()
+        let whiteColor = UIColor.white
         view.backgroundColor = whiteColor
         
-        tableView = UITableView(frame: CGRect(x: 0, y: 20, width: view.bounds.width, height: view.bounds.height-20), style: .Plain)
-        tableView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        tableView = UITableView(frame: CGRect(x: 0, y: 20, width: view.bounds.width, height: view.bounds.height-20), style: .plain)
+        tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         tableView.backgroundColor = whiteColor
         let edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: toolBarMinHeight, right: 0)
         tableView.contentInset = edgeInsets
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.keyboardDismissMode = .Interactive
+        tableView.keyboardDismissMode = .interactive
         tableView.estimatedRowHeight = 44
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.separatorStyle = .None
+        tableView.separatorStyle = .none
         view.addSubview(tableView)
         
-        let notificationCenter = NSNotificationCenter.defaultCenter()
-        notificationCenter.addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
-        notificationCenter.addObserver(self, selector: "keyboardDidShow:", name: UIKeyboardDidShowNotification, object: nil)
-        notificationCenter.addObserver(self, selector: "menuControllerWillHide:", name: UIMenuControllerWillHideMenuNotification, object: nil) // #CopyMessage
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(ReplViewController.keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(ReplViewController.keyboardDidShow(_:)), name: NSNotification.Name.UIKeyboardDidShow, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(ReplViewController.menuControllerWillHide(_:)), name: NSNotification.Name.UIMenuControllerWillHideMenu, object: nil) // #CopyMessage
         
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         
         appDelegate.setPrintCallback { (incoming: Bool, message: String!) -> Void in
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
                 self.loadMessage(incoming, text: message)
             }
         }
         
-        dispatch_async(dispatch_get_main_queue()) {
+        DispatchQueue.main.async {
             self.loadMessage(false, text:"\nClojureScript " + appDelegate.getClojureScriptVersion() + "\n" +
             "    Docs: (doc function-name)\n" +
             "          (find-doc \"part-of-name\")\n" +
@@ -124,16 +124,16 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         };
         
         NSLog("Initializing...");
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default).async {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.initializeJavaScriptEnvironment()
             
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
                 // mark ready
                 NSLog("Ready");
                 self.initialized = true;
-                let hasText = self.textView.hasText()
-                self.evalButton.enabled = hasText
+                let hasText = self.textView.hasText
+                self.evalButton.isEnabled = hasText
                 if (hasText) {
                     self.runParinfer()
                 }
@@ -143,15 +143,15 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
-    override func viewDidAppear(animated: Bool)  {
+    override func viewDidAppear(_ animated: Bool)  {
         super.viewDidAppear(animated)
         //tableView.flashScrollIndicators()
     }
     
-    override func viewWillDisappear(animated: Bool)  {
+    override func viewWillDisappear(_ animated: Bool)  {
         super.viewWillDisappear(animated)
         //chat.draft = textView.text
     }
@@ -168,47 +168,47 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return history.loadedMessages.count
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return history.loadedMessages[section].count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
             let cellIdentifier = NSStringFromClass(HistoryTableViewCell)
-            var cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier) as! HistoryTableViewCell!
+            var cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier) as! HistoryTableViewCell!
             if cell == nil {
-                cell = HistoryTableViewCell(style: .Default, reuseIdentifier: cellIdentifier)
+                cell = HistoryTableViewCell(style: .default, reuseIdentifier: cellIdentifier)
                 
                 // Add gesture recognizers #CopyMessage
-                let action: Selector = "messageShowMenuAction:"
+                let action: Selector = #selector(ReplViewController.messageShowMenuAction(_:))
                 let doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: action)
                 doubleTapGestureRecognizer.numberOfTapsRequired = 2
-                cell.messageLabel.addGestureRecognizer(doubleTapGestureRecognizer)
-                cell.messageLabel.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: action))
+                cell?.messageLabel.addGestureRecognizer(doubleTapGestureRecognizer)
+                cell?.messageLabel.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: action))
             }
             let message = history.loadedMessages[indexPath.section][indexPath.row]
-            cell.configureWithMessage(message)
-            return cell
+            cell?.configureWithMessage(message)
+            return cell!
         
     }
     
     // Reserve row selection #CopyMessage
-    func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         return nil
     }
         
-    func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
      
         // Disable default keyboard shortcut where two spaces inserts a '.'
         let currentText = textView.text
         if (range.location > 0 &&
             text == " " &&
-            currentText.substringWithRange(currentText.startIndex.advancedBy(range.location-1)...currentText.startIndex.advancedBy(range.location-1)) == " ") {
-            textView.text = (textView.text as NSString).stringByReplacingCharactersInRange(range, withString: " ")
+            currentText?.substring(with: currentText!.index(currentText!.startIndex, offsetBy: range.location-1)..<currentText!.index(currentText!.startIndex, offsetBy: range.location-1)) == " ") {
+            textView.text = (textView.text as NSString).replacingCharacters(in: range, with: " ")
             textView.selectedRange = NSMakeRange(range.location+1, 0);
             return false;
         }
@@ -220,7 +220,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func runParinfer() {
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         
         let currentText = textView.text
         let currentSelectedRange = textView.selectedRange
@@ -258,28 +258,28 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
-    func textViewDidChange(textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         if (initialized) {
             runParinfer()
         } else {
             runPoorMansParinfer()
         }
         updateTextViewHeight()
-        evalButton.enabled = self.initialized && textView.hasText()
+        evalButton.isEnabled = self.initialized && textView.hasText
     }
     
-    func keyboardWillShow(notification: NSNotification) {
+    func keyboardWillShow(_ notification: Notification) {
         
         let userInfo = notification.userInfo as NSDictionary!
-        let frameNew = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
-        let insetNewBottom = tableView.convertRect(frameNew, fromView: nil).height
+        let frameNew = (userInfo?[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        let insetNewBottom = tableView.convert(frameNew, from: nil).height
         let insetOld = tableView.contentInset
         let insetChange = insetNewBottom - insetOld.bottom
         let overflow = tableView.contentSize.height - (tableView.frame.height-insetOld.top-insetOld.bottom)
         
-        let duration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as! NSNumber).doubleValue
+        let duration = (userInfo?[UIKeyboardAnimationDurationUserInfoKey] as! NSNumber).doubleValue
         let animations: (() -> Void) = {
-            if !(self.tableView.tracking || self.tableView.decelerating) {
+            if !(self.tableView.isTracking || self.tableView.isDecelerating) {
                 // Move content with keyboard
                 if overflow > 0 {                   // scrollable before
                     self.tableView.contentOffset.y += insetChange
@@ -292,18 +292,18 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
             }
         }
         if duration > 0 {
-            let options = UIViewAnimationOptions(rawValue: UInt((userInfo[UIKeyboardAnimationCurveUserInfoKey] as! NSNumber).integerValue << 16)) // http://stackoverflow.com/a/18873820/242933
-            UIView.animateWithDuration(duration, delay: 0, options: options, animations: animations, completion: nil)
+            let options = UIViewAnimationOptions(rawValue: UInt((userInfo?[UIKeyboardAnimationCurveUserInfoKey] as! NSNumber).intValue << 16)) // http://stackoverflow.com/a/18873820/242933
+            UIView.animate(withDuration: duration, delay: 0, options: options, animations: animations, completion: nil)
         } else {
             animations()
         }
     }
     
-    func keyboardDidShow(notification: NSNotification) {
+    func keyboardDidShow(_ notification: Notification) {
         
         let userInfo = notification.userInfo as NSDictionary!
-        let frameNew = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
-        let insetNewBottom = tableView.convertRect(frameNew, fromView: nil).height
+        let frameNew = (userInfo?[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        let insetNewBottom = tableView.convert(frameNew, from: nil).height
         self.currentKeyboardHeight = frameNew.height
         
         // Inset `tableView` with keyboard
@@ -311,7 +311,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         tableView.contentInset.bottom = insetNewBottom
         tableView.scrollIndicatorInsets.bottom = insetNewBottom
         // Prevents jump after keyboard dismissal
-        if self.tableView.tracking || self.tableView.decelerating {
+        if self.tableView.isTracking || self.tableView.isDecelerating {
             tableView.contentOffset.y = contentOffsetY
         }
     }
@@ -319,7 +319,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func updateTextViewHeight() {
         let oldHeight = textView.frame.height
         let newText = textView.text
-        let newSize = (newText as NSString).boundingRectWithSize(CGSize(width: textView.frame.width - textView.textContainerInset.right - textView.textContainerInset.left - 10, height: CGFloat.max), options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName: textView.font!], context: nil)
+        let newSize = (newText as! NSString).boundingRect(with: CGSize(width: textView.frame.width - textView.textContainerInset.right - textView.textContainerInset.left - 10, height: CGFloat.greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: textView.font!], context: nil)
         let heightChange = newSize.height + textView.textContainerInset.top + textView.textContainerInset.bottom - oldHeight
         
         let maxHeight = self.view.frame.height
@@ -346,25 +346,25 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
     }
     
-    func markString(s: NSMutableAttributedString) -> Bool {
-        if (s.string.containsString("\u{001b}[")) {
+    func markString(_ s: NSMutableAttributedString) -> Bool {
+        if (s.string.contains("\u{001b}[")) {
             
             let text = s.string;
-            let range : Range<String.Index> = text.rangeOfString("\u{001b}[")!;
-            let index: Int = text.startIndex.distanceTo(range.startIndex);
-            let index2 = text.startIndex.advancedBy(index + 2);
-            var color : UIColor = UIColor.blackColor();
-            if (text.substringFromIndex(index2).hasPrefix("34m")){
-                color = UIColor.blueColor();
-            } else if (text.substringFromIndex(index2).hasPrefix("32m")){
+            let range : Range<String.Index> = text.range(of: "\u{001b}[")!;
+            let index: Int = text.characters.distance(from: text.startIndex, to: range.lowerBound);
+            let index2 = text.characters.index(text.startIndex, offsetBy: index + 2);
+            var color : UIColor = UIColor.black;
+            if (text.substring(from: index2).hasPrefix("34m")){
+                color = UIColor.blue;
+            } else if (text.substring(from: index2).hasPrefix("32m")){
                 color = UIColor.init(colorLiteralRed: 0.0, green: 0.75, blue: 0.0, alpha: 1.0);
-            } else if (text.substringFromIndex(index2).hasPrefix("35m")){
+            } else if (text.substring(from: index2).hasPrefix("35m")){
                 color = UIColor.init(colorLiteralRed: 0.75, green: 0.0, blue: 0.75, alpha: 1.0);
-            } else if (text.substringFromIndex(index2).hasPrefix("31m")){
+            } else if (text.substring(from: index2).hasPrefix("31m")){
                 color = UIColor.init(colorLiteralRed: 1, green: 0.33, blue: 0.33, alpha: 1.0);
             }
             
-            s.replaceCharactersInRange(NSMakeRange(index, 5), withString: "");
+            s.replaceCharacters(in: NSMakeRange(index, 5), with: "");
             s.addAttribute(NSForegroundColorAttributeName,
                            value: color,
                            range: NSMakeRange(index, s.length-index));
@@ -374,36 +374,35 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return false;
     }
     
-    func loadMessage(incoming: Bool, text: String) {
+    func loadMessage(_ incoming: Bool, text: String) {
         
         if (text != "\n") {
             // NSLog("load: %@", text);
             
-            var s = NSMutableAttributedString(string:text);
+            let s = NSMutableAttributedString(string:text);
             
             while (markString(s)) {};
             
             history.loadedMessages.append([Message(incoming: incoming, text: s)])
             
             if (history.loadedMessages.count > 64) {
-                history.loadedMessages.removeAtIndex(0);
+                history.loadedMessages.remove(at: 0);
                 tableView.reloadData();
             } else {
             
                 let lastSection = tableView.numberOfSections
                 tableView.beginUpdates()
-                tableView.insertSections(NSIndexSet(index: lastSection), withRowAnimation: .Automatic)
-                tableView.insertRowsAtIndexPaths([
-                    NSIndexPath(forRow: 0, inSection: lastSection)
-                    ], withRowAnimation: .Automatic)
+                tableView.insertSections(IndexSet(integer: lastSection), with: .automatic)
+                tableView.insertRows(at: [
+                    IndexPath(row: 0, section: lastSection)
+                    ], with: .automatic)
                 tableView.endUpdates()
             }
             
             scrollToBottom = true;
             
-            let delayTime = dispatch_time(DISPATCH_TIME_NOW,
-                                          Int64(50 * Double(NSEC_PER_MSEC)))
-            dispatch_after(delayTime, dispatch_get_main_queue()) {
+            let delayTime = DispatchTime.now() + Double(Int64(50 * Double(NSEC_PER_MSEC))) / Double(NSEC_PER_SEC)
+            DispatchQueue.main.asyncAfter(deadline: delayTime) {
                 if (self.scrollToBottom) {
                     self.scrollToBottom = false;
                     self.tableViewScrollToBottomAnimated(false)
@@ -419,65 +418,64 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         let textToEvaluate = textView.text
         
-        loadMessage(false, text: textToEvaluate)
+        loadMessage(false, text: textToEvaluate!)
         
         textView.text = nil
         updateTextViewHeight()
-        evalButton.enabled = false
+        evalButton.isEnabled = false
         
         // Dispatch to be evaluated
         
-        let delayTime = dispatch_time(DISPATCH_TIME_NOW,
-            Int64(50 * Double(NSEC_PER_MSEC)))
-        dispatch_after(delayTime, dispatch_get_main_queue()) {
-            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let delayTime = DispatchTime.now() + Double(Int64(50 * Double(NSEC_PER_MSEC))) / Double(NSEC_PER_SEC)
+        DispatchQueue.main.asyncAfter(deadline: delayTime) {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.evaluate(textToEvaluate)
         }
 
     }
     
-    func tableViewScrollToBottomAnimated(animated: Bool) {
+    func tableViewScrollToBottomAnimated(_ animated: Bool) {
         let numberOfSections = tableView.numberOfSections;
-        let numberOfRows = tableView.numberOfRowsInSection(numberOfSections-1)
+        let numberOfRows = tableView.numberOfRows(inSection: numberOfSections-1)
         if numberOfRows > 0 {
-            tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: numberOfRows-1, inSection: numberOfSections-1), atScrollPosition: .Bottom, animated: animated)
+            tableView.scrollToRow(at: IndexPath(row: numberOfRows-1, section: numberOfSections-1), at: .bottom, animated: animated)
         }
     }
     
     // Handle actions #CopyMessage
     // 1. Select row and show "Copy" menu
-    func messageShowMenuAction(gestureRecognizer: UITapGestureRecognizer) {
+    func messageShowMenuAction(_ gestureRecognizer: UITapGestureRecognizer) {
         let twoTaps = (gestureRecognizer.numberOfTapsRequired == 2)
-        let doubleTap = (twoTaps && gestureRecognizer.state == .Ended)
-        let longPress = (!twoTaps && gestureRecognizer.state == .Began)
+        let doubleTap = (twoTaps && gestureRecognizer.state == .ended)
+        let longPress = (!twoTaps && gestureRecognizer.state == .began)
         if doubleTap || longPress {
-            let pressedIndexPath = tableView.indexPathForRowAtPoint(gestureRecognizer.locationInView(tableView))!
-            tableView.selectRowAtIndexPath(pressedIndexPath, animated: false, scrollPosition: .None)
+            let pressedIndexPath = tableView.indexPathForRow(at: gestureRecognizer.location(in: tableView))!
+            tableView.selectRow(at: pressedIndexPath, animated: false, scrollPosition: .none)
             
-            let menuController = UIMenuController.sharedMenuController()
+            let menuController = UIMenuController.shared
             let bubbleImageView = gestureRecognizer.view!
-            menuController.setTargetRect(bubbleImageView.frame, inView: bubbleImageView.superview!)
-            menuController.menuItems = [UIMenuItem(title: "Copy", action: "messageCopyTextAction:")]
+            menuController.setTargetRect(bubbleImageView.frame, in: bubbleImageView.superview!)
+            menuController.menuItems = [UIMenuItem(title: "Copy", action: #selector(ReplViewController.messageCopyTextAction(_:)))]
             menuController.setMenuVisible(true, animated: true)
         }
     }
     // 2. Copy text to pasteboard
-    func messageCopyTextAction(menuController: UIMenuController) {
+    func messageCopyTextAction(_ menuController: UIMenuController) {
         let selectedIndexPath = tableView.indexPathForSelectedRow
         let selectedMessage = history.loadedMessages[selectedIndexPath!.section][selectedIndexPath!.row]
-        UIPasteboard.generalPasteboard().string = selectedMessage.text.string
+        UIPasteboard.general.string = selectedMessage.text.string
     }
     // 3. Deselect row
-    func menuControllerWillHide(notification: NSNotification) {
+    func menuControllerWillHide(_ notification: Notification) {
         if let selectedIndexPath = tableView.indexPathForSelectedRow {
-            tableView.deselectRowAtIndexPath(selectedIndexPath, animated: false)
+            tableView.deselectRow(at: selectedIndexPath, animated: false)
         }
         (notification.object as! UIMenuController).menuItems = nil
     }
     
     override var keyCommands: [UIKeyCommand]? {
         get {
-            let commandEnter = UIKeyCommand(input: "\r", modifierFlags: .Command, action: Selector("sendAction"))
+            let commandEnter = UIKeyCommand(input: "\r", modifierFlags: .command, action: #selector(ReplViewController.sendAction))
             return [commandEnter]
         }
     }
@@ -485,16 +483,16 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
 // Only show "Copy" when editing `textView` #CopyMessage
 class InputTextView: UITextView {
-    override func canPerformAction(action: Selector, withSender sender: AnyObject!) -> Bool {
+    override func canPerformAction(_ action: Selector, withSender sender: Any!) -> Bool {
         if (delegate as! ReplViewController).tableView.indexPathForSelectedRow != nil {
-            return action == "messageCopyTextAction:"
+            return action == #selector(ReplViewController.messageCopyTextAction(_:))
         } else {
             return super.canPerformAction(action, withSender: sender)
         }
     }
     
     // More specific than implementing `nextResponder` to return `delegate`, which might cause side effects?
-    func messageCopyTextAction(menuController: UIMenuController) {
+    func messageCopyTextAction(_ menuController: UIMenuController) {
         (delegate as! ReplViewController).messageCopyTextAction(menuController)
     }
 }
