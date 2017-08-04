@@ -33,6 +33,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 textView.textContainerInset = UIEdgeInsetsMake(6, 3, 6, 3)
                 textView.autocorrectionType = UITextAutocorrectionType.No;
                 textView.autocapitalizationType = UITextAutocapitalizationType.None;
+                textView.keyboardType = UIKeyboardType.ASCIICapable;
                 textView.delegate = self
                 toolBar.addSubview(textView)
                 
