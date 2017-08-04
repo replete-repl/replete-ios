@@ -60,3 +60,6 @@ do
     echo -n "."
   fi 
 done
+
+echo "Removing source map files"
+find . -name *.js.map | xargs rm
