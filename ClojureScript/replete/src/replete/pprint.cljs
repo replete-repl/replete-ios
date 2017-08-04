@@ -1,6 +1,7 @@
 (ns replete.pprint
   (:refer-clojure :exclude [lift-ns])
-  (:require [fipp.visit :refer [visit visit*]]
+  (:require [clojure.string :as string]
+            [fipp.visit :refer [visit visit*]]
             [fipp.engine :refer (pprint-document)]
             [goog.object :as gobj]))
 
@@ -129,7 +130,9 @@
     [:text (pr-str x)])
 
   (visit-record [this x]
-    [:text (pr-str x)]))
+    (pretty-coll this (str "#" (string/replace (pr-str (type x)) #"/" ".") "{") x [:span "," :line] "}"
+      (fn [printer [k v]]
+        [:span (visit printer k) " " (visit printer v)]))))
 
 (defn pprint
   ([x] (pprint x {}))
