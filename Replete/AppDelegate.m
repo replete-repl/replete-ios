@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import "ABYContextManager.h"
+#import "ABYUtils.h"
+#import "NSData+Gzip.h"
 
 @interface AppDelegate ()
 
@@ -67,7 +69,7 @@
     [self.contextManager setUpConsoleLog];
     [self.contextManager setupGlobalContext];
     [self.contextManager setUpTimerFunctionality];
-    [self.contextManager setUpAmblyImportScript];
+    [self setUpAmblyImportScript:outURL.path inContext:self.contextManager.context];
     
     NSString* mainJsFilePath = [[outURL URLByAppendingPathComponent:@"main" isDirectory:NO]
                                 URLByAppendingPathExtension:@"js"].path;
@@ -102,20 +104,29 @@
         
         NSString* fullPath = [NSURL URLWithString:path
                                     relativeToURL:[NSURL URLWithString:srcPath]].path;
+        NSData* data = [NSData dataWithContentsOfFile:fullPath];
         
-        NSString* rv = [NSString stringWithContentsOfFile:fullPath
-                                                 encoding:NSUTF8StringEncoding error:nil];
         // Now try in the outPath
-        if (!rv) {
+        if (!data) {
             fullPath = [NSURL URLWithString:path
                               relativeToURL:[NSURL URLWithString:[outPath stringByAppendingString:@"/"]]].path;
-            rv = [NSString stringWithContentsOfFile:fullPath
-                                           encoding:NSUTF8StringEncoding error:nil];
+            data = [NSData dataWithContentsOfFile:fullPath];
             
+            if (!data) {
+                fullPath = [NSString stringWithFormat:@"%@.gz", fullPath];
+                data = [NSData dataWithContentsOfFile:fullPath];
+            }
             //if (rv) NSLog(fullPath);
         }
         
-        return rv;
+        if (data) {
+            if ([fullPath hasSuffix:@".gz"]) {
+                data = [data gzipInflate];
+            }
+            return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        }
+        
+        return (NSString*)nil;
     };
     
     JSValue* initAppEnvFn = [self getValue:@"init-app-env" inNamespace:@"replete.repl" fromContext:context];
@@ -290,5 +301,59 @@
         return @"(Unknown)";
     }
 }
+
+-(void)setUpAmblyImportScript:(NSString*)compilerOutputDirectoryPath inContext:(JSGlobalContextRef)_context
+{
+    
+    [ABYUtils installGlobalFunctionWithBlock:
+     
+     ^JSValueRef(JSContextRef ctx, size_t argc, const JSValueRef argv[]) {
+         
+         if (argc == 1 && JSValueGetType (ctx, argv[0]) == kJSTypeString)
+         {
+             JSStringRef pathStrRef = JSValueToStringCopy(ctx, argv[0], NULL);
+             NSString* path = (__bridge_transfer NSString *) JSStringCopyCFString( kCFAllocatorDefault, pathStrRef );
+             JSStringRelease(pathStrRef);
+             
+#if TARGET_OS_IPHONE
+             NSString* url = [NSURL fileURLWithPath:path].absoluteString;
+#else
+             NSString* url = [@"file:///" stringByAppendingString:path];
+#endif
+             JSStringRef urlStringRef = JSStringCreateWithCFString((__bridge CFStringRef)url);
+             
+             NSString* readPath = [NSString stringWithFormat:@"%@/%@", compilerOutputDirectoryPath, path];
+             
+             NSError* error = nil;
+             
+             NSData* data = [NSData dataWithContentsOfFile:readPath];
+            
+             if (!data) {
+                 NSString* readPathGz = [NSString stringWithFormat:@"%@.gz", readPath];
+                 data = [NSData dataWithContentsOfFile:readPathGz];
+                 data = [data gzipInflate];
+             }
+             
+             NSString* sourceText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        
+             if (sourceText) {
+                 
+                 JSValueRef jsError = NULL;
+                 JSStringRef javaScriptStringRef = JSStringCreateWithCFString((__bridge CFStringRef)sourceText);
+                 JSEvaluateScript(ctx, javaScriptStringRef, NULL, urlStringRef, 0, &jsError);
+                 JSStringRelease(javaScriptStringRef);
+             }
+             
+             JSStringRelease(urlStringRef);
+         }
+         
+         return JSValueMakeUndefined(ctx);
+     }
+                                        name:@"AMBLY_IMPORT_SCRIPT"
+                                     argList:@"path"
+                                   inContext:_context];
+    
+}
+
 
 @end

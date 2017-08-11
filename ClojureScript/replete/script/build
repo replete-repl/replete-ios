@@ -63,3 +63,9 @@ done
 
 echo "Removing source map files"
 find . -name *.js.map | xargs rm
+
+echo "Gzip all files"
+find . | xargs gzip -9
+gunzip goog/deps.js
+gunzip goog/base.js
+gunzip main.js

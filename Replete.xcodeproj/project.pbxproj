@@ -18,6 +18,7 @@
 		ED93310F1B401411004B09FD /* HistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED93310D1B401411004B09FD /* HistoryTableViewCell.swift */; };
 		ED9331131B40151A004B09FD /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9331111B40151A004B09FD /* History.swift */; };
 		ED9331141B40151A004B09FD /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9331121B40151A004B09FD /* Message.swift */; };
+		EDC941D41F3D613A00906862 /* NSData+Gzip.m in Sources */ = {isa = PBXBuildFile; fileRef = EDC941D31F3D613900906862 /* NSData+Gzip.m */; };
 		EDE7D6CB1B3F79AB00710B50 /* out in Resources */ = {isa = PBXBuildFile; fileRef = EDE7D6CA1B3F79AB00710B50 /* out */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +51,8 @@
 		ED93310D1B401411004B09FD /* HistoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HistoryTableViewCell.swift; sourceTree = "<group>"; };
 		ED9331111B40151A004B09FD /* History.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
 		ED9331121B40151A004B09FD /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		EDC941D21F3D60E700906862 /* NSData+Gzip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+Gzip.h"; sourceTree = "<group>"; };
+		EDC941D31F3D613900906862 /* NSData+Gzip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Gzip.m"; sourceTree = "<group>"; };
 		EDE7D6CA1B3F79AB00710B50 /* out */ = {isa = PBXFileReference; lastKnownFileType = folder; name = out; path = ClojureScript/replete/out; sourceTree = SOURCE_ROOT; };
 		FC809025F4AED9EEED53D5FC /* libPods-Replete.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Replete.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -125,6 +128,8 @@
 				ED06DC331B3F62E800100331 /* LaunchScreen.xib */,
 				ED06DC241B3F62E800100331 /* Supporting Files */,
 				ED93310A1B4013EF004B09FD /* Replete-Bridging-Header.h */,
+				EDC941D21F3D60E700906862 /* NSData+Gzip.h */,
+				EDC941D31F3D613900906862 /* NSData+Gzip.m */,
 			);
 			path = Replete;
 			sourceTree = "<group>";
@@ -312,6 +317,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EDC941D41F3D613A00906862 /* NSData+Gzip.m in Sources */,
 				ED93310F1B401411004B09FD /* HistoryTableViewCell.swift in Sources */,
 				ED9331131B40151A004B09FD /* History.swift in Sources */,
 				ED93310C1B4013F0004B09FD /* ReplViewController.swift in Sources */,
