@@ -69,3 +69,4 @@ find . | xargs gzip -9
 gunzip goog/deps.js
 gunzip goog/base.js
 gunzip main.js
+gunzip replete/bundle.js
