@@ -48,7 +48,7 @@ echo "Compiling ClojureScript"
 lein run -m clojure.main script/build.clj
 
 echo "Applying Closure"
-CLOSURE_RELEASE="20170626"
+export CLOSURE_RELEASE="20170806"
 script/get-closure-compiler
 cd out
 for file in `find . -name '*.js'`
