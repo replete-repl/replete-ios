@@ -14,12 +14,12 @@
 		ED06DC321B3F62E800100331 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED06DC311B3F62E800100331 /* Images.xcassets */; };
 		ED06DC351B3F62E800100331 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED06DC331B3F62E800100331 /* LaunchScreen.xib */; };
 		ED06DC411B3F62E800100331 /* RepleteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED06DC401B3F62E800100331 /* RepleteTests.m */; };
+		ED1A8FDB1F3F45B1005B6E60 /* bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = ED1A8FD91F3F45B1005B6E60 /* bundle.c */; };
 		ED93310C1B4013F0004B09FD /* ReplViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED93310B1B4013F0004B09FD /* ReplViewController.swift */; };
 		ED93310F1B401411004B09FD /* HistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED93310D1B401411004B09FD /* HistoryTableViewCell.swift */; };
 		ED9331131B40151A004B09FD /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9331111B40151A004B09FD /* History.swift */; };
 		ED9331141B40151A004B09FD /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9331121B40151A004B09FD /* Message.swift */; };
-		EDC941D41F3D613A00906862 /* NSData+Gzip.m in Sources */ = {isa = PBXBuildFile; fileRef = EDC941D31F3D613900906862 /* NSData+Gzip.m */; };
-		EDE7D6CB1B3F79AB00710B50 /* out in Resources */ = {isa = PBXBuildFile; fileRef = EDE7D6CA1B3F79AB00710B50 /* out */; };
+		EDFFAC3B1F3FE38700AADBDA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = EDFFAC3A1F3FE38700AADBDA /* libz.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,14 +46,15 @@
 		ED06DC3A1B3F62E800100331 /* RepleteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RepleteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED06DC3F1B3F62E800100331 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ED06DC401B3F62E800100331 /* RepleteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RepleteTests.m; sourceTree = "<group>"; };
+		ED1A8FD81F3F45A0005B6E60 /* bundle_inflate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bundle_inflate.h; sourceTree = "<group>"; };
+		ED1A8FD91F3F45B1005B6E60 /* bundle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bundle.c; sourceTree = "<group>"; };
+		ED1A8FDA1F3F45B1005B6E60 /* bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundle.h; sourceTree = "<group>"; };
 		ED93310A1B4013EF004B09FD /* Replete-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Replete-Bridging-Header.h"; sourceTree = "<group>"; };
 		ED93310B1B4013F0004B09FD /* ReplViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplViewController.swift; sourceTree = "<group>"; };
 		ED93310D1B401411004B09FD /* HistoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HistoryTableViewCell.swift; sourceTree = "<group>"; };
 		ED9331111B40151A004B09FD /* History.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
 		ED9331121B40151A004B09FD /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
-		EDC941D21F3D60E700906862 /* NSData+Gzip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+Gzip.h"; sourceTree = "<group>"; };
-		EDC941D31F3D613900906862 /* NSData+Gzip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Gzip.m"; sourceTree = "<group>"; };
-		EDE7D6CA1B3F79AB00710B50 /* out */ = {isa = PBXFileReference; lastKnownFileType = folder; name = out; path = ClojureScript/replete/out; sourceTree = SOURCE_ROOT; };
+		EDFFAC3A1F3FE38700AADBDA /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		FC809025F4AED9EEED53D5FC /* libPods-Replete.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Replete.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -62,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EDFFAC3B1F3FE38700AADBDA /* libz.tbd in Frameworks */,
 				8199E7F6C3E896126D0BD8D7 /* libPods-Replete.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -88,6 +90,7 @@
 		DBA6446E3C68D11D9E9A7EF6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EDFFAC3A1F3FE38700AADBDA /* libz.tbd */,
 				FC809025F4AED9EEED53D5FC /* libPods-Replete.a */,
 			);
 			name = Frameworks;
@@ -116,7 +119,6 @@
 		ED06DC231B3F62E800100331 /* Replete */ = {
 			isa = PBXGroup;
 			children = (
-				EDE7D6CA1B3F79AB00710B50 /* out */,
 				ED06DC281B3F62E800100331 /* AppDelegate.h */,
 				ED06DC291B3F62E800100331 /* AppDelegate.m */,
 				ED93310B1B4013F0004B09FD /* ReplViewController.swift */,
@@ -128,8 +130,9 @@
 				ED06DC331B3F62E800100331 /* LaunchScreen.xib */,
 				ED06DC241B3F62E800100331 /* Supporting Files */,
 				ED93310A1B4013EF004B09FD /* Replete-Bridging-Header.h */,
-				EDC941D21F3D60E700906862 /* NSData+Gzip.h */,
-				EDC941D31F3D613900906862 /* NSData+Gzip.m */,
+				ED1A8FD81F3F45A0005B6E60 /* bundle_inflate.h */,
+				ED1A8FDA1F3F45B1005B6E60 /* bundle.h */,
+				ED1A8FD91F3F45B1005B6E60 /* bundle.c */,
 			);
 			path = Replete;
 			sourceTree = "<group>";
@@ -248,7 +251,6 @@
 				ED06DC301B3F62E800100331 /* Main.storyboard in Resources */,
 				ED06DC351B3F62E800100331 /* LaunchScreen.xib in Resources */,
 				ED06DC321B3F62E800100331 /* Images.xcassets in Resources */,
-				EDE7D6CB1B3F79AB00710B50 /* out in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,9 +319,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EDC941D41F3D613A00906862 /* NSData+Gzip.m in Sources */,
 				ED93310F1B401411004B09FD /* HistoryTableViewCell.swift in Sources */,
 				ED9331131B40151A004B09FD /* History.swift in Sources */,
+				ED1A8FDB1F3F45B1005B6E60 /* bundle.c in Sources */,
 				ED93310C1B4013F0004B09FD /* ReplViewController.swift in Sources */,
 				ED06DC2A1B3F62E800100331 /* AppDelegate.m in Sources */,
 				ED9331141B40151A004B09FD /* Message.swift in Sources */,

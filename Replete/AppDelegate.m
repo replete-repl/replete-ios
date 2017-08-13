@@ -7,13 +7,13 @@
 //
 
 #import "AppDelegate.h"
-#import "ABYContextManager.h"
-#import "ABYUtils.h"
-#import "NSData+Gzip.h"
+#include <Foundation/Foundation.h>
+#include <JavaScriptCore/JavaScriptCore.h>
+#include "bundle.h"
 
 @interface AppDelegate ()
 
-@property (strong, nonatomic) ABYContextManager* contextManager;
+@property (assign, nonatomic) JSContext* context;
 @property (strong, nonatomic) JSValue* readEvalPrintFn;
 @property (strong, nonatomic) JSValue* formatFn;
 @property (strong, nonatomic) JSValue* setWidthFn;
@@ -56,34 +56,179 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+JSValueRef evaluate_script(JSContextRef ctx, char *script, char *source) {
+    JSStringRef script_ref = JSStringCreateWithUTF8CString(script);
+    JSStringRef source_ref = NULL;
+    if (source != NULL) {
+        source_ref = JSStringCreateWithUTF8CString(source);
+    }
+    
+    JSValueRef ex = NULL;
+    JSValueRef val = JSEvaluateScript(ctx, script_ref, NULL, source_ref, 0, &ex);
+    JSStringRelease(script_ref);
+    if (source != NULL) {
+        JSStringRelease(source_ref);
+    }
+    
+    // debug_print_value("evaluate_script", ctx, ex);
+    
+    return val;
+}
+
+void register_global_function(JSContextRef ctx, char *name, JSObjectCallAsFunctionCallback handler) {
+    JSObjectRef global_obj = JSContextGetGlobalObject(ctx);
+    
+    JSStringRef fn_name = JSStringCreateWithUTF8CString(name);
+    JSObjectRef fn_obj = JSObjectMakeFunctionWithCallback(ctx, fn_name, handler);
+    
+    JSObjectSetProperty(ctx, global_obj, fn_name, fn_obj, kJSPropertyAttributeNone, NULL);
+}
+
+int str_has_prefix(const char *str, const char *prefix) {
+    size_t len = strlen(str);
+    size_t prefix_len = strlen(prefix);
+    
+    if (len < prefix_len) {
+        return -1;
+    }
+    
+    return strncmp(str, prefix, prefix_len);
+}
+
+unsigned long hash(unsigned char *str) {
+    unsigned long hash = 5381;
+    int c;
+    
+    while ((c = *str++))
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+    
+    return hash;
+}
+
+static unsigned long loaded_goog_hashes[2048];
+static size_t count_loaded_goog_hashes = 0;
+
+bool is_loaded(unsigned long h) {
+    size_t i;
+    for (i = 0; i < count_loaded_goog_hashes; ++i) {
+        if (loaded_goog_hashes[i] == h) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void add_loaded_hash(unsigned long h) {
+    if (count_loaded_goog_hashes < 2048) {
+        loaded_goog_hashes[count_loaded_goog_hashes++] = h;
+    }
+}
+
+JSValueRef function_import_script(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject,
+                                  size_t argc, const JSValueRef args[], JSValueRef *exception) {
+    if (argc == 1 && JSValueGetType(ctx, args[0]) == kJSTypeString) {
+        JSStringRef path_str_ref = JSValueToStringCopy(ctx, args[0], NULL);
+        assert(JSStringGetLength(path_str_ref) < PATH_MAX);
+        char tmp[PATH_MAX];
+        tmp[0] = '\0';
+        JSStringGetUTF8CString(path_str_ref, tmp, PATH_MAX);
+        JSStringRelease(path_str_ref);
+        
+        bool can_skip_load = false;
+        char *path = tmp;
+        if (str_has_prefix(path, "goog/../") == 0) {
+            path = path + 8;
+        } else {
+            unsigned long h = hash((unsigned char *) path);
+            if (is_loaded(h)) {
+                can_skip_load = true;
+            } else {
+                add_loaded_hash(h);
+            }
+        }
+        
+        if (!can_skip_load) {
+            char *source = bundle_get_contents(path);
+            if (source != NULL) {
+                evaluate_script(ctx, source, path);
+                free(source);
+            } else {
+                NSLog(@"Failed to get source for %s", path);
+            }
+        }
+    }
+    
+    return JSValueMakeUndefined(ctx);
+}
+
+void bootstrap(JSContextRef ctx) {
+    
+    char *deps_file_path = "main.js";
+    char *goog_base_path = "goog/base.js";
+    
+    char source[] = "<bootstrap>";
+    
+    // Setup CLOSURE_IMPORT_SCRIPT
+    evaluate_script(ctx, "CLOSURE_IMPORT_SCRIPT = function(src) { AMBLY_IMPORT_SCRIPT('goog/' + src); return true; }",
+                    source);
+    
+    // Load goog base
+    char *base_script_str = bundle_get_contents(goog_base_path);
+    if (base_script_str == NULL) {
+        fprintf(stderr, "The goog base JavaScript text could not be loaded\n");
+        exit(1);
+    }
+    evaluate_script(ctx, base_script_str, "<bootstrap:base>");
+    free(base_script_str);
+    
+    // Load the deps file
+    char *deps_script_str = bundle_get_contents(deps_file_path);
+    if (deps_script_str == NULL) {
+        fprintf(stderr, "The deps JavaScript text could not be loaded\n");
+        exit(1);
+    }
+    evaluate_script(ctx, deps_script_str, "<bootstrap:deps>");
+    free(deps_script_str);
+    
+    evaluate_script(ctx, "goog.isProvided_ = function(x) { return false; };", source);
+    
+    evaluate_script(ctx,
+                    "goog.require = function (name) { return CLOSURE_IMPORT_SCRIPT(goog.dependencies_.nameToPath[name]); };",
+                    source);
+    
+    evaluate_script(ctx, "goog.require('cljs.core');", source);
+    
+    // redef goog.require to track loaded libs
+    evaluate_script(ctx,
+                    "cljs.core._STAR_loaded_libs_STAR_ = cljs.core.into.call(null, cljs.core.PersistentHashSet.EMPTY, [\"cljs.core\"]);\n"
+                    "goog.require = function (name, reload) {\n"
+                    "    if(!cljs.core.contains_QMARK_(cljs.core._STAR_loaded_libs_STAR_, name) || reload) {\n"
+                    "        var AMBLY_TMP = cljs.core.PersistentHashSet.EMPTY;\n"
+                    "        if (cljs.core._STAR_loaded_libs_STAR_) {\n"
+                    "            AMBLY_TMP = cljs.core._STAR_loaded_libs_STAR_;\n"
+                    "        }\n"
+                    "        cljs.core._STAR_loaded_libs_STAR_ = cljs.core.into.call(null, AMBLY_TMP, [name]);\n"
+                    "        CLOSURE_IMPORT_SCRIPT(goog.dependencies_.nameToPath[name]);\n"
+                    "    }\n"
+                    "};", source);
+}
+
 - (void)initializeJavaScriptEnvironment {
     
-    NSString *outPath = [[NSBundle mainBundle] pathForResource:@"out" ofType:nil];
-    NSURL* outURL = [NSURL URLWithString:outPath];
+    JSGlobalContextRef ctx = JSGlobalContextCreate(NULL);
+    self.context = [JSContext contextWithJSGlobalContextRef:ctx];
+
+    evaluate_script(ctx, "var global = this;", "<init>");
+
+    register_global_function(ctx, "AMBLY_IMPORT_SCRIPT", function_import_script);
+    bootstrap(ctx);
     
-    NSURL* srcURL = [[AppDelegate applicationDocumentsDirectory] URLByAppendingPathComponent:@"src/" isDirectory:YES];
-    NSString* srcPath = srcURL.path;
+    evaluate_script(ctx, "goog.provide('cljs.user');", "<init>");
+    evaluate_script(ctx, "goog.require('cljs.core');", "<init>");
     
-    self.contextManager = [[ABYContextManager alloc] initWithContext:JSGlobalContextCreate(NULL)
-                                             compilerOutputDirectory:outURL];
-    [self.contextManager setUpConsoleLog];
-    [self.contextManager setupGlobalContext];
-    [self.contextManager setUpTimerFunctionality];
-    [self setUpAmblyImportScript:outURL.path inContext:self.contextManager.context];
+    [self requireAppNamespaces:self.context];
     
-    NSString* mainJsFilePath = [[outURL URLByAppendingPathComponent:@"main" isDirectory:NO]
-                                URLByAppendingPathExtension:@"js"].path;
-    
-    NSURL* googDirectory = [outURL URLByAppendingPathComponent:@"goog"];
-    
-    [self.contextManager bootstrapWithDepsFilePath:mainJsFilePath
-                                      googBasePath:[[googDirectory URLByAppendingPathComponent:@"base" isDirectory:NO] URLByAppendingPathExtension:@"js"].path];
-    
-    JSContext* context = [JSContext contextWithJSGlobalContextRef:self.contextManager.context];
-    
-    [self requireAppNamespaces:context];
-    
-    JSValue* setupCljsUser = [self getValue:@"setup-cljs-user" inNamespace:@"replete.repl" fromContext:context];
+    JSValue* setupCljsUser = [self getValue:@"setup-cljs-user" inNamespace:@"replete.repl" fromContext:self.context];
     NSAssert(!setupCljsUser.isUndefined, @"Could not find the setup-cljs-user function");
     [setupCljsUser callWithArguments:@[]];
     
@@ -99,51 +244,35 @@
     BOOL targetSimulator = NO;
 #endif
     
-    context[@"REPLETE_LOAD"] = ^(NSString *path) {
-        // First try in the srcPath
+    self.context[@"REPLETE_LOAD"] = ^(NSString *path) {
         
-        NSString* fullPath = [NSURL URLWithString:path
-                                    relativeToURL:[NSURL URLWithString:srcPath]].path;
-        NSData* data = [NSData dataWithContentsOfFile:fullPath];
+        //NSLog(@"Loading %@", path);
+        char* contents = bundle_get_contents((char*)[path UTF8String]);
         
-        // Now try in the outPath
-        if (!data) {
-            fullPath = [NSURL URLWithString:path
-                              relativeToURL:[NSURL URLWithString:[outPath stringByAppendingString:@"/"]]].path;
-            data = [NSData dataWithContentsOfFile:fullPath];
-            
-            if (!data) {
-                fullPath = [NSString stringWithFormat:@"%@.gz", fullPath];
-                data = [NSData dataWithContentsOfFile:fullPath];
-            }
-            //if (rv) NSLog(fullPath);
-        }
-        
-        if (data) {
-            if ([fullPath hasSuffix:@".gz"]) {
-                data = [data gzipInflate];
-            }
-            return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        if (contents) {
+            return [NSString stringWithUTF8String:contents];
+        } else {
+            //NSLog(@"Failed to load %@", path);
         }
         
         return (NSString*)nil;
     };
     
-    JSValue* initAppEnvFn = [self getValue:@"init-app-env" inNamespace:@"replete.repl" fromContext:context];
+    JSValue* initAppEnvFn = [self getValue:@"init-app-env" inNamespace:@"replete.repl" fromContext:self.context];
     [initAppEnvFn callWithArguments:@[@{@"debug-build": @(debugBuild),
                                         @"target-simulator": @(targetSimulator),
                                         @"user-interface-idiom": (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad": @"iPhone")}]];
     
-    self.readEvalPrintFn = [self getValue:@"read-eval-print" inNamespace:@"replete.repl" fromContext:context];
+    self.readEvalPrintFn = [self getValue:@"read-eval-print" inNamespace:@"replete.repl" fromContext:self.context];
     NSAssert(!self.readEvalPrintFn.isUndefined, @"Could not find the read-eval-print function");
     
-    self.formatFn = [self getValue:@"format" inNamespace:@"replete.repl" fromContext:context];
+    self.formatFn = [self getValue:@"format" inNamespace:@"replete.repl" fromContext:self.context];
     NSAssert(!self.formatFn.isUndefined, @"Could not find the format function");
     
-    self.setWidthFn = [self getValue:@"set-width" inNamespace:@"replete.repl" fromContext:context];
+    self.setWidthFn = [self getValue:@"set-width" inNamespace:@"replete.repl" fromContext:self.context];
     NSAssert(!self.setWidthFn.isUndefined, @"Could not find the set-width function");
     
-    context[@"REPLETE_PRINT_FN"] = ^(NSString *message) {
+    self.context[@"REPLETE_PRINT_FN"] = ^(NSString *message) {
 //        NSLog(@"repl out: %@", message);
         if (self.initialized) {
             if (self.myPrintCallback) {
@@ -154,13 +283,13 @@
         }
         //self.outputTextView.text = [self.outputTextView.text stringByAppendingString:message];
     };
-    [context evaluateScript:@"cljs.core.set_print_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
-    [context evaluateScript:@"cljs.core.set_print_err_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
+    [self.context evaluateScript:@"cljs.core.set_print_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
+    [self.context evaluateScript:@"cljs.core.set_print_err_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
     
     [self.readEvalPrintFn callWithArguments:@[@"(ns cljs.user (:require [replete.core :refer [eval]]))"]];
     
     // TODO look into this. Without it thngs won't work.
-    [context evaluateScript:@"var window = global;"];
+    [self.context evaluateScript:@"var window = global;"];
     
     self.initialized = true;
     
@@ -290,70 +419,14 @@
 
 -(NSString*)getClojureScriptVersion
 {
-    NSString *outPath = [[NSBundle mainBundle] pathForResource:@"out" ofType:nil];
-   
     // Grab bundle.js; it is relatively small
-    NSString* bundleJs = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/replete/bundle.js", outPath]
-                                                   encoding:NSUTF8StringEncoding error:nil];
+    NSString* bundleJs = [NSString stringWithUTF8String:bundle_get_contents("replete/bundle.js")];
+    
     if (bundleJs) {
         return [[bundleJs substringFromIndex:29] componentsSeparatedByString:@" "][0];
     } else {
         return @"(Unknown)";
     }
 }
-
--(void)setUpAmblyImportScript:(NSString*)compilerOutputDirectoryPath inContext:(JSGlobalContextRef)_context
-{
-    
-    [ABYUtils installGlobalFunctionWithBlock:
-     
-     ^JSValueRef(JSContextRef ctx, size_t argc, const JSValueRef argv[]) {
-         
-         if (argc == 1 && JSValueGetType (ctx, argv[0]) == kJSTypeString)
-         {
-             JSStringRef pathStrRef = JSValueToStringCopy(ctx, argv[0], NULL);
-             NSString* path = (__bridge_transfer NSString *) JSStringCopyCFString( kCFAllocatorDefault, pathStrRef );
-             JSStringRelease(pathStrRef);
-             
-#if TARGET_OS_IPHONE
-             NSString* url = [NSURL fileURLWithPath:path].absoluteString;
-#else
-             NSString* url = [@"file:///" stringByAppendingString:path];
-#endif
-             JSStringRef urlStringRef = JSStringCreateWithCFString((__bridge CFStringRef)url);
-             
-             NSString* readPath = [NSString stringWithFormat:@"%@/%@", compilerOutputDirectoryPath, path];
-             
-             NSError* error = nil;
-             
-             NSData* data = [NSData dataWithContentsOfFile:readPath];
-            
-             if (!data) {
-                 NSString* readPathGz = [NSString stringWithFormat:@"%@.gz", readPath];
-                 data = [NSData dataWithContentsOfFile:readPathGz];
-                 data = [data gzipInflate];
-             }
-             
-             NSString* sourceText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        
-             if (sourceText) {
-                 
-                 JSValueRef jsError = NULL;
-                 JSStringRef javaScriptStringRef = JSStringCreateWithCFString((__bridge CFStringRef)sourceText);
-                 JSEvaluateScript(ctx, javaScriptStringRef, NULL, urlStringRef, 0, &jsError);
-                 JSStringRelease(javaScriptStringRef);
-             }
-             
-             JSStringRelease(urlStringRef);
-         }
-         
-         return JSValueMakeUndefined(ctx);
-     }
-                                        name:@"AMBLY_IMPORT_SCRIPT"
-                                     argList:@"path"
-                                   inContext:_context];
-    
-}
-
 
 @end

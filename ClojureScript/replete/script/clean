@@ -3,3 +3,6 @@ lein clean
 rm -rf compiler
 rm -rf resources
 rm -rf aot-cache
+
+git update-index --no-assume-unchanged ../../Replete/bundle.c
+git checkout -- ../../Replete/bundle.c

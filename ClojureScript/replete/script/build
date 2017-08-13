@@ -47,26 +47,4 @@ cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_macros\$macros.js.map.json out/cl
 echo "Compiling ClojureScript"
 lein run -m clojure.main script/build.clj
 
-echo "Applying Closure"
-export CLOSURE_RELEASE="20170806"
-script/get-closure-compiler
-cd out
-for file in `find . -name '*.js'`
-do
-  if [ "${file: -7}" != "deps.js" ] && [ "${file: -9}" != "bundle.js" ]
-  then
-    java -jar ../compiler/closure-compiler-v$CLOSURE_RELEASE.jar --language_in ECMASCRIPT3 --language_out ECMASCRIPT3 --process_closure_primitives false --js $file --js_output_file $file.simple
-    mv $file.simple $file
-    echo -n "."
-  fi 
-done
-
-echo "Removing source map files"
-find . -name *.js.map | xargs rm
-
-echo "Gzip all files"
-find . | xargs gzip -9
-gunzip goog/deps.js
-gunzip goog/base.js
-gunzip main.js
-gunzip replete/bundle.js
+script/bundle
