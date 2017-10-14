@@ -2,7 +2,7 @@
   :dependencies [[andare "0.7.0"]                           ; Update in script/build also
                  [cljsjs/parinfer "1.8.1-0"]
                  [com.cognitect/transit-clj "0.8.300"]
-                 [com.cognitect/transit-cljs "0.8.239"]
+                 [com.cognitect/transit-cljs "0.8.243"]
                  [fipp "0.6.8"]
                  [tailrecursion/cljson "1.0.7"]
                  [malabarba/lazy-map "1.1"]
