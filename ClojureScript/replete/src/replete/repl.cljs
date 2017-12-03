@@ -444,8 +444,9 @@
         (when-let [file-source (get-file-source filepath)]
           (let [rdr (rt/source-logging-push-back-reader file-source)]
             (dotimes [_ (dec (:line var))] (rt/read-line rdr))
-            (-> (r/read {:read-cond :allow :features #{:cljs}} rdr)
-              meta :source))))))
+            (binding [r/*alias-map* (reify ILookup (-lookup [_ k] k))]
+              (-> (r/read {:read-cond :allow :features #{:cljs}} rdr)
+                meta :source)))))))
 
 (defn- make-base-eval-opts
   []
