@@ -430,8 +430,7 @@
     (let [file-source (js/REPLETE_LOAD filepath)]
       (or file-source
           (js/REPLETE_LOAD (s/replace filepath #"^out/" ""))
-          (js/REPLETE_LOAD (s/replace filepath #"^src/" ""))
-        (js/REPLETE_LOAD (s/replace filepath #"^/.*/planck-cljs/src/" ""))))))
+          (js/REPLETE_LOAD (s/replace filepath #"^src/" ""))))))
 
 (defn- fetch-source
   [var]
