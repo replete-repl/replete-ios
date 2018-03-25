@@ -483,6 +483,41 @@ void bootstrap(JSContextRef ctx) {
                     "        CLOSURE_IMPORT_SCRIPT(goog.dependencies_.nameToPath[name]);\n"
                     "    }\n"
                     "};", source);
+    
+    register_global_function(ctx, "REPLETE_SET_TIMEOUT", function_set_timeout);
+    register_global_function(ctx, "REPLETE_SET_INTERVAL", function_set_interval);
+    evaluate_script(ctx,
+                    "var REPLETE_TIMEOUT_CALLBACK_STORE = {};\
+                    var setTimeout = function( fn, ms ) {\
+                    var id = REPLETE_SET_TIMEOUT(ms);\
+                    REPLETE_TIMEOUT_CALLBACK_STORE[id] = fn;\
+                    return id;\
+                    };\
+                    var REPLETE_RUN_TIMEOUT = function( id ) {\
+                    if( REPLETE_TIMEOUT_CALLBACK_STORE[id] ) {\
+                    REPLETE_TIMEOUT_CALLBACK_STORE[id]();\
+                    delete REPLETE_TIMEOUT_CALLBACK_STORE[id];\
+                    }\
+                    };\
+                    var clearTimeout = function( id ) {\
+                    delete REPLETE_TIMEOUT_CALLBACK_STORE[id];\
+                    };\
+                    var REPLETE_INTERVAL_CALLBACK_STORE = {};\
+                    var setInterval = function( fn, ms ) {\
+                    var id = REPLETE_SET_INTERVAL(ms, null);\
+                    REPLETE_INTERVAL_CALLBACK_STORE[id] = \
+                    function(){ fn(); REPLETE_SET_INTERVAL(ms, id); };\
+                    return id;\
+                    };\
+                    var REPLETE_RUN_INTERVAL = function( id ) {\
+                    if( REPLETE_INTERVAL_CALLBACK_STORE[id] ) {\
+                    REPLETE_INTERVAL_CALLBACK_STORE[id]();\
+                    }\
+                    };\
+                    var clearInterval = function( id ) {\
+                    delete REPLETE_INTERVAL_CALLBACK_STORE[id];\
+                    };",
+                    "<init>");
 }
 
 - (void)initializeJavaScriptEnvironment {
