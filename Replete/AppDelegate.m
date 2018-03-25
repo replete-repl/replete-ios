@@ -286,8 +286,6 @@ void bootstrap(JSContextRef ctx) {
     [self.context evaluateScript:@"cljs.core.set_print_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
     [self.context evaluateScript:@"cljs.core.set_print_err_fn_BANG_.call(null,REPLETE_PRINT_FN);"];
     
-    [self.readEvalPrintFn callWithArguments:@[@"(ns cljs.user (:require [replete.core :refer [eval]]))"]];
-    
     // TODO look into this. Without it thngs won't work.
     [self.context evaluateScript:@"var window = global;"];
     

@@ -4,7 +4,7 @@ mkdir -p aot-cache
 lein deps
 M2_REPO=~/.m2/repository
 echo "AOT compiling macros"
-../../../planck/planck-c/build/planck -q -k aot-cache -c $M2_REPO/andare/andare/0.7.0/andare-0.7.0.jar:$M2_REPO/org/clojure/test.check/0.10.0-alpha2/test.check-0.10.0-alpha2.jar <<REPL_INPUT
+../../../planck/planck-c/build/planck -q -k aot-cache -c $M2_REPO/andare/andare/0.9.0/andare-0.9.0.jar:$M2_REPO/org/clojure/test.check/0.10.0-alpha2/test.check-0.10.0-alpha2.jar <<REPL_INPUT
 (require '[clojure.test.check.clojure-test :include-macros true])
 (require-macros
   'clojure.test.check.properties
@@ -33,13 +33,13 @@ cp ../../../planck/planck-cljs/out/cljs/test\$macros.js out/cljs/test\$macros.js
 
 cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_clojure_test\$macros.cache.json out/clojure/test/check/clojure_test\$macros.cljc.cache.json
 cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_clojure_test\$macros.js out/clojure/test/check/clojure_test\$macros.js
-cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_clojure_test\$macros.js.map.json out/clojure/test/check/clojure_test\$macros.cljc.map.json
+#cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_clojure_test\$macros.js.map.json out/clojure/test/check/clojure_test\$macros.cljc.map.json
 cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_properties\$macros.cache.json out/clojure/test/check/properties\$macros.cljc.cache.json
 cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_properties\$macros.js out/clojure/test/check/properties\$macros.js
 cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_properties\$macros.js.map.json out/clojure/test/check/properties\$macros.cljc.map.json
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.cache.json out/cljs/core/async/impl/ioc_macros\$macros.clj.cache.json
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.js out/cljs/core/async/impl/ioc_macros\$macros.js
-cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.js.map.json out/cljs/core/async/impl/ioc_macros\$macros.clj.map.json
+#cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.js.map.json out/cljs/core/async/impl/ioc_macros\$macros.clj.map.json
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_macros\$macros.cache.json out/cljs/core/async/macros\$macros.cljc.cache.json
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_macros\$macros.js out/cljs/core/async/macros\$macros.js
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_macros\$macros.js.map.json out/cljs/core/async/macros\$macros.cljc.map.json
