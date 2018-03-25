@@ -1,11 +1,11 @@
 (ns replete.core
-  (:refer-clojure :exclude [resolve])
+  (:refer-clojure :exclude [resolve eval])
   (:require [replete.repl :as repl]))
 
 (defn eval
   "Evaluates the form data structure (not text!) and returns the result."
   [form]
-  (repl/eval form))
+  (cljs.core/eval form))
 
 (defn ns-resolve
   "Returns the var to which a symbol will be resolved in the namespace,

@@ -619,41 +619,6 @@
             (println (form-indicator column))))
         (print warning-string)))))
 
-;; The following atoms and fns set up a scheme to
-;; emit function values into JavaScript as numeric
-;; references that are looked up.
-
-(defonce ^:private fn-index (atom 0))
-(defonce ^:private fn-refs (atom {}))
-
-(defn- clear-fns!
-  "Clears saved functions."
-  []
-  (reset! fn-refs {}))
-
-(defn- put-fn
-  "Saves a function, returning a numeric representation."
-  [f]
-  (let [n (swap! fn-index inc)]
-    (swap! fn-refs assoc n f)
-    n))
-
-(defn- get-fn
-  "Gets a function, given its numeric representation."
-  [n]
-  (get @fn-refs n))
-
-(defn- emit-fn [f]
-  (print "replete.repl.get_fn(" (put-fn f) ")"))
-
-(defmethod comp/emit-constant js/Function
-  [f]
-  (emit-fn f))
-
-(defmethod comp/emit-constant cljs.core/Var
-  [f]
-  (emit-fn f))
-
 (defn- call-form?
   [expression-form allowed-operators]
   (contains? allowed-operators (and (list? expression-form)
@@ -668,7 +633,6 @@
   ([source]
    (read-eval-print source true))
   ([source expression?]
-   (clear-fns!)
    (reset-show-indicator!)
    (binding [ana/*cljs-warning-handlers* (if expression?
                                            [warning-handler]
