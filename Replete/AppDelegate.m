@@ -6,10 +6,13 @@
 //  Copyright (c) 2015 FikesFarm. All rights reserved.
 //
 
+#include <pthread.h>
+
 #import "AppDelegate.h"
 #include <Foundation/Foundation.h>
 #include <JavaScriptCore/JavaScriptCore.h>
 #include "bundle.h"
+
 
 @interface AppDelegate ()
 
@@ -124,6 +127,8 @@ void add_loaded_hash(unsigned long h) {
     }
 }
 
+JSGlobalContextRef ctx = NULL;
+
 JSValueRef function_import_script(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject,
                                   size_t argc, const JSValueRef args[], JSValueRef *exception) {
     if (argc == 1 && JSValueGetType(ctx, args[0]) == kJSTypeString) {
@@ -160,6 +165,273 @@ JSValueRef function_import_script(JSContextRef ctx, JSObjectRef function, JSObje
     
     return JSValueMakeUndefined(ctx);
 }
+
+pthread_mutex_t eval_lock = PTHREAD_MUTEX_INITIALIZER;
+
+void acquire_eval_lock() {
+    pthread_mutex_lock(&eval_lock);
+}
+
+void release_eval_lock() {
+    pthread_mutex_unlock(&eval_lock);
+}
+
+
+char *munge(char *s) {
+    size_t len = strlen(s);
+    size_t new_len = 0;
+    int i;
+    for (i = 0; i < len; i++) {
+        switch (s[i]) {
+            case '!':
+                new_len += 6; // _BANG_
+                break;
+            case '?':
+                new_len += 7; // _QMARK_
+                break;
+            default:
+                new_len += 1;
+        }
+    }
+    
+    char *ms = malloc((new_len + 1) * sizeof(char));
+    int j = 0;
+    for (i = 0; i < len; i++) {
+        switch (s[i]) {
+            case '-':
+                ms[j++] = '_';
+                break;
+            case '!':
+                ms[j++] = '_';
+                ms[j++] = 'B';
+                ms[j++] = 'A';
+                ms[j++] = 'N';
+                ms[j++] = 'G';
+                ms[j++] = '_';
+                break;
+            case '?':
+                ms[j++] = '_';
+                ms[j++] = 'Q';
+                ms[j++] = 'M';
+                ms[j++] = 'A';
+                ms[j++] = 'R';
+                ms[j++] = 'K';
+                ms[j++] = '_';
+                break;
+                
+            default:
+                ms[j++] = s[i];
+        }
+    }
+    ms[new_len] = '\0';
+    
+    return ms;
+}
+
+JSValueRef get_value_on_object(JSContextRef ctx, JSObjectRef obj, char *name) {
+    JSStringRef name_str = JSStringCreateWithUTF8CString(name);
+    JSValueRef val = JSObjectGetProperty(ctx, obj, name_str, NULL);
+    JSStringRelease(name_str);
+    return val;
+}
+
+JSValueRef get_value(JSContextRef ctx, char *namespace, char *name) {
+    JSValueRef ns_val = NULL;
+    
+    // printf("get_value: '%s'\n", namespace);
+    char *ns_tmp = strdup(namespace);
+    char *saveptr;
+    char *ns_part = strtok_r(ns_tmp, ".", &saveptr);
+    while (ns_part != NULL) {
+        char *munged_ns_part = munge(ns_part);
+        if (ns_val) {
+            ns_val = get_value_on_object(ctx, JSValueToObject(ctx, ns_val, NULL), munged_ns_part);
+        } else {
+            ns_val = get_value_on_object(ctx, JSContextGetGlobalObject(ctx), munged_ns_part);
+        }
+        free(munged_ns_part); // TODO: Use a fixed buffer for this?  (Which would restrict namespace part length...)
+        
+        ns_part = strtok_r(NULL, ".", &saveptr);
+    }
+    free(ns_tmp);
+    
+    char *munged_name = munge(name);
+    JSValueRef val = get_value_on_object(ctx, JSValueToObject(ctx, ns_val, NULL), munged_name);
+    free(munged_name);
+    return val;
+}
+
+JSObjectRef get_function(char *namespace, char *name) {
+    JSValueRef val = get_value(ctx, namespace, name);
+    if (JSValueIsUndefined(ctx, val)) {
+        char buffer[1024];
+        snprintf(buffer, 1024, "Failed to get function %s/%s\n", namespace, name);
+        //engine_print(buffer);
+        assert(false);
+    }
+    return JSValueToObject(ctx, val, NULL);
+}
+
+typedef void (*timer_callback_t)(void *data);
+
+struct timer_data_t {
+    long millis;
+    timer_callback_t timer_callback;
+    void *data;
+};
+
+void *timer_thread(void *data) {
+    
+    struct timer_data_t *timer_data = data;
+    
+    struct timespec t;
+    t.tv_sec = timer_data->millis / 1000;
+    t.tv_nsec = 1000 * 1000 * (timer_data->millis % 1000);
+    if (t.tv_sec == 0 && t.tv_nsec == 0) {
+        t.tv_nsec = 1; /* Evidently needed on Ubuntu 14.04 */
+    }
+    
+    int err = nanosleep(&t, NULL);
+    if (err) {
+        free(data);
+        //engine_perror("timer nanosleep");
+        return NULL;
+    }
+    
+    timer_data->timer_callback(timer_data->data);
+    
+    free(data);
+    
+    return NULL;
+}
+
+int start_timer(long millis, timer_callback_t timer_callback, void *data) {
+    
+    struct timer_data_t *timer_data = malloc(sizeof(struct timer_data_t));
+    if (!timer_data) return -1;
+    
+    timer_data->millis = millis;
+    timer_data->timer_callback = timer_callback;
+    timer_data->data = data;
+    
+    pthread_attr_t attr;
+    int err = pthread_attr_init(&attr);
+    if (err) {
+        free(timer_data);
+        return err;
+    }
+    
+    err = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+    if (err) {
+        free(timer_data);
+        return err;
+    }
+    
+    pthread_t thread;
+    err = pthread_create(&thread, &attr, timer_thread, timer_data);
+    if (err) {
+        free(timer_data);
+    }
+    return err;
+}
+
+void do_run_timeout(void *data) {
+    
+    unsigned long *timeout_data = data;
+    
+    JSValueRef args[1];
+    args[0] = JSValueMakeNumber(ctx, (double)*timeout_data);
+    free(timeout_data);
+    
+    static JSObjectRef run_timeout_fn = NULL;
+    if (!run_timeout_fn) {
+        run_timeout_fn = get_function("global", "REPLETE_RUN_TIMEOUT");
+        JSValueProtect(ctx, run_timeout_fn);
+    }
+    acquire_eval_lock();
+    JSObjectCallAsFunction(ctx, run_timeout_fn, NULL, 1, args, NULL);
+    release_eval_lock();
+}
+
+static unsigned long timeout_id = 0;
+
+JSValueRef function_set_timeout(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject,
+                                size_t argc, const JSValueRef args[], JSValueRef *exception) {
+    if (argc == 1
+        && JSValueGetType(ctx, args[0]) == kJSTypeNumber) {
+        
+        int millis = (int) JSValueToNumber(ctx, args[0], NULL);
+        
+        if (timeout_id == 9007199254740991) {
+            timeout_id = 0;
+        } else {
+            ++timeout_id;
+        }
+        
+        JSValueRef rv = JSValueMakeNumber(ctx, (double)timeout_id);
+        
+        unsigned long *timeout_data = malloc(sizeof(unsigned long));
+        *timeout_data = timeout_id;
+        
+        start_timer(millis, do_run_timeout, (void *) timeout_data);
+        
+        return rv;
+    }
+    return JSValueMakeNull(ctx);
+}
+
+void do_run_interval(void *data) {
+    
+    unsigned long *interval_data = data;
+    
+    JSValueRef args[1];
+    args[0] = JSValueMakeNumber(ctx, (double)*interval_data);
+    free(interval_data);
+    
+    static JSObjectRef run_interval_fn = NULL;
+    if (!run_interval_fn) {
+        run_interval_fn = get_function("global", "REPLETE_RUN_INTERVAL");
+        JSValueProtect(ctx, run_interval_fn);
+    }
+    acquire_eval_lock();
+    JSObjectCallAsFunction(ctx, run_interval_fn, NULL, 1, args, NULL);
+    release_eval_lock();
+}
+
+static unsigned long interval_id = 0;
+
+JSValueRef function_set_interval(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject,
+                                 size_t argc, const JSValueRef args[], JSValueRef *exception) {
+    if (argc == 2
+        && JSValueGetType(ctx, args[0]) == kJSTypeNumber) {
+        
+        int millis = (int) JSValueToNumber(ctx, args[0], NULL);
+        
+        unsigned long curr_interval_id;
+        
+        if (JSValueIsNull(ctx, args[1])) {
+            if (interval_id == 9007199254740991) {
+                interval_id = 0;
+            } else {
+                ++interval_id;
+            }
+            curr_interval_id = interval_id;
+        } else {
+            curr_interval_id = (unsigned long) JSValueToNumber(ctx, args[1], NULL);
+        }
+        
+        JSValueRef rv = JSValueMakeNumber(ctx, (double)curr_interval_id);
+        
+        unsigned long *interval_data = malloc(sizeof(unsigned long));
+        *interval_data = curr_interval_id;
+        
+        start_timer(millis, do_run_interval, (void *) interval_data);
+        
+        return rv;
+    }
+    return JSValueMakeNull(ctx);
+}
+
 
 void bootstrap(JSContextRef ctx) {
     
@@ -215,7 +487,7 @@ void bootstrap(JSContextRef ctx) {
 
 - (void)initializeJavaScriptEnvironment {
     
-    JSGlobalContextRef ctx = JSGlobalContextCreate(NULL);
+    ctx = JSGlobalContextCreate(NULL);
     self.context = [JSContext contextWithJSGlobalContextRef:ctx];
 
     evaluate_script(ctx, "var global = this;", "<init>");
