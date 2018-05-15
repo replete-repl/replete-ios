@@ -22,6 +22,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         get {
             if toolBar == nil {
                 toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 0, height: toolBarMinHeight-0.5))
+                toolBar.layoutIfNeeded() // see SO answer re: iOS 11 and UIToolbar - https://bit.ly/2wIPF5n
                 
                 textView = InputTextView(frame: CGRect.zero)
                 textView.backgroundColor = UIColor(white: 250/255, alpha: 1)
@@ -30,7 +31,8 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 textView.layer.borderWidth = 0.5
                 textView.layer.cornerRadius = 5
                 textView.scrollsToTop = false
-                textView.textContainerInset = UIEdgeInsetsMake(6, 3, 6, 3)
+                textView.isScrollEnabled = false
+                textView.textContainerInset = UIEdgeInsetsMake(3, 6, 3, 6)
                 textView.autocorrectionType = UITextAutocorrectionType.no;
                 textView.autocapitalizationType = UITextAutocapitalizationType.none;
                 textView.keyboardType = UIKeyboardType.asciiCapable;
@@ -56,12 +58,13 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
                 toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .left, relatedBy: .equal, toItem: toolBar, attribute: .left, multiplier: 1, constant: 8))
                 toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .top, relatedBy: .equal, toItem: toolBar, attribute: .top, multiplier: 1, constant: 7.5))
-                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .right, relatedBy: .equal, toItem: evalButton, attribute: .left, multiplier: 1, constant: -2))
+                toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .trailing, relatedBy: .equal, toItem: evalButton, attribute: .leading, multiplier: 1, constant: -2))
                 toolBar.addConstraint(NSLayoutConstraint(item: textView, attribute: .bottom, relatedBy: .equal, toItem: toolBar, attribute: .bottom, multiplier: 1, constant: -8))
 
                 toolBar.addConstraint(NSLayoutConstraint(item: evalButton, attribute: .right, relatedBy: .equal, toItem: toolBar, attribute: .right, multiplier: 1, constant: 0))
                 toolBar.addConstraint(NSLayoutConstraint(item: evalButton, attribute: .bottom, relatedBy: .equal, toItem: toolBar, attribute: .bottom, multiplier: 1, constant: -4.5))
-                
+                evalButton.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .horizontal)
+                evalButton.setContentHuggingPriority(UILayoutPriorityRequired, for: .horizontal)
             }
             return toolBar
         }
@@ -116,19 +119,19 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
         
         DispatchQueue.main.async {
-            self.loadMessage(false, text:"\nClojureScript " + appDelegate.getClojureScriptVersion() + "\n" +
+            let version = appDelegate.getClojureScriptVersion()
+            let masthead = "\nClojureScript \(version!)\n" +
             "    Docs: (doc function-name)\n" +
             "          (find-doc \"part-of-name\")\n" +
             "  Source: (source function-name)\n" +
             " Results: Stored in *1, *2, *3,\n" +
-            "          an exception in *e\n");
+            "          an exception in *e\n";
+            self.loadMessage(false, text: masthead)
         };
         
         NSLog("Initializing...");
         DispatchQueue.global(qos: .background).async {
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.initializeJavaScriptEnvironment()
-            
             DispatchQueue.main.async {
                 // mark ready
                 NSLog("Ready");
@@ -140,7 +143,6 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 }
             }
         }
-        
     }
     
     deinit {
@@ -180,7 +182,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
             let cellIdentifier = NSStringFromClass(HistoryTableViewCell.self)
-            var cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier) as! HistoryTableViewCell!
+            var cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier) as! HistoryTableViewCell?
             if cell == nil {
                 cell = HistoryTableViewCell(style: .default, reuseIdentifier: cellIdentifier)
                 
@@ -208,7 +210,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let currentText = textView.text
         if (range.location > 0 &&
             text == " " &&
-            currentText!.substring(with: currentText!.index(currentText!.startIndex, offsetBy: range.location)..<currentText!.index(currentText!.startIndex, offsetBy: range.location)) == " ") {
+            currentText!.substring(with: currentText!.index(currentText!.startIndex, offsetBy: range.location-1)..<currentText!.index(currentText!.startIndex, offsetBy: range.location)) == " ") {
             textView.text = (textView.text as NSString).replacingCharacters(in: range, with: " ")
             textView.selectedRange = NSMakeRange(range.location+1, 0);
             return false;
@@ -216,6 +218,12 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         if (text == "\n") {
             enterPressed = true;
+        }
+        if (textView.intrinsicContentSize.width >= textView.frame.width - evalButton.frame.width - 12){ // the magic number is inset widths summed
+            textView.isScrollEnabled = true
+        }
+        else{
+            textView.isScrollEnabled = false
         }
         return true;
     }
@@ -271,7 +279,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func keyboardWillShow(_ notification: Notification) {
         
-        let userInfo = notification.userInfo as NSDictionary!
+        let userInfo = notification.userInfo as NSDictionary?
         let frameNew = (userInfo?[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         let insetNewBottom = tableView.convert(frameNew, from: nil).height
         let insetOld = tableView.contentInset
@@ -302,7 +310,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func keyboardDidShow(_ notification: Notification) {
         
-        let userInfo = notification.userInfo as NSDictionary!
+        let userInfo = notification.userInfo as NSDictionary?
         let frameNew = (userInfo?[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         let insetNewBottom = tableView.convert(frameNew, from: nil).height
         self.currentKeyboardHeight = frameNew.height
@@ -323,13 +331,14 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let newSize = (newText! as NSString).boundingRect(with: CGSize(width: textView.frame.width - textView.textContainerInset.right - textView.textContainerInset.left - 10, height: CGFloat.greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: textView.font!], context: nil)
         let heightChange = newSize.height + textView.textContainerInset.top + textView.textContainerInset.bottom - oldHeight
         
-        let maxHeight = self.view.frame.height
+        let maxHeightDeltas = toolBar.frame.height
             - self.topLayoutGuide.length
             - currentKeyboardHeight
-            + toolBar.frame.height
             - textView.textContainerInset.top
             - textView.textContainerInset.bottom
             - 20
+        
+        let maxHeight = self.view.frame.height - maxHeightDeltas
         
         if !(textFieldHeightLayoutConstraint.constant + heightChange > maxHeight){
             //ceil because of small irregularities in heightChange
@@ -352,17 +361,17 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
             
             let text = s.string;
             let range : Range<String.Index> = text.range(of: "\u{001b}[")!;
-            let index: Int = text.characters.distance(from: text.startIndex, to: range.lowerBound);
-            let index2 = text.characters.index(text.startIndex, offsetBy: index + 2);
+            let index: Int = text.distance(from: text.startIndex, to: range.lowerBound);
+            let index2 = text.index(text.startIndex, offsetBy: index + 2);
             var color : UIColor = UIColor.black;
             if (text.substring(from: index2).hasPrefix("34m")){
                 color = UIColor.blue;
             } else if (text.substring(from: index2).hasPrefix("32m")){
-                color = UIColor.init(colorLiteralRed: 0.0, green: 0.75, blue: 0.0, alpha: 1.0);
+                color = UIColor(red: 0.0, green: 0.75, blue: 0.0, alpha: 1.0);
             } else if (text.substring(from: index2).hasPrefix("35m")){
-                color = UIColor.init(colorLiteralRed: 0.75, green: 0.0, blue: 0.75, alpha: 1.0);
+                color = UIColor(red: 0.75, green: 0.0, blue: 0.75, alpha: 1.0);
             } else if (text.substring(from: index2).hasPrefix("31m")){
-                color = UIColor.init(colorLiteralRed: 1, green: 0.33, blue: 0.33, alpha: 1.0);
+                color = UIColor(red: 1, green: 0.33, blue: 0.33, alpha: 1.0);
             }
             
             s.replaceCharacters(in: NSMakeRange(index, 5), with: "");
@@ -376,43 +385,52 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func loadMessage(_ incoming: Bool, text: String) {
+        let s = prepareMessageForDisplay(text)
+        addPreparedMessageToDisplay(incoming, text: s)
         
-        if (text != "\n") {
-            // NSLog("load: %@", text);
-            
-            let s = NSMutableAttributedString(string:text);
-            
-            while (markString(s)) {};
-            
-            history.loadedMessages.append([Message(incoming: incoming, text: s)])
-            
-            if (history.loadedMessages.count > 64) {
-                history.loadedMessages.remove(at: 0);
-                tableView.reloadData();
-            } else {
-            
-                let lastSection = tableView.numberOfSections
-                tableView.beginUpdates()
-                tableView.insertSections(IndexSet(integer: lastSection), with: .automatic)
-                tableView.insertRows(at: [
-                    IndexPath(row: 0, section: lastSection)
-                    ], with: .automatic)
-                tableView.endUpdates()
-            }
-            
-            scrollToBottom = true;
-            
-            let delayTime = DispatchTime.now() + Double(Int64(50 * Double(NSEC_PER_MSEC))) / Double(NSEC_PER_SEC)
-            DispatchQueue.main.asyncAfter(deadline: delayTime) {
-                if (self.scrollToBottom) {
-                    self.scrollToBottom = false;
-                    self.tableViewScrollToBottomAnimated(false)
-                }
+        let delayTime = DispatchTime.now() + Double(Int64(50 * Double(NSEC_PER_MSEC))) / Double(NSEC_PER_SEC)
+        DispatchQueue.main.asyncAfter(deadline: delayTime) {
+            if (self.scrollToBottom) {
+                self.scrollToBottom = false;
+                self.tableViewScrollToBottomAnimated(false)
             }
         }
     }
     
+    func prepareMessageForDisplay(_ text: String) -> NSMutableAttributedString? {
+        if (text != "\n") {
+            let s = NSMutableAttributedString(string:text);
+            while (markString(s)) {};
+            return s
+        }
+        return nil
+    }
+    
+    func addPreparedMessageToDisplay(_ incoming: Bool, text: NSMutableAttributedString?) {
+        guard let text = text else {
+            return
+        }
+        history.loadedMessages.append([Message(incoming: incoming, text: text)])
+        
+        if (history.loadedMessages.count > 64) {
+            history.loadedMessages.remove(at: 0);
+            tableView.reloadData();
+        } else {
+            
+            let lastSection = tableView.numberOfSections
+            tableView.beginUpdates()
+            tableView.insertSections(IndexSet(integer: lastSection), with: .automatic)
+            tableView.insertRows(at: [
+                IndexPath(row: 0, section: lastSection)
+                ], with: .automatic)
+            tableView.endUpdates()
+        }
+        
+        scrollToBottom = true;
+    }
+    
     func sendAction() {
+        NSLog("Did receive sendAction() tap")
         // Autocomplete text before sending #hack
         //textView.resignFirstResponder()
         //textView.becomeFirstResponder()
