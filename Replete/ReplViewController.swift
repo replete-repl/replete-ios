@@ -63,8 +63,8 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
                 toolBar.addConstraint(NSLayoutConstraint(item: evalButton, attribute: .right, relatedBy: .equal, toItem: toolBar, attribute: .right, multiplier: 1, constant: 0))
                 toolBar.addConstraint(NSLayoutConstraint(item: evalButton, attribute: .bottom, relatedBy: .equal, toItem: toolBar, attribute: .bottom, multiplier: 1, constant: -4.5))
-                evalButton.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .horizontal)
-                evalButton.setContentHuggingPriority(UILayoutPriorityRequired, for: .horizontal)
+                evalButton.setContentCompressionResistancePriority(UILayoutPriority.required, for: .horizontal)
+                evalButton.setContentHuggingPriority(UILayoutPriority.required, for: .horizontal)
             }
             return toolBar
         }
@@ -210,7 +210,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let currentText = textView.text
         if (range.location > 0 &&
             text == " " &&
-            currentText!.substring(with: currentText!.index(currentText!.startIndex, offsetBy: range.location-1)..<currentText!.index(currentText!.startIndex, offsetBy: range.location)) == " ") {
+            currentText![currentText!.index(currentText!.startIndex, offsetBy: range.location-1)..<currentText!.index(currentText!.startIndex, offsetBy: range.location)] == " ") {
             textView.text = (textView.text as NSString).replacingCharacters(in: range, with: " ")
             textView.selectedRange = NSMakeRange(range.location+1, 0);
             return false;
@@ -277,7 +277,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         evalButton.isEnabled = self.initialized && textView.hasText
     }
     
-    func keyboardWillShow(_ notification: Notification) {
+    @objc func keyboardWillShow(_ notification: Notification) {
         
         let userInfo = notification.userInfo as NSDictionary?
         let frameNew = (userInfo?[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
@@ -308,7 +308,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
-    func keyboardDidShow(_ notification: Notification) {
+    @objc func keyboardDidShow(_ notification: Notification) {
         
         let userInfo = notification.userInfo as NSDictionary?
         let frameNew = (userInfo?[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
@@ -328,7 +328,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func updateTextViewHeight() {
         let oldHeight = textView.frame.height
         let newText = textView.text
-        let newSize = (newText! as NSString).boundingRect(with: CGSize(width: textView.frame.width - textView.textContainerInset.right - textView.textContainerInset.left - 10, height: CGFloat.greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: textView.font!], context: nil)
+        let newSize = (newText! as NSString).boundingRect(with: CGSize(width: textView.frame.width - textView.textContainerInset.right - textView.textContainerInset.left - 10, height: CGFloat.greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: textView.font!], context: nil)
         let heightChange = newSize.height + textView.textContainerInset.top + textView.textContainerInset.bottom - oldHeight
         
         let maxHeightDeltas = toolBar.frame.height
@@ -364,18 +364,18 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
             let index: Int = text.distance(from: text.startIndex, to: range.lowerBound);
             let index2 = text.index(text.startIndex, offsetBy: index + 2);
             var color : UIColor = UIColor.black;
-            if (text.substring(from: index2).hasPrefix("34m")){
+            if (text[index2...].hasPrefix("34m")){
                 color = UIColor.blue;
-            } else if (text.substring(from: index2).hasPrefix("32m")){
+            } else if (text[index2...].hasPrefix("32m")){
                 color = UIColor(red: 0.0, green: 0.75, blue: 0.0, alpha: 1.0);
-            } else if (text.substring(from: index2).hasPrefix("35m")){
+            } else if (text[index2...].hasPrefix("35m")){
                 color = UIColor(red: 0.75, green: 0.0, blue: 0.75, alpha: 1.0);
-            } else if (text.substring(from: index2).hasPrefix("31m")){
+            } else if (text[index2...].hasPrefix("31m")){
                 color = UIColor(red: 1, green: 0.33, blue: 0.33, alpha: 1.0);
             }
             
             s.replaceCharacters(in: NSMakeRange(index, 5), with: "");
-            s.addAttribute(NSForegroundColorAttributeName,
+            s.addAttribute(NSAttributedStringKey.foregroundColor,
                            value: color,
                            range: NSMakeRange(index, s.length-index));
             return true;
@@ -429,8 +429,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         scrollToBottom = true;
     }
     
-    func sendAction() {
-        NSLog("Did receive sendAction() tap")
+    @objc func sendAction() {
         // Autocomplete text before sending #hack
         //textView.resignFirstResponder()
         //textView.becomeFirstResponder()
@@ -463,7 +462,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     // Handle actions #CopyMessage
     // 1. Select row and show "Copy" menu
-    func messageShowMenuAction(_ gestureRecognizer: UITapGestureRecognizer) {
+    @objc func messageShowMenuAction(_ gestureRecognizer: UITapGestureRecognizer) {
         let twoTaps = (gestureRecognizer.numberOfTapsRequired == 2)
         let doubleTap = (twoTaps && gestureRecognizer.state == .ended)
         let longPress = (!twoTaps && gestureRecognizer.state == .began)
@@ -479,13 +478,13 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     // 2. Copy text to pasteboard
-    func messageCopyTextAction(_ menuController: UIMenuController) {
+    @objc func messageCopyTextAction(_ menuController: UIMenuController) {
         let selectedIndexPath = tableView.indexPathForSelectedRow
         let selectedMessage = history.loadedMessages[selectedIndexPath!.section][selectedIndexPath!.row]
         UIPasteboard.general.string = selectedMessage.text.string
     }
     // 3. Deselect row
-    func menuControllerWillHide(_ notification: Notification) {
+    @objc func menuControllerWillHide(_ notification: Notification) {
         if let selectedIndexPath = tableView.indexPathForSelectedRow {
             tableView.deselectRow(at: selectedIndexPath, animated: false)
         }
