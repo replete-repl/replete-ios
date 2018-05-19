@@ -6,7 +6,7 @@
 set -e
 set -o pipefail
 
-export CLOSURE_RELEASE="20180204"
+export CLOSURE_RELEASE="20180319"
 script/get-closure-compiler
 
 cat <<EOF > bundle.c
