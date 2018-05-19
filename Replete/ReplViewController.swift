@@ -517,14 +517,14 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
 class InputTextView: UITextView {
     override func canPerformAction(_ action: Selector, withSender sender: Any!) -> Bool {
         if (delegate as! ReplViewController).tableView.indexPathForSelectedRow != nil {
-            return action == #selector(ReplViewController.messageCopyTextAction(_:))
+            return action == #selector(InputTextView.messageCopyTextAction(_:))
         } else {
             return super.canPerformAction(action, withSender: sender)
         }
     }
     
     // More specific than implementing `nextResponder` to return `delegate`, which might cause side effects?
-    func messageCopyTextAction(_ menuController: UIMenuController) {
+    @objc func messageCopyTextAction(_ menuController: UIMenuController) {
         (delegate as! ReplViewController).messageCopyTextAction(menuController)
     }
 }
