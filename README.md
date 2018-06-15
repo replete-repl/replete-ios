@@ -15,7 +15,7 @@ Interested in Android instead? See [Replicator](https://github.com/tahmidsadik11
 1. Clone [planck](https://github.com/mfikes/planck) into a sibling directory and build it.
 1. In the `ClojureScript/replete` directory, do `script/build`
 1. Do a `pod install` in the top level.
-1. `open Replete.xcworkspace` with Xcode 7.3.1 and run the app on a device or in the simulator.
+1. `open Replete.xcworkspace` with Xcode and run the app on a device or in the simulator.
 
 # Contributing
 
