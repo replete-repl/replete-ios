@@ -11,13 +11,13 @@
   "Returns the var to which a symbol will be resolved in the namespace,
   else nil."
   [ns sym]
-  (repl/ns-resolve ns sym))
+  (#'repl/ns-resolve ns sym))
 
 (defn resolve
   "Returns the var to which a symbol will be resolved in the current
   namespace, else nil."
   [sym]
-  (repl/resolve sym))
+  (#'repl/resolve sym))
 
 (defn intern
   "Finds or creates a var named by the symbol name in the namespace
@@ -25,6 +25,6 @@
   to val if supplied. The namespace must exist. The var will adopt any
   metadata from the name symbol.  Returns the var."
   ([ns name]
-   (repl/intern ns name))
+   (#'repl/intern ns name))
   ([ns name val]
-   (repl/intern ns name val)))
+   (#'repl/intern ns name val)))

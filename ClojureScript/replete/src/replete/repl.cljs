@@ -524,7 +524,7 @@
   ;; after newlines with two.
   (when-not (nil? s)
     (if (re-find #"[^\n]*\n\n?      ?\S.*" s)
-      (s/replace-all s #"\n      ?" "\n  ")
+      (s/replace s #"\n      ?" "\n  ")
       s)))
 
 (defn- doc*
