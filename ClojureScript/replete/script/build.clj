@@ -23,8 +23,10 @@
 
 (defn copy-source
   [path]
-  (spit (str "out/" path)
-    (slurp (io/resource path))))
+  (let [target (io/file "out" path)]
+    (io/make-parents path)
+    (spit target
+      (slurp (io/resource path)))))
 
 (copy-source "cljs/test.cljc")
 (copy-source "cljs/spec/alpha.cljc")
@@ -34,6 +36,8 @@
 (copy-source "clojure/template.clj")
 (copy-source "cljs/core/async/macros.cljc")
 (copy-source "cljs/core/async/impl/ioc_macros.clj")
+(copy-source "cljs/core/specs/alpha.cljc")
+(copy-source "cljs/core/specs/alpha.cljs")
 
 (let [res (io/resource "cljs/core.cljs.cache.aot.edn")
       cache (read-string (slurp res))]
