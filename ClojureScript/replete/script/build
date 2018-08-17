@@ -1,4 +1,33 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# Make sure we fail and exit on the command that actually failed.
+set -e
+set -o pipefail
+
+FAST_PLANCK=''
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --fast)
+      export FAST_PLANCK="--fast"
+      export FAST_BUILD=1
+      shift
+      ;;
+  esac
+done
+
+cd ../../../
+if [ ! -e planck ]; then
+  curl -L https://github.com/planck-repl/planck/archive/master.tar.gz | gunzip | tar x
+  ln -s planck-master planck
+fi
+cd -
+
+cd ../../../planck
+if [ ! -e planck-c/build/planck ]; then
+  osascript -e 'display notification "Building planck..." with title "Replete"'
+  script/build $FAST_PLANCK
+fi
+cd -
 
 mkdir -p aot-cache
 lein deps
@@ -13,10 +42,8 @@ echo "AOT compiling macros"
   'cljs.core.async.impl.ioc-macros)
 REPL_INPUT
 
-mkdir -p out/clojure
 mkdir -p out/clojure/test/check
 mkdir -p out/cljs/analyzer
-mkdir -p out/cljs/spec
 mkdir -p out/cljs/spec/test
 mkdir -p out/cljs/spec/gen
 mkdir -p out/cljs/core/async/impl
@@ -33,15 +60,16 @@ cp ../../../planck/planck-cljs/out/cljs/spec/gen/alpha\$macros.js out/cljs/spec/
 cp ../../../planck/planck-cljs/out/cljs/test\$macros.cache.json out/cljs/test\$macros.cljc.cache.json
 cp ../../../planck/planck-cljs/out/cljs/test\$macros.js out/cljs/test\$macros.js
 
+# Note: --fast will cause some of these files to be missing.  These have been marked optional via '|| true'.
 cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_clojure_test\$macros.cache.json out/clojure/test/check/clojure_test\$macros.cljc.cache.json
 cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_clojure_test\$macros.js out/clojure/test/check/clojure_test\$macros.js
-cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_clojure_test\$macros.js.map.json out/clojure/test/check/clojure_test\$macros.cljc.map.json
+cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_clojure_test\$macros.js.map.json out/clojure/test/check/clojure_test\$macros.cljc.map.json || true
 cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_properties\$macros.cache.json out/clojure/test/check/properties\$macros.cljc.cache.json
 cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_properties\$macros.js out/clojure/test/check/properties\$macros.js
 cp aot-cache/clojure_SLASH_test_SLASH_check_SLASH_properties\$macros.js.map.json out/clojure/test/check/properties\$macros.cljc.map.json
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.cache.json out/cljs/core/async/impl/ioc_macros\$macros.clj.cache.json
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.js out/cljs/core/async/impl/ioc_macros\$macros.js
-cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.js.map.json out/cljs/core/async/impl/ioc_macros\$macros.clj.map.json
+cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_impl_SLASH_ioc_macros\$macros.js.map.json out/cljs/core/async/impl/ioc_macros\$macros.clj.map.json || true
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_macros\$macros.cache.json out/cljs/core/async/macros\$macros.cljc.cache.json
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_macros\$macros.js out/cljs/core/async/macros\$macros.js
 cp aot-cache/cljs_SLASH_core_SLASH_async_SLASH_macros\$macros.js.map.json out/cljs/core/async/macros\$macros.cljc.map.json
@@ -50,6 +78,7 @@ cp aot-cache/cljs_SLASH_core_SLASH_async\$macros.js out/cljs/core/async\$macros.
 cp aot-cache/cljs_SLASH_core_SLASH_async\$macros.js.map.json out/cljs/core/async\$macros.cljc.map.json
 
 echo "Compiling ClojureScript"
+osascript -e 'display notification "Compiling ClojureScript..." with title "Replete"'
 lein run -m clojure.main script/build.clj
 
 script/bundle
