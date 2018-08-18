@@ -25,13 +25,13 @@ EOF
 
 CLOSURE_OPTIMIZATIONS="${CLOSURE_OPTIMIZATIONS:-SIMPLE}"
 
-if [ $FAST_BUILD == "1" ]
+if [ "$FAST_BUILD" == "1" ]
 then
   echo "Because this is a fast build, setting Closure Optimizations to NONE"
   CLOSURE_OPTIMIZATIONS=NONE
 fi
 
-if [ $CLOSURE_OPTIMIZATIONS != "NONE" ]
+if [ "$CLOSURE_OPTIMIZATIONS" != "NONE" ]
 then
   echo "### Optimizing bundled JavaScript with Closure Optimizations:" $CLOSURE_OPTIMIZATIONS
 fi
@@ -44,11 +44,11 @@ for file in `find . -name '*.js' -o -name '*.cljs' -o -name '*.cljc' -o -name '*
 do 
 file=${file:2}
 cp -p $file $file.bak
-if [ $CLOSURE_OPTIMIZATIONS != "NONE" ] && [ ${file: -3} == ".js" ] && [ "${file: -7}" != "deps.js" ] && [ "${file: -9}" != "bundle.js" ] && [ "${file: -6}" != "csv.js" ] && [ "${file: -19}" != "performancetimer.js" ]
+if [ "$CLOSURE_OPTIMIZATIONS" != "NONE" ] && [ ${file: -3} == ".js" ] && [ "${file: -7}" != "deps.js" ] && [ "${file: -9}" != "bundle.js" ] && [ "${file: -6}" != "csv.js" ] && [ "${file: -19}" != "performancetimer.js" ]
 then
   if [ ! -f $file.optim ] || [ $file -nt $file.optim ]
   then
-    osascript -e 'display notification "Closure compiling $file" with title "Replete"'
+    osascript -e "display notification \"Closure compiling $file\" with title \"Replete\""
     java -jar ../compiler/closure-compiler-v$CLOSURE_RELEASE.jar --compilation_level $CLOSURE_OPTIMIZATIONS --language_in ECMASCRIPT3 --language_out ECMASCRIPT3 --process_closure_primitives false --js $file --js_output_file $file.optim
     echo -n "."
   fi
@@ -74,7 +74,7 @@ cat <<EOF >> ../bundle_dict.c
 EOF
 done
 
-if [ $CLOSURE_OPTIMIZATIONS != "NONE" ]
+if [ "$CLOSURE_OPTIMIZATIONS" != "NONE" ]
 then
   echo
 fi

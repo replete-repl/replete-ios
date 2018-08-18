@@ -4,6 +4,17 @@
 set -e
 set -o pipefail
 
+# Ensure pkg-config can find libs installed by homebrew.
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig/:/opt/local/lib/pkgconfig/
+
+# Check on some build dependencies:
+which pkg-config >/dev/null || $( echo "Error: please \"brew install pkg-config\"" >&2 ; exit 1 )
+which cmake >/dev/null || $( echo "Error: please \"brew install cmake\"" >&2 ; exit 1 )
+pkg-config zlib || $( echo "Error: please \"brew install zlib\"" >&2 ; exit 1 )
+pkg-config libzip || $( echo "Error: please \"brew install libzip\"" >&2 ; exit 1 )
+pkg-config icu-uc || $( echo "Error: please \"brew install icu4c\"" >&2 ; exit 1 )
+
+# Parse the command-line options:
 FAST_PLANCK=''
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -15,8 +26,10 @@ while [ $# -gt 0 ]; do
   esac
 done
 
+# Fetch and build planck:
 cd ../../../
 if [ ! -e planck ]; then
+  echo "Fetching planck"
   curl -L https://github.com/planck-repl/planck/archive/master.tar.gz | gunzip | tar x
   ln -s planck-master planck
 fi
@@ -24,6 +37,7 @@ cd -
 
 cd ../../../planck
 if [ ! -e planck-c/build/planck ]; then
+  echo "Building planck"
   osascript -e 'display notification "Building planck..." with title "Replete"'
   script/build $FAST_PLANCK
 fi
