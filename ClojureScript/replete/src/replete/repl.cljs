@@ -23,6 +23,9 @@
             [replete.repl-resources :refer [special-doc-map repl-special-doc-map]]
             [cljs.compiler :as comp]))
 
+;; Prefer ES6 Number.isInteger
+(set! integer? (or (.-isInteger js/Number) integer?))
+
 (def DEBUG false)
 
 (defonce st (cljs/empty-state))
