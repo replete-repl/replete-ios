@@ -49,11 +49,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>69</string>
+	<string>79</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<false/>
 	<key>UIFileSharingEnabled</key>
 	<false/>
 	<key>UILaunchStoryboardName</key>

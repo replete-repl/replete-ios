@@ -28,6 +28,7 @@
     (spit target
       (slurp (io/resource path)))))
 
+(copy-source "chivorcam/core.cljc")
 (copy-source "cljs/test.cljc")
 (copy-source "cljs/spec/alpha.cljc")
 (copy-source "cljs/spec/test/alpha.cljc")

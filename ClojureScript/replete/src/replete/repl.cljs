@@ -632,6 +632,9 @@
   [expression-form]
   (call-form? expression-form '#{def defn defn- defonce defmulti}))
 
+(defn ^:export chivorcam-referred []
+  (boolean (get-in @st [::ana/namespaces @current-ns :use-macros 'defmacfn])))
+
 (defn ^:export read-eval-print
   ([source]
    (read-eval-print source true))

@@ -18,10 +18,13 @@
 
 @property (assign, nonatomic) JSContext* context;
 @property (strong, nonatomic) JSValue* readEvalPrintFn;
+@property (strong, nonatomic) JSValue* chivorcamReferred;
 @property (strong, nonatomic) JSValue* formatFn;
 @property (strong, nonatomic) JSValue* setWidthFn;
 @property (nonatomic, copy) void (^myPrintCallback)(BOOL, NSString*);
 @property BOOL initialized;
+@property BOOL consentedToChivorcam;
+@property BOOL suppressPrinting;
 @property NSString *codeToBeEvaluatedWhenReady;
 
 @end
@@ -579,11 +582,18 @@ void bootstrap(JSContextRef ctx) {
     self.setWidthFn = [self getValue:@"set-width" inNamespace:@"replete.repl" fromContext:self.context];
     NSAssert(!self.setWidthFn.isUndefined, @"Could not find the set-width function");
     
+    self.chivorcamReferred = [self getValue:@"chivorcam-referred" inNamespace:@"replete.repl" fromContext:self.context];
+    NSAssert(!self.chivorcamReferred.isUndefined, @"Could not find the chivorcam-referred function");
+    
+    self.suppressPrinting = false;
+    
     self.context[@"REPLETE_PRINT_FN"] = ^(NSString *message) {
 //        NSLog(@"repl out: %@", message);
         if (self.initialized) {
             if (self.myPrintCallback) {
-                self.myPrintCallback(true, message);
+                if (!self.suppressPrinting) {
+                    self.myPrintCallback(true, message);
+                }
             } else {
                 NSLog(@"printed without callback set: %@", message);
             }
@@ -597,6 +607,8 @@ void bootstrap(JSContextRef ctx) {
     [self.context evaluateScript:@"var window = global;"];
     
     self.initialized = true;
+    
+    self.consentedToChivorcam = false;
     
     [self updateWidth];
 
@@ -646,11 +658,79 @@ void bootstrap(JSContextRef ctx) {
     [self evaluate:text asExpression:YES];
 }
 
+- (void)defmacroCalled:(NSString*)text
+{
+    if (self.consentedToChivorcam) {
+        self.suppressPrinting = true;
+        [self.readEvalPrintFn callWithArguments:@[@"(require '[chivorcam.core :refer [defmacro defmacfn]])"]];
+        self.suppressPrinting = false;
+        [self.readEvalPrintFn callWithArguments:@[text, @true]];
+    } else {
+        UIAlertController * alert = [UIAlertController
+                                     alertControllerWithTitle:@"Enable REPL\nMacro Definitions?"
+                                     message:@""
+                                     preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* noButton = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction * action) {
+                                   }];
+        
+        UIAlertAction* yesButton = [UIAlertAction
+                                    actionWithTitle:@"OK"
+                                    style:UIAlertActionStyleDefault
+                                    handler:^(UIAlertAction * action) {
+                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                                            self.consentedToChivorcam = true;
+                                            self.suppressPrinting = true;
+                                            [self.readEvalPrintFn callWithArguments:@[@"(require '[chivorcam.core :refer [defmacro defmacfn]])"]];
+                                            self.suppressPrinting = false;
+                                            [self.readEvalPrintFn callWithArguments:@[text, @true]];
+                                        });
+                                    }];
+        
+        [alert addAction:noButton];
+        [alert addAction:yesButton];
+       
+        NSString* message = @"ClojureScript macros must be defined in a separate namespace and required appropriately."
+        "\n\nFor didactic purposes, we can support defining macros directly in the Replete REPL. "
+        "\n\nAny helper functions called during macroexpansion must be defined using defmacfn in lieu of defn.";
+        
+        NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc] init];
+        paraStyle.alignment = NSTextAlignmentLeft;
+        
+        NSMutableAttributedString *atrStr = [[NSMutableAttributedString alloc] initWithString:message attributes:@{NSParagraphStyleAttributeName:paraStyle,NSFontAttributeName:[UIFont systemFontOfSize:14.0]}];
+        
+        [atrStr addAttribute:NSFontAttributeName value:[UIFont italicSystemFontOfSize:14] range:[message rangeOfString:@"during"]];
+        [atrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Menlo" size:14] range:[message rangeOfString:@"defmacfn"]];
+        [atrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Menlo" size:14] range:[message rangeOfString:@"defn"]];
+        
+        [alert setValue:atrStr forKey:@"attributedMessage"];
+        
+        // Left justify text
+        NSArray *subViewArray = alert.view.subviews;
+        for(int x = 0; x < [subViewArray count]; x++){
+            if([[[subViewArray objectAtIndex:x] class] isSubclassOfClass:[UILabel class]]) {
+                UILabel *label = [subViewArray objectAtIndex:x];
+                label.textAlignment = NSTextAlignmentLeft;
+            }
+        }
+        
+        [self.window.rootViewController presentViewController:alert animated:YES completion:nil];
+    }
+}
+
 -(void)evaluate:(NSString*)text asExpression:(BOOL)expression
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        [self.readEvalPrintFn callWithArguments:@[text, @(expression)]];
-    });
+    if (([text hasPrefix:@"(defmacro"] || [text hasPrefix:@"(defmacfn"])
+        && ![self.chivorcamReferred callWithArguments:@[]].toBool) {
+        [self defmacroCalled:text];
+    } else {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+            [self.readEvalPrintFn callWithArguments:@[text, @(expression)]];
+        });
+    }
 }
 
 -(NSArray*)parinferFormat:(NSString*)text pos:(int)pos enterPressed:(BOOL)enterPressed

@@ -1,5 +1,6 @@
 (defproject replete "0.1.0"
   :dependencies [[andare "0.9.0"]                           ; Update in script/build also
+                 [chivorcam "0.3.0"]
                  [cljsjs/parinfer "1.8.1-0"]
                  [com.cognitect/transit-clj "0.8.309"]
                  [com.cognitect/transit-cljs "0.8.248"]
