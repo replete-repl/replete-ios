@@ -48,14 +48,27 @@
   [kw theme text]
   [:span [:pass (kw theme)] [:text text] [:pass (:reset-font theme)]])
 
+(defn- visit-default
+  "Delegates to ClojureScript for printing a value."
+  [x]
+  [:text (binding [*print-meta* false] (pr-str x))])
+
 (defrecord RepletePrinter [symbols print-meta print-length print-level print-namespace-maps theme]
 
   fipp.visit/IVisitor
 
   (visit-unknown [this x]
     (cond
+      (instance? Atom x)
+      (pretty-coll this "#object [" ['cljs.core.Atom {:val @x}] :line "]" visit)
+      (instance? Volatile x)
+      (pretty-coll this "#object [" ['cljs.core.Volatile {:val @x}] :line "]" visit)
+      (satisfies? IPrintWithWriter x)
+      (visit-default x)
       (instance? Eduction x)
-      (visit this (sequence x))
+      (if print-length
+        (fipp.visit/visit-seq this (into [] (take (inc print-length)) x))
+        (visit this (sequence x)))
       (array? x)
       (pretty-coll this "#js [" x :line "]" visit)
       (object? x)
@@ -67,9 +80,8 @@
           (fn [printer [k v]]
             [:span (visit printer k) " " (visit printer v)])))
       :else
-      [:text (binding [*print-meta* false] (pr-str x))]))
-
-
+      (visit-default x)))
+  
   (visit-nil [this]
     (wrap-theme :results-font theme "nil"))
 
