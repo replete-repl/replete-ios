@@ -26,6 +26,14 @@
 ;; Prefer ES6 Number.isInteger
 (set! integer? (or (.-isInteger js/Number) integer?))
 
+;; Monkey patch target-specific core fns
+
+(set! array? (fn [x] (instance? js/Array x)))
+
+(set! find-ns-obj (fn [ns] (let [munged-ns (munge (str ns))
+                                 segs (.split munged-ns ".")]
+                             (find-ns-obj* goog/global segs))))
+
 (def DEBUG false)
 
 (defonce st (cljs/empty-state))
