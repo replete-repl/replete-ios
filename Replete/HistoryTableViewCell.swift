@@ -40,7 +40,7 @@ class HistoryTableViewCell: UITableViewCell {
         if (message.incoming) {
             messageLabel.textColor = UIColor.black;
         } else {
-            messageLabel.textColor = UIColor.gray;
+            messageLabel.textColor = UIColor.darkGray;
         }
 
         messageLabel.attributedText = message.text
