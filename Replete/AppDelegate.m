@@ -11,6 +11,7 @@
 #import "AppDelegate.h"
 #include <Foundation/Foundation.h>
 #include <JavaScriptCore/JavaScriptCore.h>
+#include <mach/mach_time.h>
 #include "bundle.h"
 
 
@@ -586,6 +587,13 @@ void bootstrap(JSContextRef ctx) {
     NSAssert(!self.chivorcamReferred.isUndefined, @"Could not find the chivorcam-referred function");
     
     self.suppressPrinting = false;
+    
+    self.context[@"REPLETE_HIGH_RES_TIMER"] = ^() {
+        return mach_absolute_time() / 1e6;
+    };
+    
+    // Monkey patch cljs.core/system-time to use Replete's high-res timer
+    [self.context evaluateScript:@"cljs.core.system_time = REPLETE_HIGH_RES_TIMER;"];
     
     self.context[@"REPLETE_PRINT_FN"] = ^(NSString *message) {
 //        NSLog(@"repl out: %@", message);
