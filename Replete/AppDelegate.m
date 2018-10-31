@@ -589,7 +589,13 @@ void bootstrap(JSContextRef ctx) {
     self.suppressPrinting = false;
     
     self.context[@"REPLETE_HIGH_RES_TIMER"] = ^() {
-        return mach_absolute_time() / 1e6;
+        static mach_timebase_info_data_t    sTimebaseInfo;
+        if ( sTimebaseInfo.denom == 0 ) {
+            (void) mach_timebase_info(&sTimebaseInfo);
+        }
+        uint64_t now = mach_absolute_time();
+        uint64_t now_nanos = now * sTimebaseInfo.numer / sTimebaseInfo.denom;
+        return now_nanos / 1e6;
     };
     
     // Monkey patch cljs.core/system-time to use Replete's high-res timer
