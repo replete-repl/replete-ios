@@ -8,7 +8,7 @@
                  [tailrecursion/cljson "1.0.7"]
                  [malabarba/lazy-map "1.3"]
                  [org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.339"]
+                 [org.clojure/clojurescript "1.10.439"]
                  [org.clojure/test.check "0.10.0-alpha2"]] 
   :clean-targets ["out" "target"]
   :plugins [[lein-cljsbuild "1.1.7"]]
