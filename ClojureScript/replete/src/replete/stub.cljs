@@ -2,4 +2,5 @@
  (:require
   replete.bundle 
   replete.repl
-  replete.core))
+  replete.core
+  replete.http))
