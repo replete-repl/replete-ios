@@ -13,6 +13,9 @@
 #include <JavaScriptCore/JavaScriptCore.h>
 #include <mach/mach_time.h>
 #include "jsc_utils.h"
+#include "functions.h"
+#include "io.h"
+#include "http.h"
 #include "bundle.h"
 
 
@@ -504,6 +507,70 @@ void bootstrap(JSContextRef ctx) {
                     delete REPLETE_INTERVAL_CALLBACK_STORE[id];\
                     };",
                     "<init>");
+    
+    register_global_function(ctx, "REPLETE_READ_FILE", function_read_file);
+    //register_global_function(ctx, "REPLETE_LOAD", function_load);
+    //register_global_function(ctx, "REPLETE_LOAD_DEPS_CLJS_FILES", function_load_deps_cljs_files);
+    //register_global_function(ctx, "REPLETE_LOAD_DATA_READERS_FILES", function_load_data_readers_files);
+    //register_global_function(ctx, "REPLETE_LOAD_FROM_JAR", function_load_from_jar);
+    //register_global_function(ctx, "REPLETE_CACHE", function_cache);
+    
+    register_global_function(ctx, "REPLETE_EVAL", function_eval);
+    
+    //register_global_function(ctx, "REPLETE_GET_TERM_SIZE", function_get_term_size);
+    
+    //register_global_function(ctx, "REPLETE_EXIT_WITH_VALUE", function_exit_with_value);
+    
+    //register_global_function(ctx, "REPLETE_RAW_READ_STDIN", function_raw_read_stdin);
+    //register_global_function(ctx, "REPLETE_RAW_WRITE_STDOUT", function_raw_write_stdout);
+    //register_global_function(ctx, "REPLETE_RAW_FLUSH_STDOUT", function_raw_flush_stdout);
+    //register_global_function(ctx, "REPLETE_RAW_WRITE_STDERR", function_raw_write_stderr);
+    //register_global_function(ctx, "REPLETE_RAW_FLUSH_STDERR", function_raw_flush_stderr);
+    
+    //register_global_function(ctx, "REPLETE_FILE_READER_OPEN", function_file_reader_open);
+    //register_global_function(ctx, "REPLETE_FILE_READER_READ", function_file_reader_read);
+    //register_global_function(ctx, "REPLETE_FILE_READER_CLOSE", function_file_reader_close);
+    
+    //register_global_function(ctx, "REPLETE_FILE_WRITER_OPEN", function_file_writer_open);
+    //register_global_function(ctx, "REPLETE_FILE_WRITER_WRITE", function_file_writer_write);
+    //register_global_function(ctx, "REPLETE_FILE_WRITER_FLUSH", function_file_writer_flush);
+    //register_global_function(ctx, "REPLETE_FILE_WRITER_CLOSE", function_file_writer_close);
+    
+    register_global_function(ctx, "REPLETE_FILE_INPUT_STREAM_OPEN", function_file_input_stream_open);
+    register_global_function(ctx, "REPLETE_FILE_INPUT_STREAM_READ", function_file_input_stream_read);
+    register_global_function(ctx, "REPLETE_FILE_INPUT_STREAM_CLOSE", function_file_input_stream_close);
+    
+    register_global_function(ctx, "REPLETE_FILE_OUTPUT_STREAM_OPEN", function_file_output_stream_open);
+    register_global_function(ctx, "REPLETE_FILE_OUTPUT_STREAM_WRITE", function_file_output_stream_write);
+    register_global_function(ctx, "REPLETE_FILE_OUTPUT_STREAM_FLUSH", function_file_output_stream_flush);
+    register_global_function(ctx, "REPLETE_FILE_OUTPUT_STREAM_CLOSE", function_file_output_stream_close);
+    
+    register_global_function(ctx, "REPLETE_MKDIRS", function_mkdirs);
+    register_global_function(ctx, "REPLETE_DELETE", function_delete_file);
+    register_global_function(ctx, "REPLETE_COPY", function_copy_file);
+    
+    register_global_function(ctx, "REPLETE_LIST_FILES", function_list_files);
+    
+    register_global_function(ctx, "REPLETE_IS_DIRECTORY", function_is_directory);
+    
+    register_global_function(ctx, "REPLETE_FSTAT", function_fstat);
+    
+    register_global_function(ctx, "REPLETE_REQUEST", function_http_request);
+    
+    //register_global_function(ctx, "REPLETE_READ_PASSWORD", function_read_password);
+    
+    //register_global_function(ctx, "REPLETE_HIGH_RES_TIMER", function_high_res_timer);
+    
+    //register_global_function(ctx, "REPLETE_SOCKET_CONNECT", function_socket_connect);
+    //register_global_function(ctx, "REPLETE_SOCKET_LISTEN", function_socket_listen);
+    //register_global_function(ctx, "REPLETE_SOCKET_WRITE", function_socket_write);
+    //register_global_function(ctx, "REPLETE_SOCKET_CLOSE", function_socket_close);
+    
+    register_global_function(ctx, "REPLETE_SLEEP", function_sleep);
+    
+    //register_global_function(ctx, "REPLETE_SIGNAL_TASK_COMPLETE", function_signal_task_complete);
+    
+    //register_global_function(ctx, "REPLETE_GETENV", function_getenv);
 }
 
 - (void)initializeJavaScriptEnvironment {

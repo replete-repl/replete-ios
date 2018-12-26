@@ -17,6 +17,8 @@
 		ED1A8FDB1F3F45B1005B6E60 /* bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = ED1A8FD91F3F45B1005B6E60 /* bundle.c */; };
 		ED4ED03C21D2E8A100821419 /* jsc_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = ED4ED03A21D2E8A100821419 /* jsc_utils.c */; };
 		ED4ED03E21D3ABAA00821419 /* libnghttp2_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */; };
+		ED4ED04121D3AEF200821419 /* functions.c in Sources */ = {isa = PBXBuildFile; fileRef = ED4ED03F21D3AEF200821419 /* functions.c */; };
+		ED4ED04421D3AFD400821419 /* file.c in Sources */ = {isa = PBXBuildFile; fileRef = ED4ED04221D3AFD400821419 /* file.c */; };
 		ED76745421D2C5B200B33060 /* io.c in Sources */ = {isa = PBXBuildFile; fileRef = ED76745221D2C5B200B33060 /* io.c */; };
 		ED76745721D2C63200B33060 /* http.c in Sources */ = {isa = PBXBuildFile; fileRef = ED76745621D2C63200B33060 /* http.c */; };
 		ED76745B21D2E22600B33060 /* libcurl_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED76745A21D2E22600B33060 /* libcurl_iOS.a */; };
@@ -59,6 +61,10 @@
 		ED4ED03A21D2E8A100821419 /* jsc_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = jsc_utils.c; sourceTree = "<group>"; };
 		ED4ED03B21D2E8A100821419 /* jsc_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsc_utils.h; sourceTree = "<group>"; };
 		ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnghttp2_iOS.a; path = Replete/nghttp2/lib/libnghttp2_iOS.a; sourceTree = "<group>"; };
+		ED4ED03F21D3AEF200821419 /* functions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = functions.c; sourceTree = "<group>"; };
+		ED4ED04021D3AEF200821419 /* functions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = functions.h; sourceTree = "<group>"; };
+		ED4ED04221D3AFD400821419 /* file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = file.c; sourceTree = "<group>"; };
+		ED4ED04321D3AFD400821419 /* file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = file.h; sourceTree = "<group>"; };
 		ED76745221D2C5B200B33060 /* io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = io.c; sourceTree = "<group>"; };
 		ED76745321D2C5B200B33060 /* io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = io.h; sourceTree = "<group>"; };
 		ED76745521D2C63100B33060 /* http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http.h; sourceTree = "<group>"; };
@@ -72,6 +78,7 @@
 		ED93310D1B401411004B09FD /* HistoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HistoryTableViewCell.swift; sourceTree = "<group>"; };
 		ED9331111B40151A004B09FD /* History.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
 		ED9331121B40151A004B09FD /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		EDF5F9F521D3B17E00A81DF7 /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = usr/lib/libicucore.tbd; sourceTree = SDKROOT; };
 		EDFFAC3A1F3FE38700AADBDA /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		FC809025F4AED9EEED53D5FC /* libPods-Replete.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Replete.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -112,6 +119,7 @@
 		DBA6446E3C68D11D9E9A7EF6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EDF5F9F521D3B17E00A81DF7 /* libicucore.tbd */,
 				ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */,
 				ED76745C21D2E24400B33060 /* libcrypto.a */,
 				ED76745D21D2E24400B33060 /* libssl.a */,
@@ -160,6 +168,10 @@
 				ED1A8FD81F3F45A0005B6E60 /* bundle_inflate.h */,
 				ED1A8FDA1F3F45B1005B6E60 /* bundle.h */,
 				ED1A8FD91F3F45B1005B6E60 /* bundle.c */,
+				ED4ED04321D3AFD400821419 /* file.h */,
+				ED4ED04221D3AFD400821419 /* file.c */,
+				ED4ED04021D3AEF200821419 /* functions.h */,
+				ED4ED03F21D3AEF200821419 /* functions.c */,
 				ED76745321D2C5B200B33060 /* io.h */,
 				ED76745221D2C5B200B33060 /* io.c */,
 				ED76745521D2C63100B33060 /* http.h */,
@@ -324,6 +336,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED93310F1B401411004B09FD /* HistoryTableViewCell.swift in Sources */,
+				ED4ED04121D3AEF200821419 /* functions.c in Sources */,
 				ED9331131B40151A004B09FD /* History.swift in Sources */,
 				ED1A8FDB1F3F45B1005B6E60 /* bundle.c in Sources */,
 				ED93310C1B4013F0004B09FD /* ReplViewController.swift in Sources */,
@@ -333,6 +346,7 @@
 				ED9331141B40151A004B09FD /* Message.swift in Sources */,
 				ED06DC271B3F62E800100331 /* main.m in Sources */,
 				ED76745721D2C63200B33060 /* http.c in Sources */,
+				ED4ED04421D3AFD400821419 /* file.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
