@@ -10,6 +10,13 @@ Available [on the App Store](https://itunes.apple.com/us/app/replete/id101346563
 
 Earlier post: [Replete: A Standalone iOS CLJS REPL](http://blog.fikesfarm.com/posts/2015-06-27-replete-a-standalone-ios-cljs-repl.html).
 
+# Build Curl for iOS
+
+1. Clone `https://github.com/jasonacox/Build-OpenSSL-cURL`
+1. Go into that project and run `./build.sh`
+1. Copy the resulting `curl`, `openssl` and `nghttp2` directories into the `Replete` directory.
+1. The Xcode project is already set up to look in these directories for headers and static libs.
+
 # Running
 
 1. Clone [planck](https://github.com/mfikes/planck) into a sibling directory and build it.

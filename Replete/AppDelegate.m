@@ -12,6 +12,7 @@
 #include <Foundation/Foundation.h>
 #include <JavaScriptCore/JavaScriptCore.h>
 #include <mach/mach_time.h>
+#include "jsc_utils.h"
 #include "bundle.h"
 
 
@@ -61,25 +62,6 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-}
-
-JSValueRef evaluate_script(JSContextRef ctx, char *script, char *source) {
-    JSStringRef script_ref = JSStringCreateWithUTF8CString(script);
-    JSStringRef source_ref = NULL;
-    if (source != NULL) {
-        source_ref = JSStringCreateWithUTF8CString(source);
-    }
-    
-    JSValueRef ex = NULL;
-    JSValueRef val = JSEvaluateScript(ctx, script_ref, NULL, source_ref, 0, &ex);
-    JSStringRelease(script_ref);
-    if (source != NULL) {
-        JSStringRelease(source_ref);
-    }
-    
-    // debug_print_value("evaluate_script", ctx, ex);
-    
-    return val;
 }
 
 void register_global_function(JSContextRef ctx, char *name, JSObjectCallAsFunctionCallback handler) {

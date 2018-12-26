@@ -9,3 +9,6 @@ ClojureScript/replete/.idea
 ClojureScript/replete/replete.iml
 ClojureScript/replete/aot-cache
 /ClojureScript/replete/compiler
+/Replete/curl
+/Replete/openssl
+/Replete/nghttp2

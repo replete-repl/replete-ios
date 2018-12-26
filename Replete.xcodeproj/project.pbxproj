@@ -15,6 +15,13 @@
 		ED06DC351B3F62E800100331 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED06DC331B3F62E800100331 /* LaunchScreen.xib */; };
 		ED06DC411B3F62E800100331 /* RepleteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED06DC401B3F62E800100331 /* RepleteTests.m */; };
 		ED1A8FDB1F3F45B1005B6E60 /* bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = ED1A8FD91F3F45B1005B6E60 /* bundle.c */; };
+		ED4ED03C21D2E8A100821419 /* jsc_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = ED4ED03A21D2E8A100821419 /* jsc_utils.c */; };
+		ED4ED03E21D3ABAA00821419 /* libnghttp2_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */; };
+		ED76745421D2C5B200B33060 /* io.c in Sources */ = {isa = PBXBuildFile; fileRef = ED76745221D2C5B200B33060 /* io.c */; };
+		ED76745721D2C63200B33060 /* http.c in Sources */ = {isa = PBXBuildFile; fileRef = ED76745621D2C63200B33060 /* http.c */; };
+		ED76745B21D2E22600B33060 /* libcurl_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED76745A21D2E22600B33060 /* libcurl_iOS.a */; };
+		ED76745E21D2E24400B33060 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED76745C21D2E24400B33060 /* libcrypto.a */; };
+		ED76745F21D2E24400B33060 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED76745D21D2E24400B33060 /* libssl.a */; };
 		ED93310C1B4013F0004B09FD /* ReplViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED93310B1B4013F0004B09FD /* ReplViewController.swift */; };
 		ED93310F1B401411004B09FD /* HistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED93310D1B401411004B09FD /* HistoryTableViewCell.swift */; };
 		ED9331131B40151A004B09FD /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9331111B40151A004B09FD /* History.swift */; };
@@ -49,6 +56,17 @@
 		ED1A8FD81F3F45A0005B6E60 /* bundle_inflate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bundle_inflate.h; sourceTree = "<group>"; };
 		ED1A8FD91F3F45B1005B6E60 /* bundle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bundle.c; sourceTree = "<group>"; };
 		ED1A8FDA1F3F45B1005B6E60 /* bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundle.h; sourceTree = "<group>"; };
+		ED4ED03A21D2E8A100821419 /* jsc_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = jsc_utils.c; sourceTree = "<group>"; };
+		ED4ED03B21D2E8A100821419 /* jsc_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsc_utils.h; sourceTree = "<group>"; };
+		ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnghttp2_iOS.a; path = Replete/nghttp2/lib/libnghttp2_iOS.a; sourceTree = "<group>"; };
+		ED76745221D2C5B200B33060 /* io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = io.c; sourceTree = "<group>"; };
+		ED76745321D2C5B200B33060 /* io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = io.h; sourceTree = "<group>"; };
+		ED76745521D2C63100B33060 /* http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http.h; sourceTree = "<group>"; };
+		ED76745621D2C63200B33060 /* http.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = http.c; sourceTree = "<group>"; };
+		ED76745821D2E21300B33060 /* curl */ = {isa = PBXFileReference; lastKnownFileType = folder; name = curl; path = Replete/curl; sourceTree = "<group>"; };
+		ED76745A21D2E22600B33060 /* libcurl_iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_iOS.a; path = Replete/curl/lib/libcurl_iOS.a; sourceTree = "<group>"; };
+		ED76745C21D2E24400B33060 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Replete/openssl/iOS/lib/libcrypto.a; sourceTree = "<group>"; };
+		ED76745D21D2E24400B33060 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Replete/openssl/iOS/lib/libssl.a; sourceTree = "<group>"; };
 		ED93310A1B4013EF004B09FD /* Replete-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Replete-Bridging-Header.h"; sourceTree = "<group>"; };
 		ED93310B1B4013F0004B09FD /* ReplViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplViewController.swift; sourceTree = "<group>"; };
 		ED93310D1B401411004B09FD /* HistoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HistoryTableViewCell.swift; sourceTree = "<group>"; };
@@ -63,6 +81,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED4ED03E21D3ABAA00821419 /* libnghttp2_iOS.a in Frameworks */,
+				ED76745E21D2E24400B33060 /* libcrypto.a in Frameworks */,
+				ED76745F21D2E24400B33060 /* libssl.a in Frameworks */,
+				ED76745B21D2E22600B33060 /* libcurl_iOS.a in Frameworks */,
 				EDFFAC3B1F3FE38700AADBDA /* libz.tbd in Frameworks */,
 				8199E7F6C3E896126D0BD8D7 /* libPods-Replete.a in Frameworks */,
 			);
@@ -90,6 +112,11 @@
 		DBA6446E3C68D11D9E9A7EF6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */,
+				ED76745C21D2E24400B33060 /* libcrypto.a */,
+				ED76745D21D2E24400B33060 /* libssl.a */,
+				ED76745A21D2E22600B33060 /* libcurl_iOS.a */,
+				ED76745821D2E21300B33060 /* curl */,
 				EDFFAC3A1F3FE38700AADBDA /* libz.tbd */,
 				FC809025F4AED9EEED53D5FC /* libPods-Replete.a */,
 			);
@@ -133,6 +160,12 @@
 				ED1A8FD81F3F45A0005B6E60 /* bundle_inflate.h */,
 				ED1A8FDA1F3F45B1005B6E60 /* bundle.h */,
 				ED1A8FD91F3F45B1005B6E60 /* bundle.c */,
+				ED76745321D2C5B200B33060 /* io.h */,
+				ED76745221D2C5B200B33060 /* io.c */,
+				ED76745521D2C63100B33060 /* http.h */,
+				ED76745621D2C63200B33060 /* http.c */,
+				ED4ED03B21D2E8A100821419 /* jsc_utils.h */,
+				ED4ED03A21D2E8A100821419 /* jsc_utils.c */,
 			);
 			path = Replete;
 			sourceTree = "<group>";
@@ -295,8 +328,11 @@
 				ED1A8FDB1F3F45B1005B6E60 /* bundle.c in Sources */,
 				ED93310C1B4013F0004B09FD /* ReplViewController.swift in Sources */,
 				ED06DC2A1B3F62E800100331 /* AppDelegate.m in Sources */,
+				ED76745421D2C5B200B33060 /* io.c in Sources */,
+				ED4ED03C21D2E8A100821419 /* jsc_utils.c in Sources */,
 				ED9331141B40151A004B09FD /* Message.swift in Sources */,
 				ED06DC271B3F62E800100331 /* main.m in Sources */,
+				ED76745721D2C63200B33060 /* http.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -385,6 +421,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -432,6 +469,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
@@ -447,9 +485,19 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = FMH366978P;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Replete/curl/include",
+					"$(PROJECT_DIR)/Replete/openssl/iOS/include",
+				);
 				INFOPLIST_FILE = Replete/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Replete/curl/lib",
+					"$(PROJECT_DIR)/Replete/openssl/iOS/lib",
+					"$(PROJECT_DIR)/Replete/nghttp2/lib",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.fikesfarm.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Replete/Replete-Bridging-Header.h";
@@ -467,9 +515,19 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = FMH366978P;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Replete/curl/include",
+					"$(PROJECT_DIR)/Replete/openssl/iOS/include",
+				);
 				INFOPLIST_FILE = Replete/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Replete/curl/lib",
+					"$(PROJECT_DIR)/Replete/openssl/iOS/lib",
+					"$(PROJECT_DIR)/Replete/nghttp2/lib",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.fikesfarm.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Replete/Replete-Bridging-Header.h";
