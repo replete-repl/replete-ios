@@ -522,10 +522,10 @@ void bootstrap(JSContextRef ctx) {
     //register_global_function(ctx, "REPLETE_EXIT_WITH_VALUE", function_exit_with_value);
     
     //register_global_function(ctx, "REPLETE_RAW_READ_STDIN", function_raw_read_stdin);
-    //register_global_function(ctx, "REPLETE_RAW_WRITE_STDOUT", function_raw_write_stdout);
-    //register_global_function(ctx, "REPLETE_RAW_FLUSH_STDOUT", function_raw_flush_stdout);
-    //register_global_function(ctx, "REPLETE_RAW_WRITE_STDERR", function_raw_write_stderr);
-    //register_global_function(ctx, "REPLETE_RAW_FLUSH_STDERR", function_raw_flush_stderr);
+    register_global_function(ctx, "REPLETE_RAW_WRITE_STDOUT", function_raw_write_stdout);
+    register_global_function(ctx, "REPLETE_RAW_FLUSH_STDOUT", function_raw_flush_stdout);
+    register_global_function(ctx, "REPLETE_RAW_WRITE_STDERR", function_raw_write_stderr);
+    register_global_function(ctx, "REPLETE_RAW_FLUSH_STDERR", function_raw_flush_stderr);
     
     //register_global_function(ctx, "REPLETE_FILE_READER_OPEN", function_file_reader_open);
     //register_global_function(ctx, "REPLETE_FILE_READER_READ", function_file_reader_read);

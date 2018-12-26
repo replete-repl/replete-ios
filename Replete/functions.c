@@ -529,6 +529,7 @@ JSValueRef function_raw_read_stdin(JSContextRef ctx, JSObjectRef function, JSObj
     
     return JSValueMakeNull(ctx);
 }
+*/
 
 JSValueRef function_raw_write_stdout(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject,
                                      size_t argc, const JSValueRef args[], JSValueRef *exception) {
@@ -565,7 +566,7 @@ JSValueRef function_raw_flush_stderr(JSContextRef ctx, JSObjectRef function, JSO
     
     return JSValueMakeNull(ctx);
 }
-*/
+
 
 #ifdef DEFHASHFNS
 unsigned long hash(unsigned char *str) {
