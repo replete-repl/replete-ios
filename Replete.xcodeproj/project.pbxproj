@@ -499,10 +499,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = FMH366978P;
-				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/Replete/curl/include",
-					"$(PROJECT_DIR)/Replete/openssl/iOS/include",
-				);
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Replete/curl/include";
 				INFOPLIST_FILE = Replete/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -529,10 +526,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = FMH366978P;
-				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/Replete/curl/include",
-					"$(PROJECT_DIR)/Replete/openssl/iOS/include",
-				);
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Replete/curl/include";
 				INFOPLIST_FILE = Replete/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
