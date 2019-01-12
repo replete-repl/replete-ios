@@ -4,12 +4,12 @@ UFILE* u_fopen(const char *filename, const char *perm, const char *locale, const
     return fopen(filename, perm);
 }
 
-int32_t u_file_write (const UChar *ustring, int32_t count, UFILE *f) {
-    return (int32_t) fwrite(ustring, sizeof(char), count, f);
+int32_t u_file_write(const UChar *ustring, int32_t count, UFILE *f) {
+    return (int32_t) fwrite(ustring, sizeof(UChar), count, f);
 }
 
-int32_t u_file_read (UChar *chars, int32_t count, UFILE *f) {
-    return (int32_t)fread(chars, sizeof(char), count, f);
+int32_t u_file_read(UChar *chars, int32_t count, UFILE *f) {
+    return (int32_t)fread(chars, sizeof(UChar), count, f);
 }
 
 int u_feof(UFILE* f) {
