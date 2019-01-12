@@ -34,6 +34,19 @@ char console_log_buf[CONSOLE_LOG_BUF_SIZE];
 
 //extern char **environ;
 
+static const char* root_directory;
+
+void set_root_directory(const char* path) {
+    root_directory = path;
+}
+
+static char sandbox_path_buffer[FILENAME_MAX];
+
+const char* sandbox(const char* path) {
+    sprintf((char*)sandbox_path_buffer, "%s%s", root_directory, path);
+    return (const char*)sandbox_path_buffer;
+}
+
 JSValueRef function_console_stdout(JSContextRef ctx, JSObjectRef function, JSObjectRef this_object,
                                    size_t argc, JSValueRef const *args, JSValueRef *exception) {
     int i;
@@ -662,7 +675,7 @@ JSValueRef function_file_reader_open(JSContextRef ctx, JSObjectRef function, JSO
         char *path = value_to_c_string(ctx, args[0]);
         char *encoding = value_to_c_string(ctx, args[1]);
         
-        descriptor_t descriptor = ufile_open_read(path, encoding);
+        descriptor_t descriptor = ufile_open_read(sandbox(path), encoding);
         
         free(path);
         free(encoding);
@@ -724,7 +737,7 @@ JSValueRef function_file_writer_open(JSContextRef ctx, JSObjectRef function, JSO
         bool append = JSValueToBoolean(ctx, args[1]);
         char *encoding = value_to_c_string(ctx, args[2]);
         
-        uint64_t descriptor = ufile_open_write(path, append, encoding);
+        uint64_t descriptor = ufile_open_write(sandbox(path), append, encoding);
         
         free(path);
         free(encoding);
@@ -789,7 +802,7 @@ JSValueRef function_file_input_stream_open(JSContextRef ctx, JSObjectRef functio
         
         char *path = value_to_c_string(ctx, args[0]);
         
-        uint64_t descriptor = file_open_read(path);
+        uint64_t descriptor = file_open_read(sandbox(path));
         
         free(path);
         
@@ -865,7 +878,7 @@ JSValueRef function_file_output_stream_open(JSContextRef ctx, JSObjectRef functi
         char *path = value_to_c_string(ctx, args[0]);
         bool append = JSValueToBoolean(ctx, args[1]);
         
-        uint64_t descriptor = file_open_write(path, append);
+        uint64_t descriptor = file_open_write(sandbox(path), append);
         
         free(path);
         

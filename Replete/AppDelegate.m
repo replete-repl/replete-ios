@@ -15,6 +15,7 @@
 #include "jsc_utils.h"
 #include "functions.h"
 #include "io.h"
+#include "file.h"
 #include "http.h"
 #include "bundle.h"
 
@@ -31,6 +32,7 @@
 @property BOOL consentedToChivorcam;
 @property BOOL suppressPrinting;
 @property NSString *codeToBeEvaluatedWhenReady;
+@property NSString *rootDirectory;
 
 @end
 
@@ -42,6 +44,10 @@
                                              selector:@selector(handleDidChangeStatusBarOrientationNotification:)
                                                  name:UIApplicationDidChangeStatusBarOrientationNotification
                                                object:nil];
+    
+    self.rootDirectory = [[AppDelegate applicationDocumentsDirectory] absoluteString];
+    set_root_directory([self.rootDirectory cStringUsingEncoding:NSUTF8StringEncoding] + 7);
+    
     return YES;
 }
 

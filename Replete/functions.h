@@ -1,3 +1,5 @@
+void set_root_directory(const char* path);
+
 JSValueRef function_console_stdout(JSContextRef ctx, JSObjectRef function, JSObjectRef this_object, size_t argc,
                                    JSValueRef const *args, JSValueRef *exception);
 
