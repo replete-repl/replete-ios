@@ -1,5 +1,11 @@
 #include <stdio.h>
-#define UFILE FILE
+#include <iconv.h>
+
+typedef struct {
+    FILE* fp;
+    iconv_t cd;
+} UFILE;
+
 #define UChar uint16_t
 
 UFILE* u_fopen(const char *filename, const char *perm, const char *locale, const char *codepage);

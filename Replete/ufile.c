@@ -6,30 +6,12 @@
 #include "ufile.h"
 
 int
-file2wcs (int fd, const char *charset, uint16_t *outbuf, size_t avail)
+file2wcs (int fd, iconv_t cd, uint16_t *outbuf, size_t avail)
 {
     char inbuf[BUFSIZ];
     size_t insize = 0;
     char *wrptr = (char *) outbuf;
     int result = 0;
-    iconv_t cd;
-    
-    cd = iconv_open ("UTF-16LE", charset);
-    if (cd == (iconv_t) -1)
-    {
-        /* Something went wrong.  */
-        if (errno == EINVAL)
-            /*error (0, 0, "conversion from '%s' to wchar_t not available",
-                   charset);*/
-            1;
-        else
-            perror ("iconv_open");
-        
-        /* Terminate the output string.  */
-        *outbuf = L'\0';
-        
-        return -1;
-    }
     
     while (avail > 0)
     {
@@ -84,21 +66,29 @@ file2wcs (int fd, const char *charset, uint16_t *outbuf, size_t avail)
     if (avail >= sizeof (wchar_t))
         *((uint16_t *) wrptr) = L'\0';
     
-    if (iconv_close (cd) != 0)
-        perror ("iconv_close");
-    
     return (uint16_t *) wrptr - outbuf;
 }
 
 UFILE* u_fopen(const char *filename, const char *perm, const char *locale, const char *codepage) {
-    return fopen(filename, perm);
+    if (codepage == NULL) {
+        codepage = "UTF8";
+    }
+    
+    UFILE* rv = malloc(sizeof(UFILE));
+    rv->fp = fopen(filename, perm);
+    
+    if (strcmp(perm, "r") == 0) {
+        rv->cd = iconv_open("UTF-16LE", codepage);
+    } else {
+        rv->cd = iconv_open(codepage, "UTF-16LE");
+    }
+    
+    return rv;
 }
 
 int32_t u_file_write(const UChar *ustring, int32_t count, UFILE *f) {
     
     int32_t rv = 0;
-    
-    iconv_t cd = iconv_open ("UTF8", "UTF-16LE");
     
     char* inbuf = (char*)ustring;
     size_t inbytesleft = 2*count;
@@ -107,32 +97,31 @@ int32_t u_file_write(const UChar *ustring, int32_t count, UFILE *f) {
         char* outbufbegin = malloc(1024 * sizeof(char));
         char* outbuf = outbufbegin;
         size_t outbytesleft = 1024;
-        iconv(cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
-        rv += (int32_t) fwrite(outbufbegin, sizeof(char), 1024 - outbytesleft, f);
+        iconv(f->cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+        rv += (int32_t) fwrite(outbufbegin, sizeof(char), 1024 - outbytesleft, f->fp);
         free(outbufbegin);
     }
-    
-    iconv_close(cd);
     
     return rv;
 }
 
 int32_t u_file_read(UChar *chars, int32_t count, UFILE *f) {
-    return file2wcs(fileno(f), "UTF8", (wchar_t*)chars, count);
+    return file2wcs(fileno(f->fp), f->cd, (uint16_t *)chars, count);
 }
 
 int u_feof(UFILE* f) {
-    return feof(f);
+    return feof(f->fp);
 }
 
 void u_fflush(UFILE* f) {
-    fflush(f);
+    fflush(f->fp);
 }
 
 FILE* u_fgetfile (UFILE* f) {
-    return f;
+    return f->fp;
 }
 
 void u_fclose(UFILE* f) {
-    fclose(f);
+    fclose(f->fp);
+    iconv_close(f->cd);
 }
