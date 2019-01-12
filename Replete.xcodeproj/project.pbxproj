@@ -16,6 +16,7 @@
 		ED06DC411B3F62E800100331 /* RepleteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED06DC401B3F62E800100331 /* RepleteTests.m */; };
 		ED1A8FDB1F3F45B1005B6E60 /* bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = ED1A8FD91F3F45B1005B6E60 /* bundle.c */; };
 		ED3BE3BA21EA3A6C00151935 /* ufile.c in Sources */ = {isa = PBXBuildFile; fileRef = ED3BE3B921EA3A6C00151935 /* ufile.c */; };
+		ED3BE3BC21EA6D5C00151935 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = ED3BE3BB21EA6D5C00151935 /* libiconv.tbd */; };
 		ED4ED03C21D2E8A100821419 /* jsc_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = ED4ED03A21D2E8A100821419 /* jsc_utils.c */; };
 		ED4ED03E21D3ABAA00821419 /* libnghttp2_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */; };
 		ED4ED04121D3AEF200821419 /* functions.c in Sources */ = {isa = PBXBuildFile; fileRef = ED4ED03F21D3AEF200821419 /* functions.c */; };
@@ -61,6 +62,7 @@
 		ED1A8FDA1F3F45B1005B6E60 /* bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundle.h; sourceTree = "<group>"; };
 		ED3BE3B821EA3A6C00151935 /* ufile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ufile.h; sourceTree = "<group>"; };
 		ED3BE3B921EA3A6C00151935 /* ufile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ufile.c; sourceTree = "<group>"; };
+		ED3BE3BB21EA6D5C00151935 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		ED4ED03A21D2E8A100821419 /* jsc_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = jsc_utils.c; sourceTree = "<group>"; };
 		ED4ED03B21D2E8A100821419 /* jsc_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsc_utils.h; sourceTree = "<group>"; };
 		ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnghttp2_iOS.a; path = Replete/nghttp2/lib/libnghttp2_iOS.a; sourceTree = "<group>"; };
@@ -91,6 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED3BE3BC21EA6D5C00151935 /* libiconv.tbd in Frameworks */,
 				ED4ED03E21D3ABAA00821419 /* libnghttp2_iOS.a in Frameworks */,
 				ED76745E21D2E24400B33060 /* libcrypto.a in Frameworks */,
 				ED76745F21D2E24400B33060 /* libssl.a in Frameworks */,
@@ -122,6 +125,7 @@
 		DBA6446E3C68D11D9E9A7EF6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				ED3BE3BB21EA6D5C00151935 /* libiconv.tbd */,
 				EDF5F9F521D3B17E00A81DF7 /* libicucore.tbd */,
 				ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */,
 				ED76745C21D2E24400B33060 /* libcrypto.a */,
