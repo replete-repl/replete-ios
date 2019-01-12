@@ -5,7 +5,7 @@
 #include "ufile.h"
 
 int
-file2wcs (int fd, const char *charset, wchar_t *outbuf, size_t avail)
+file2wcs (int fd, const char *charset, uint16_t *outbuf, size_t avail)
 {
     char inbuf[BUFSIZ];
     size_t insize = 0;
@@ -13,7 +13,7 @@ file2wcs (int fd, const char *charset, wchar_t *outbuf, size_t avail)
     int result = 0;
     iconv_t cd;
     
-    cd = iconv_open ("WCHAR_T", charset);
+    cd = iconv_open ("UTF-16LE", charset);
     if (cd == (iconv_t) -1)
     {
         /* Something went wrong.  */
@@ -81,12 +81,12 @@ file2wcs (int fd, const char *charset, wchar_t *outbuf, size_t avail)
     
     /* Terminate the output string.  */
     if (avail >= sizeof (wchar_t))
-        *((wchar_t *) wrptr) = L'\0';
+        *((uint16_t *) wrptr) = L'\0';
     
     if (iconv_close (cd) != 0)
         perror ("iconv_close");
     
-    return (wchar_t *) wrptr - outbuf;
+    return (uint16_t *) wrptr - outbuf;
 }
 
 UFILE* u_fopen(const char *filename, const char *perm, const char *locale, const char *codepage) {
