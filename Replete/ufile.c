@@ -95,16 +95,25 @@ UFILE* u_fopen(const char *filename, const char *perm, const char *locale, const
 }
 
 int32_t u_file_write(const UChar *ustring, int32_t count, UFILE *f) {
+    
+    int32_t rv = 0;
+    
     iconv_t cd = iconv_open ("UTF8", "UTF-16LE");
+    
     char* inbuf = (char*)ustring;
     size_t inbytesleft = 2*count;
-    char* outbufbegin = malloc(1024 * sizeof(char));
-    char* outbuf = outbufbegin;
-    size_t outbytesleft = 1024;
-    size_t nconv = iconv(cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+    
+    while (inbytesleft) {
+        char* outbufbegin = malloc(1024 * sizeof(char));
+        char* outbuf = outbufbegin;
+        size_t outbytesleft = 1024;
+        iconv(cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+        rv += (int32_t) fwrite(outbufbegin, sizeof(char), 1024 - outbytesleft, f);
+        free(outbufbegin);
+    }
+    
     iconv_close(cd);
-    int32_t rv = (int32_t) fwrite(outbufbegin, sizeof(char), 1024 - outbytesleft, f);
-    free(outbufbegin);
+    
     return rv;
 }
 
