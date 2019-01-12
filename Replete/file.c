@@ -2,9 +2,9 @@
 #include <search.h>
 #include <JavaScriptCore/JavaScript.h>
 //#include "unicode/ustdio.h"
+#include "ufile.h"
 #include "file.h"
 
-#ifdef UFILE_AVAILABLE
 descriptor_t ufile_to_descriptor(UFILE *ufile) {
     return (descriptor_t) ufile;
 }
@@ -56,7 +56,6 @@ void ufile_close(descriptor_t descriptor) {
     UFILE *ufile = descriptor_to_ufile(descriptor);
     u_fclose(ufile);
 }
-#endif
 
 descriptor_t file_to_descriptor(FILE *file) {
     return (descriptor_t) file;

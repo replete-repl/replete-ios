@@ -15,6 +15,7 @@
 		ED06DC351B3F62E800100331 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED06DC331B3F62E800100331 /* LaunchScreen.xib */; };
 		ED06DC411B3F62E800100331 /* RepleteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED06DC401B3F62E800100331 /* RepleteTests.m */; };
 		ED1A8FDB1F3F45B1005B6E60 /* bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = ED1A8FD91F3F45B1005B6E60 /* bundle.c */; };
+		ED3BE3BA21EA3A6C00151935 /* ufile.c in Sources */ = {isa = PBXBuildFile; fileRef = ED3BE3B921EA3A6C00151935 /* ufile.c */; };
 		ED4ED03C21D2E8A100821419 /* jsc_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = ED4ED03A21D2E8A100821419 /* jsc_utils.c */; };
 		ED4ED03E21D3ABAA00821419 /* libnghttp2_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */; };
 		ED4ED04121D3AEF200821419 /* functions.c in Sources */ = {isa = PBXBuildFile; fileRef = ED4ED03F21D3AEF200821419 /* functions.c */; };
@@ -58,6 +59,8 @@
 		ED1A8FD81F3F45A0005B6E60 /* bundle_inflate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bundle_inflate.h; sourceTree = "<group>"; };
 		ED1A8FD91F3F45B1005B6E60 /* bundle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bundle.c; sourceTree = "<group>"; };
 		ED1A8FDA1F3F45B1005B6E60 /* bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundle.h; sourceTree = "<group>"; };
+		ED3BE3B821EA3A6C00151935 /* ufile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ufile.h; sourceTree = "<group>"; };
+		ED3BE3B921EA3A6C00151935 /* ufile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ufile.c; sourceTree = "<group>"; };
 		ED4ED03A21D2E8A100821419 /* jsc_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = jsc_utils.c; sourceTree = "<group>"; };
 		ED4ED03B21D2E8A100821419 /* jsc_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsc_utils.h; sourceTree = "<group>"; };
 		ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnghttp2_iOS.a; path = Replete/nghttp2/lib/libnghttp2_iOS.a; sourceTree = "<group>"; };
@@ -178,6 +181,8 @@
 				ED76745621D2C63200B33060 /* http.c */,
 				ED4ED03B21D2E8A100821419 /* jsc_utils.h */,
 				ED4ED03A21D2E8A100821419 /* jsc_utils.c */,
+				ED3BE3B821EA3A6C00151935 /* ufile.h */,
+				ED3BE3B921EA3A6C00151935 /* ufile.c */,
 			);
 			path = Replete;
 			sourceTree = "<group>";
@@ -336,6 +341,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED93310F1B401411004B09FD /* HistoryTableViewCell.swift in Sources */,
+				ED3BE3BA21EA3A6C00151935 /* ufile.c in Sources */,
 				ED4ED04121D3AEF200821419 /* functions.c in Sources */,
 				ED9331131B40151A004B09FD /* History.swift in Sources */,
 				ED1A8FDB1F3F45B1005B6E60 /* bundle.c in Sources */,
