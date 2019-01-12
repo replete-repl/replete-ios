@@ -654,7 +654,6 @@ char *descriptor_int_to_str(descriptor_t i) {
     return rv;
 }
 
-/*
 JSValueRef function_file_reader_open(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject,
                                      size_t argc, const JSValueRef args[], JSValueRef *exception) {
     if (argc == 2
@@ -781,7 +780,7 @@ JSValueRef function_file_writer_close(JSContextRef ctx, JSObjectRef function, JS
     }
     return JSValueMakeNull(ctx);
 }
-*/
+
 
 JSValueRef function_file_input_stream_open(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject,
                                            size_t argc, const JSValueRef args[], JSValueRef *exception) {

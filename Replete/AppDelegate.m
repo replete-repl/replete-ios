@@ -527,14 +527,14 @@ void bootstrap(JSContextRef ctx) {
     register_global_function(ctx, "REPLETE_RAW_WRITE_STDERR", function_raw_write_stderr);
     register_global_function(ctx, "REPLETE_RAW_FLUSH_STDERR", function_raw_flush_stderr);
     
-    //register_global_function(ctx, "REPLETE_FILE_READER_OPEN", function_file_reader_open);
-    //register_global_function(ctx, "REPLETE_FILE_READER_READ", function_file_reader_read);
-    //register_global_function(ctx, "REPLETE_FILE_READER_CLOSE", function_file_reader_close);
+    register_global_function(ctx, "REPLETE_FILE_READER_OPEN", function_file_reader_open);
+    register_global_function(ctx, "REPLETE_FILE_READER_READ", function_file_reader_read);
+    register_global_function(ctx, "REPLETE_FILE_READER_CLOSE", function_file_reader_close);
     
-    //register_global_function(ctx, "REPLETE_FILE_WRITER_OPEN", function_file_writer_open);
-    //register_global_function(ctx, "REPLETE_FILE_WRITER_WRITE", function_file_writer_write);
-    //register_global_function(ctx, "REPLETE_FILE_WRITER_FLUSH", function_file_writer_flush);
-    //register_global_function(ctx, "REPLETE_FILE_WRITER_CLOSE", function_file_writer_close);
+    register_global_function(ctx, "REPLETE_FILE_WRITER_OPEN", function_file_writer_open);
+    register_global_function(ctx, "REPLETE_FILE_WRITER_WRITE", function_file_writer_write);
+    register_global_function(ctx, "REPLETE_FILE_WRITER_FLUSH", function_file_writer_flush);
+    register_global_function(ctx, "REPLETE_FILE_WRITER_CLOSE", function_file_writer_close);
     
     register_global_function(ctx, "REPLETE_FILE_INPUT_STREAM_OPEN", function_file_input_stream_open);
     register_global_function(ctx, "REPLETE_FILE_INPUT_STREAM_READ", function_file_input_stream_read);
