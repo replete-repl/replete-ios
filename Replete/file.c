@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <search.h>
 #include <JavaScriptCore/JavaScript.h>
-//#include "unicode/ustdio.h"
 #include "ufile.h"
 #include "file.h"
 
