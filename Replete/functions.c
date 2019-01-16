@@ -970,7 +970,7 @@ JSValueRef function_delete_file(JSContextRef ctx, JSObjectRef function, JSObject
         && JSValueGetType(ctx, args[0]) == kJSTypeString) {
         
         char *path = value_to_c_string(ctx, args[0]);
-        remove(path);
+        remove(sandbox(path));
         free(path);
     }
     return JSValueMakeNull(ctx);
