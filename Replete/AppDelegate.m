@@ -518,7 +518,6 @@ void bootstrap(JSContextRef ctx) {
     
     register_global_function(ctx, "REPLETE_EVAL", function_eval);
     
-    //register_global_function(ctx, "REPLETE_RAW_READ_STDIN", function_raw_read_stdin);
     register_global_function(ctx, "REPLETE_RAW_WRITE_STDOUT", function_raw_write_stdout);
     register_global_function(ctx, "REPLETE_RAW_FLUSH_STDOUT", function_raw_flush_stdout);
     register_global_function(ctx, "REPLETE_RAW_WRITE_STDERR", function_raw_write_stderr);
