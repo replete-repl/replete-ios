@@ -990,13 +990,18 @@ JSValueRef function_copy_file(JSContextRef ctx, JSObjectRef function, JSObjectRe
         char *src = value_to_c_string(ctx, args[0]);
         char *dst = value_to_c_string(ctx, args[1]);
         
-        int rv = copy_file(src, dst);
+        char *sandboxed_src = strdup(sandbox(src));
+        char *sandboxed_dst = strdup(sandbox(dst));
+        
+        int rv = copy_file(sandboxed_src, sandboxed_dst);
         if (rv) {
             JSValueRef arguments[1];
             arguments[0] = c_string_to_value(ctx, strerror(errno));
             *exception = JSObjectMakeError(ctx, 1, arguments, NULL);
         }
         
+        free(sandboxed_src);
+        free(sandboxed_dst);
         free(src);
         free(dst);
     }

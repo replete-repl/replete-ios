@@ -1,13 +1,3 @@
-#ifdef __APPLE__
-#include "availability.h"
-#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200
-#define PLANCK_USE_CLONEFILE 1
-#endif
-#endif
-#endif
-
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,11 +8,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#ifdef PLANCK_USE_CLONEFILE
 #include <sys/attr.h>
 #include <sys/clonefile.h>
-#include "engine.h"
-#endif
 
 #define CHUNK_SIZE 1024
 
@@ -227,7 +214,6 @@ int copy_file_loop_unlinking(const char *from, const char *to) {
 
 int copy_file(const char *from, const char *to) {
     
-#ifdef PLANCK_USE_CLONEFILE
     if (-1 == clonefile(from, to, 0)) {
         if (EEXIST == errno) {
             if (-1 == unlink(to)) {
@@ -245,8 +231,5 @@ int copy_file(const char *from, const char *to) {
     } else {
         return 0;
     }
-#else
-    return copy_file_loop_unlinking(from, to);
-#endif
     
 }
