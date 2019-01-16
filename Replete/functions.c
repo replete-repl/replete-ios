@@ -41,10 +41,15 @@ void set_root_directory(const char* path) {
 }
 
 static char sandbox_path_buffer[FILENAME_MAX];
+static char unsandbox_path_buffer[FILENAME_MAX];
 
 const char* sandbox(const char* path) {
     sprintf((char*)sandbox_path_buffer, "%s%s", root_directory, path);
     return (const char*)sandbox_path_buffer;
+}
+
+const char* unsandbox(const char* path) {
+    return path + strlen(root_directory);
 }
 
 JSValueRef function_console_stdout(JSContextRef ctx, JSObjectRef function, JSObjectRef this_object,
@@ -1004,18 +1009,19 @@ JSValueRef function_list_files(JSContextRef ctx, JSObjectRef function, JSObjectR
         && JSValueGetType(ctx, args[0]) == kJSTypeString) {
         
         char *path = value_to_c_string(ctx, args[0]);
+        char *sandboxed_path = strdup(sandbox(path));
         
         size_t capacity = 32;
         size_t count = 0;
         
         JSValueRef *paths = malloc(capacity * sizeof(JSValueRef));
         
-        DIR *d = opendir(path);
+        DIR *d = opendir(sandboxed_path);
         
         if (d) {
-            size_t path_len = strlen(path);
-            if (path_len && path[path_len - 1] == '/') {
-                path[--path_len] = 0;
+            size_t path_len = strlen(sandboxed_path);
+            if (path_len && sandboxed_path[path_len - 1] == '/') {
+                sandboxed_path[--path_len] = 0;
             }
             
             struct dirent *dir;
@@ -1024,8 +1030,8 @@ JSValueRef function_list_files(JSContextRef ctx, JSObjectRef function, JSObjectR
                     
                     size_t buf_len = path_len + strlen(dir->d_name) + 2;
                     char *buf = malloc(buf_len);
-                    snprintf(buf, buf_len, "%s/%s", path, dir->d_name);
-                    JSValueRef path_ref = c_string_to_value(ctx, buf);
+                    snprintf(buf, buf_len, "%s/%s", sandboxed_path, dir->d_name);
+                    JSValueRef path_ref = c_string_to_value(ctx, unsandbox(buf));
                     paths[count++] = path_ref;
                     JSValueProtect(ctx, path_ref);
                     free(buf);
@@ -1047,6 +1053,7 @@ JSValueRef function_list_files(JSContextRef ctx, JSObjectRef function, JSObjectR
             JSValueUnprotect(ctx, paths[i]);
         }
         
+        free(sandboxed_path);
         free(path);
         free(paths);
         
