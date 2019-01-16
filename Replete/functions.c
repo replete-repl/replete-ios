@@ -1074,7 +1074,7 @@ JSValueRef function_is_directory(JSContextRef ctx, JSObjectRef function, JSObjec
         
         struct stat file_stat;
         
-        int retval = stat(path, &file_stat);
+        int retval = stat(sandbox(path), &file_stat);
         
         free(path);
         
