@@ -1090,7 +1090,7 @@ JSValueRef function_fstat(JSContextRef ctx, JSObjectRef function, JSObjectRef th
         
         struct stat file_stat;
         
-        int retval = lstat(path, &file_stat);
+        int retval = lstat(sandbox(path), &file_stat);
         
         if (retval == 0) {
             JSObjectRef result = JSObjectMake(ctx, NULL, NULL);
