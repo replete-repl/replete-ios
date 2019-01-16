@@ -959,7 +959,7 @@ JSValueRef function_mkdirs(JSContextRef ctx, JSObjectRef function, JSObjectRef t
     if (argc == 1
         && JSValueGetType(ctx, args[0]) == kJSTypeString) {
         char *path = value_to_c_string(ctx, args[0]);
-        int rv = mkdir_parents(path);
+        int rv = mkdir_parents(sandbox(path));
         free(path);
         
         if (rv == -1) {
