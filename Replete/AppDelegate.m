@@ -12,6 +12,11 @@
 #include <Foundation/Foundation.h>
 #include <JavaScriptCore/JavaScriptCore.h>
 #include <mach/mach_time.h>
+#include "jsc_utils.h"
+#include "functions.h"
+#include "io.h"
+#include "file.h"
+#include "http.h"
 #include "bundle.h"
 
 
@@ -27,6 +32,7 @@
 @property BOOL consentedToChivorcam;
 @property BOOL suppressPrinting;
 @property NSString *codeToBeEvaluatedWhenReady;
+@property NSString *rootDirectory;
 
 @end
 
@@ -38,6 +44,10 @@
                                              selector:@selector(handleDidChangeStatusBarOrientationNotification:)
                                                  name:UIApplicationDidChangeStatusBarOrientationNotification
                                                object:nil];
+    
+    self.rootDirectory = [[AppDelegate applicationDocumentsDirectory] absoluteString];
+    set_root_directory([self.rootDirectory cStringUsingEncoding:NSUTF8StringEncoding] + 7);
+    
     return YES;
 }
 
@@ -61,25 +71,6 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-}
-
-JSValueRef evaluate_script(JSContextRef ctx, char *script, char *source) {
-    JSStringRef script_ref = JSStringCreateWithUTF8CString(script);
-    JSStringRef source_ref = NULL;
-    if (source != NULL) {
-        source_ref = JSStringCreateWithUTF8CString(source);
-    }
-    
-    JSValueRef ex = NULL;
-    JSValueRef val = JSEvaluateScript(ctx, script_ref, NULL, source_ref, 0, &ex);
-    JSStringRelease(script_ref);
-    if (source != NULL) {
-        JSStringRelease(source_ref);
-    }
-    
-    // debug_print_value("evaluate_script", ctx, ex);
-    
-    return val;
 }
 
 void register_global_function(JSContextRef ctx, char *name, JSObjectCallAsFunctionCallback handler) {
@@ -522,6 +513,48 @@ void bootstrap(JSContextRef ctx) {
                     delete REPLETE_INTERVAL_CALLBACK_STORE[id];\
                     };",
                     "<init>");
+    
+    register_global_function(ctx, "REPLETE_READ_FILE", function_read_file);
+    
+    register_global_function(ctx, "REPLETE_EVAL", function_eval);
+    
+    register_global_function(ctx, "REPLETE_RAW_WRITE_STDOUT", function_raw_write_stdout);
+    register_global_function(ctx, "REPLETE_RAW_FLUSH_STDOUT", function_raw_flush_stdout);
+    register_global_function(ctx, "REPLETE_RAW_WRITE_STDERR", function_raw_write_stderr);
+    register_global_function(ctx, "REPLETE_RAW_FLUSH_STDERR", function_raw_flush_stderr);
+    
+    register_global_function(ctx, "REPLETE_FILE_READER_OPEN", function_file_reader_open);
+    register_global_function(ctx, "REPLETE_FILE_READER_READ", function_file_reader_read);
+    register_global_function(ctx, "REPLETE_FILE_READER_CLOSE", function_file_reader_close);
+    
+    register_global_function(ctx, "REPLETE_FILE_WRITER_OPEN", function_file_writer_open);
+    register_global_function(ctx, "REPLETE_FILE_WRITER_WRITE", function_file_writer_write);
+    register_global_function(ctx, "REPLETE_FILE_WRITER_FLUSH", function_file_writer_flush);
+    register_global_function(ctx, "REPLETE_FILE_WRITER_CLOSE", function_file_writer_close);
+    
+    register_global_function(ctx, "REPLETE_FILE_INPUT_STREAM_OPEN", function_file_input_stream_open);
+    register_global_function(ctx, "REPLETE_FILE_INPUT_STREAM_READ", function_file_input_stream_read);
+    register_global_function(ctx, "REPLETE_FILE_INPUT_STREAM_CLOSE", function_file_input_stream_close);
+    
+    register_global_function(ctx, "REPLETE_FILE_OUTPUT_STREAM_OPEN", function_file_output_stream_open);
+    register_global_function(ctx, "REPLETE_FILE_OUTPUT_STREAM_WRITE", function_file_output_stream_write);
+    register_global_function(ctx, "REPLETE_FILE_OUTPUT_STREAM_FLUSH", function_file_output_stream_flush);
+    register_global_function(ctx, "REPLETE_FILE_OUTPUT_STREAM_CLOSE", function_file_output_stream_close);
+    
+    register_global_function(ctx, "REPLETE_MKDIRS", function_mkdirs);
+    register_global_function(ctx, "REPLETE_DELETE", function_delete_file);
+    register_global_function(ctx, "REPLETE_COPY", function_copy_file);
+    
+    register_global_function(ctx, "REPLETE_LIST_FILES", function_list_files);
+    
+    register_global_function(ctx, "REPLETE_IS_DIRECTORY", function_is_directory);
+    
+    register_global_function(ctx, "REPLETE_FSTAT", function_fstat);
+    
+    register_global_function(ctx, "REPLETE_REQUEST", function_http_request);
+    
+    register_global_function(ctx, "REPLETE_SLEEP", function_sleep);
+    
 }
 
 - (void)initializeJavaScriptEnvironment {
