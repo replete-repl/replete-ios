@@ -48,7 +48,7 @@ if [ "$CLOSURE_OPTIMIZATIONS" != "NONE" ] && [ ${file: -3} == ".js" ] && [ "${fi
 then
   if [ ! -f $file.optim ] || [ $file -nt $file.optim ]
   then
-    osascript -e "display notification \"Closure compiling $file\" with title \"Replete\""
+    # osascript -e "display notification \"Closure compiling $file\" with title \"Replete\""
     java -jar ../compiler/closure-compiler-v$CLOSURE_RELEASE.jar --compilation_level $CLOSURE_OPTIMIZATIONS --language_in ECMASCRIPT3 --language_out ECMASCRIPT3 --process_closure_primitives false --js $file --js_output_file $file.optim
     echo -n "."
   fi
