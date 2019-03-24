@@ -33,6 +33,7 @@
 @property BOOL suppressPrinting;
 @property NSString *codeToBeEvaluatedWhenReady;
 @property NSString *rootDirectory;
+@property NSString *caRootPath;
 
 @end
 
@@ -47,6 +48,9 @@
     
     self.rootDirectory = [[AppDelegate applicationDocumentsDirectory] absoluteString];
     set_root_directory([self.rootDirectory cStringUsingEncoding:NSUTF8StringEncoding] + 7);
+    
+    self.caRootPath = [[NSBundle mainBundle] pathForResource:@"cacert" ofType:@"pem"];
+    set_ca_root_path([self.caRootPath cStringUsingEncoding:NSUTF8StringEncoding]);
     
     return YES;
 }
