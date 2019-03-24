@@ -17,6 +17,12 @@ extern JSGlobalContextRef ctx;
 #define CURLOPT_UNIX_SOCKET_PATH 0
 #endif
 
+static const char* ca_root_path;
+
+void set_ca_root_path(const char* path) {
+    ca_root_path = path;
+}
+
 struct header_state {
     JSObjectRef *headers;
 };
@@ -156,6 +162,8 @@ JSValueRef function_http_request(JSContextRef ctx, JSObjectRef function, JSObjec
         
         CURL *handle = curl_easy_init();
         assert(handle != NULL);
+        
+        curl_easy_setopt(handle, CURLOPT_CAINFO, ca_root_path); // set root CA certs
         
         curl_easy_setopt(handle, CURLOPT_CUSTOMREQUEST, method);
         curl_easy_setopt(handle, CURLOPT_URL, url);

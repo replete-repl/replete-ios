@@ -21,6 +21,7 @@
 		ED4ED03E21D3ABAA00821419 /* libnghttp2_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */; };
 		ED4ED04121D3AEF200821419 /* functions.c in Sources */ = {isa = PBXBuildFile; fileRef = ED4ED03F21D3AEF200821419 /* functions.c */; };
 		ED4ED04421D3AFD400821419 /* file.c in Sources */ = {isa = PBXBuildFile; fileRef = ED4ED04221D3AFD400821419 /* file.c */; };
+		ED6AC7362247E7AF00B891A8 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = ED6AC7352247E7AF00B891A8 /* cacert.pem */; };
 		ED76745421D2C5B200B33060 /* io.c in Sources */ = {isa = PBXBuildFile; fileRef = ED76745221D2C5B200B33060 /* io.c */; };
 		ED76745721D2C63200B33060 /* http.c in Sources */ = {isa = PBXBuildFile; fileRef = ED76745621D2C63200B33060 /* http.c */; };
 		ED76745B21D2E22600B33060 /* libcurl_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED76745A21D2E22600B33060 /* libcurl_iOS.a */; };
@@ -70,6 +71,7 @@
 		ED4ED04021D3AEF200821419 /* functions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = functions.h; sourceTree = "<group>"; };
 		ED4ED04221D3AFD400821419 /* file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = file.c; sourceTree = "<group>"; };
 		ED4ED04321D3AFD400821419 /* file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = file.h; sourceTree = "<group>"; };
+		ED6AC7352247E7AF00B891A8 /* cacert.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cacert.pem; sourceTree = "<group>"; };
 		ED76745221D2C5B200B33060 /* io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = io.c; sourceTree = "<group>"; };
 		ED76745321D2C5B200B33060 /* io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = io.h; sourceTree = "<group>"; };
 		ED76745521D2C63100B33060 /* http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http.h; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				ED06DC2E1B3F62E800100331 /* Main.storyboard */,
 				ED06DC311B3F62E800100331 /* Images.xcassets */,
 				ED06DC331B3F62E800100331 /* LaunchScreen.xib */,
+				ED6AC7352247E7AF00B891A8 /* cacert.pem */,
 				ED06DC241B3F62E800100331 /* Supporting Files */,
 				ED93310A1B4013EF004B09FD /* Replete-Bridging-Header.h */,
 				ED1A8FD81F3F45A0005B6E60 /* bundle_inflate.h */,
@@ -303,6 +306,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED6AC7362247E7AF00B891A8 /* cacert.pem in Resources */,
 				ED06DC301B3F62E800100331 /* Main.storyboard in Resources */,
 				ED06DC351B3F62E800100331 /* LaunchScreen.xib in Resources */,
 				ED06DC321B3F62E800100331 /* Images.xcassets in Resources */,
