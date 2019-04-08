@@ -1,4 +1,4 @@
-# Replete
+# Replete iOS
 
 ClojureScript REPL iOS app.
 
