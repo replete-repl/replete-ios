@@ -345,11 +345,12 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let newSize = (newText! as NSString).boundingRect(with: CGSize(width: textView.frame.width - textView.textContainerInset.right - textView.textContainerInset.left - 10, height: CGFloat.greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: textView.font!], context: nil)
         let heightChange = newSize.height + textView.textContainerInset.top + textView.textContainerInset.bottom - oldHeight
         
+        let containerInsetsSum = textView.textContainerInset.top + textView.textContainerInset.bottom
+        
         let maxHeightDeltas = toolBar.frame.height
             - self.topLayoutGuide.length
             - currentKeyboardHeight
-            - textView.textContainerInset.top
-            - textView.textContainerInset.bottom
+            - containerInsetsSum
             - 20
         
         let maxHeight = self.view.frame.height - maxHeightDeltas
