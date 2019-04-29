@@ -233,6 +233,13 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if (text == "\n") {
             enterPressed = true;
         }
+        
+        if (enterPressed && range.location == currentText!.count) {
+            enterPressed = false
+            sendAction()
+            return false;
+        }
+        
         if (textView.intrinsicContentSize.width >= textView.frame.width - evalButton.frame.width - 12){ // the magic number is inset widths summed
             textView.isScrollEnabled = true
         }
