@@ -146,10 +146,10 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         NSLog("Initializing...");
         DispatchQueue.global(qos: .background).async {
             appDelegate.initializeJavaScriptEnvironment()
+            self.initialized = true;
             DispatchQueue.main.async {
                 // mark ready
                 NSLog("Ready");
-                self.initialized = true;
                 let hasText = self.textView.hasText
                 self.evalButton.isEnabled = hasText
                 if (hasText) {
@@ -236,6 +236,9 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         if (enterPressed && range.location == currentText!.count) {
             enterPressed = false
+            while (!self.initialized) {
+                Thread.sleep(forTimeInterval: 0.1);
+            }
             sendAction()
             return false;
         }
