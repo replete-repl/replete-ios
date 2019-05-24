@@ -59,6 +59,7 @@ REPL_INPUT
 
 mkdir -p out/clojure/test/check
 mkdir -p out/cljs/analyzer
+mkdir -p out/cljs/core/specs
 mkdir -p out/cljs/spec/test
 mkdir -p out/cljs/spec/gen
 mkdir -p out/cljs/core/async/impl

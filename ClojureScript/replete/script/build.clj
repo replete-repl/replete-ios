@@ -38,8 +38,8 @@
 (copy-source "clojure/template.clj")
 (copy-source "cljs/core/async/macros.cljc")
 (copy-source "cljs/core/async/impl/ioc_macros.clj")
-#_(copy-source "cljs/core/specs/alpha.cljc")
-#_(copy-source "cljs/core/specs/alpha.cljs")
+(copy-source "cljs/core/specs/alpha.cljc")
+(copy-source "cljs/core/specs/alpha.cljs")
 
 (let [res (io/resource "cljs/core.cljs.cache.aot.edn")
       cache (read-string (slurp res))]
