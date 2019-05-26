@@ -47,7 +47,7 @@ mkdir -p aot-cache
 lein deps
 M2_REPO=~/.m2/repository
 echo "AOT compiling macros"
-../../../planck/planck-c/build/planck -q -k aot-cache -c $M2_REPO/andare/andare/0.9.0/andare-0.9.0.jar:$M2_REPO/org/clojure/test.check/0.10.0-alpha3/test.check-0.10.0-alpha3.jar:$M2_REPO/chivorcam/chivorcam/1.0.0/chivorcam-1.0.0.jar <<REPL_INPUT
+../../../planck/planck-c/build/planck -q -k aot-cache -c $M2_REPO/andare/andare/0.10.0/andare-0.10.0.jar:$M2_REPO/org/clojure/test.check/0.10.0-alpha4/test.check-0.10.0-alpha4.jar:$M2_REPO/chivorcam/chivorcam/1.0.0/chivorcam-1.0.0.jar <<REPL_INPUT
 (require '[clojure.test.check.clojure-test :include-macros true])
 (require-macros
   'chivorcam.core
