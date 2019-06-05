@@ -26,7 +26,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 
                 textView = InputTextView(frame: CGRect.zero)
                 textView.backgroundColor = UIColor(white: 250/255, alpha: 1)
-                textView.font = UIFont(name: "Menlo", size: messageFontSize)
+                textView.font = UIFont(name: "Fira Code", size: messageFontSize)
                 textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 205/255, alpha:1).cgColor
                 textView.layer.borderWidth = 0.5
                 textView.layer.cornerRadius = 5

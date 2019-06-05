@@ -10,7 +10,7 @@ class HistoryTableViewCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         
         messageLabel = UILabel(frame: CGRect.zero)
-        messageLabel.font = UIFont(name: "Menlo", size: messageFontSize)
+        messageLabel.font = UIFont(name: "Fira Code", size: messageFontSize)
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
         messageLabel.isUserInteractionEnabled = true   // #CopyMessage

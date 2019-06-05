@@ -17,6 +17,7 @@
 		ED1A8FDB1F3F45B1005B6E60 /* bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = ED1A8FD91F3F45B1005B6E60 /* bundle.c */; };
 		ED3BE3BA21EA3A6C00151935 /* ufile.c in Sources */ = {isa = PBXBuildFile; fileRef = ED3BE3B921EA3A6C00151935 /* ufile.c */; };
 		ED3BE3BC21EA6D5C00151935 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = ED3BE3BB21EA6D5C00151935 /* libiconv.tbd */; };
+		ED48AE3622A605C200F52FBB /* FiraCode-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = ED48AE3522A605C200F52FBB /* FiraCode-Regular.otf */; };
 		ED4ED03C21D2E8A100821419 /* jsc_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = ED4ED03A21D2E8A100821419 /* jsc_utils.c */; };
 		ED4ED03E21D3ABAA00821419 /* libnghttp2_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */; };
 		ED4ED04121D3AEF200821419 /* functions.c in Sources */ = {isa = PBXBuildFile; fileRef = ED4ED03F21D3AEF200821419 /* functions.c */; };
@@ -64,6 +65,7 @@
 		ED3BE3B821EA3A6C00151935 /* ufile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ufile.h; sourceTree = "<group>"; };
 		ED3BE3B921EA3A6C00151935 /* ufile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ufile.c; sourceTree = "<group>"; };
 		ED3BE3BB21EA6D5C00151935 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		ED48AE3522A605C200F52FBB /* FiraCode-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FiraCode-Regular.otf"; sourceTree = "<group>"; };
 		ED4ED03A21D2E8A100821419 /* jsc_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = jsc_utils.c; sourceTree = "<group>"; };
 		ED4ED03B21D2E8A100821419 /* jsc_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsc_utils.h; sourceTree = "<group>"; };
 		ED4ED03D21D3ABAA00821419 /* libnghttp2_iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnghttp2_iOS.a; path = Replete/nghttp2/lib/libnghttp2_iOS.a; sourceTree = "<group>"; };
@@ -163,6 +165,7 @@
 		ED06DC231B3F62E800100331 /* Replete */ = {
 			isa = PBXGroup;
 			children = (
+				ED48AE3522A605C200F52FBB /* FiraCode-Regular.otf */,
 				ED06DC281B3F62E800100331 /* AppDelegate.h */,
 				ED06DC291B3F62E800100331 /* AppDelegate.m */,
 				ED93310B1B4013F0004B09FD /* ReplViewController.swift */,
@@ -309,6 +312,7 @@
 			files = (
 				ED6AC7362247E7AF00B891A8 /* cacert.pem in Resources */,
 				ED06DC301B3F62E800100331 /* Main.storyboard in Resources */,
+				ED48AE3622A605C200F52FBB /* FiraCode-Regular.otf in Resources */,
 				ED06DC351B3F62E800100331 /* LaunchScreen.xib in Resources */,
 				ED06DC321B3F62E800100331 /* Images.xcassets in Resources */,
 			);
