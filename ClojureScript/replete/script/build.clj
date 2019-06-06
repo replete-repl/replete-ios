@@ -41,6 +41,10 @@
 (copy-source "cljs/core/specs/alpha.cljc")
 (copy-source "cljs/core/specs/alpha.cljs")
 
+(let [target (io/file "out/clojure/core/rrb_vector/macros.clj")]
+  (io/make-parents target)
+  (io/copy (io/reader "https://replete-repl.org/releases/CRRBV-16-macros.clj") target))
+
 (let [res (io/resource "cljs/core.cljs.cache.aot.edn")
       cache (read-string (slurp res))]
   (doseq [key (keys cache)]
