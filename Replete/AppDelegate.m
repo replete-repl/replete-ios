@@ -22,7 +22,7 @@
 
 @interface AppDelegate ()
 
-@property (assign, nonatomic) JSContext* context;
+@property (strong, nonatomic) JSContext* context;
 @property (strong, nonatomic) JSValue* readEvalPrintFn;
 @property (strong, nonatomic) JSValue* chivorcamReferred;
 @property (strong, nonatomic) JSValue* formatFn;
