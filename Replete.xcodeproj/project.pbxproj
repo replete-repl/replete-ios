@@ -48,7 +48,7 @@
 /* Begin PBXFileReference section */
 		2B729A836860CF6C7C9AEA5A /* Pods-Replete.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Replete.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Replete/Pods-Replete.debug.xcconfig"; sourceTree = "<group>"; };
 		41F3B6043256B063EF1F8481 /* Pods-Replete.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Replete.release.xcconfig"; path = "Pods/Target Support Files/Pods-Replete/Pods-Replete.release.xcconfig"; sourceTree = "<group>"; };
-		ED06DC211B3F62E800100331 /* Replete.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Replete.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED06DC211B3F62E800100331 /* Replete REPL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Replete REPL.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED06DC251B3F62E800100331 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ED06DC261B3F62E800100331 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		ED06DC281B3F62E800100331 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -156,7 +156,7 @@
 		ED06DC221B3F62E800100331 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				ED06DC211B3F62E800100331 /* Replete.app */,
+				ED06DC211B3F62E800100331 /* Replete REPL.app */,
 				ED06DC3A1B3F62E800100331 /* RepleteTests.xctest */,
 			);
 			name = Products;
@@ -241,7 +241,7 @@
 			);
 			name = Replete;
 			productName = Replete;
-			productReference = ED06DC211B3F62E800100331 /* Replete.app */;
+			productReference = ED06DC211B3F62E800100331 /* Replete REPL.app */;
 			productType = "com.apple.product-type.application";
 		};
 		ED06DC391B3F62E800100331 /* RepleteTests */ = {
@@ -528,8 +528,9 @@
 					"$(PROJECT_DIR)/Replete/openssl/iOS/lib",
 					"$(PROJECT_DIR)/Replete/nghttp2/lib",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.fikesfarm.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				MARKETING_VERSION = 2.3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fikesfarm.Replete;
+				PRODUCT_NAME = "Replete REPL";
 				SWIFT_OBJC_BRIDGING_HEADER = "Replete/Replete-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
@@ -555,8 +556,9 @@
 					"$(PROJECT_DIR)/Replete/openssl/iOS/lib",
 					"$(PROJECT_DIR)/Replete/nghttp2/lib",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.fikesfarm.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				MARKETING_VERSION = 2.3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fikesfarm.Replete;
+				PRODUCT_NAME = "Replete REPL";
 				SWIFT_OBJC_BRIDGING_HEADER = "Replete/Replete-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;

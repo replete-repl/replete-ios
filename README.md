@@ -1,4 +1,4 @@
-# Replete iOS
+# Replete REPL iOS
 
 ClojureScript REPL iOS app.
 
@@ -30,6 +30,6 @@ Happy to take PRs!
 
 # License
 
-Copyright © 2015–2019 Mike Fikes, Roman Liutikov, and Contributors
+Copyright © 2015–2020 Mike Fikes, Roman Liutikov, and Contributors
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
