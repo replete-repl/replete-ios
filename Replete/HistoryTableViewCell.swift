@@ -35,13 +35,19 @@ class HistoryTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func getTextColor(incoming : Bool) -> UIColor {
+        if #available(iOS 13.0, *) {
+            return incoming ?
+                (traitCollection.userInterfaceStyle == .dark ? UIColor.white : UIColor.black)
+                : (traitCollection.userInterfaceStyle == .dark ? UIColor.lightGray : UIColor.darkGray);
+        } else {
+            return incoming ? UIColor.black : UIColor.darkGray;
+        }
+    }
+    
     func configureWithMessage(_ message: Message) {
         
-        if (message.incoming) {
-            messageLabel.textColor = UIColor.black;
-        } else {
-            messageLabel.textColor = UIColor.darkGray;
-        }
+        messageLabel.textColor = self.getTextColor(incoming: message.incoming)
 
         messageLabel.attributedText = message.text
 
@@ -53,9 +59,19 @@ class HistoryTableViewCell: UITableViewCell {
         
     }
     
+    func getBackgroundColor(selected : Bool) -> UIColor {
+        if #available(iOS 13.0, *) {
+            return selected ?
+                (traitCollection.userInterfaceStyle == .dark ? UIColor.white : UIColor.blue.withAlphaComponent(0.15))
+                : UIColor.systemBackground;
+        } else {
+            return selected ? UIColor.blue.withAlphaComponent(0.15) : UIColor.white;
+        }
+    }
+    
     // Highlight cell #CopyMessage
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        messageLabel.backgroundColor = selected ? UIColor.blue.withAlphaComponent(0.15) : UIColor.white
+        messageLabel.backgroundColor = self.getBackgroundColor(selected: selected)
     }
 }
