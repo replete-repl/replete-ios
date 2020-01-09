@@ -25,9 +25,22 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 toolBar.layoutIfNeeded() // see SO answer re: iOS 11 and UIToolbar - https://bit.ly/2wIPF5n
                 
                 textView = InputTextView(frame: CGRect.zero)
-                textView.backgroundColor = UIColor(white: 250/255, alpha: 1)
+                if #available(iOS 13.0, *) {
+                    textView.backgroundColor =
+                        traitCollection.userInterfaceStyle == .dark ?
+                            UIColor(white: 5/255, alpha: 1) : UIColor(white: 250/255, alpha: 1)
+                } else {
+                    textView.backgroundColor = UIColor(white: 250/255, alpha: 1)
+                }
                 textView.font = UIFont(name: "Fira Code", size: messageFontSize)
-                textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 205/255, alpha:1).cgColor
+                if #available(iOS 13.0, *) {
+                    textView.layer.borderColor =
+                        traitCollection.userInterfaceStyle == .dark ?
+                        UIColor(red: 55/255, green: 55/255, blue: 50/255, alpha:1).cgColor
+                        : UIColor(red: 200/255, green: 200/255, blue: 205/255, alpha:1).cgColor;
+                } else {
+                    textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 205/255, alpha:1).cgColor
+                }
                 textView.layer.borderWidth = 0.5
                 textView.layer.cornerRadius = 5
                 textView.scrollsToTop = false
@@ -89,8 +102,11 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         history.loadedMessages = [
         ]
         
-        let whiteColor = UIColor.white
-        view.backgroundColor = whiteColor
+        var backgroundColor = UIColor.white
+        if #available(iOS 13.0, *) {
+            backgroundColor = UIColor.systemBackground
+        }
+        view.backgroundColor = backgroundColor
         
         if #available(iOS 11.0, *) {
             let safeAreaInsets = UIApplication.shared.delegate?.window??.safeAreaInsets;
@@ -108,7 +124,7 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
         
         tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        tableView.backgroundColor = whiteColor
+        tableView.backgroundColor = backgroundColor
         let edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: toolBarMinHeight, right: 0)
         tableView.contentInset = edgeInsets
         tableView.dataSource = self
@@ -389,12 +405,27 @@ class ReplViewController: UIViewController, UITableViewDataSource, UITableViewDe
             let index: Int = text.distance(from: text.startIndex, to: range.lowerBound);
             let index2 = text.index(text.startIndex, offsetBy: index + 2);
             var color : UIColor = UIColor.black;
+            if #available(iOS 13.0, *) {
+                if (traitCollection.userInterfaceStyle == .dark) {
+                    color = UIColor.white;
+                }
+            }
             if (text[index2...].hasPrefix("34m")){
                 color = UIColor.blue;
+                if #available(iOS 13.0, *) {
+                    if (traitCollection.userInterfaceStyle == .dark) {
+                        color = UIColor(red: 0.0, green: 0.75, blue: 1.0, alpha: 1.0);
+                    }
+                }
             } else if (text[index2...].hasPrefix("32m")){
                 color = UIColor(red: 0.0, green: 0.75, blue: 0.0, alpha: 1.0);
             } else if (text[index2...].hasPrefix("35m")){
                 color = UIColor(red: 0.75, green: 0.0, blue: 0.75, alpha: 1.0);
+                if #available(iOS 13.0, *) {
+                    if (traitCollection.userInterfaceStyle == .dark) {
+                        color = UIColor(red: 0.95, green: 0.5, blue: 0.95, alpha: 1.0);
+                    }
+                }
             } else if (text[index2...].hasPrefix("31m")){
                 color = UIColor(red: 1, green: 0.33, blue: 0.33, alpha: 1.0);
             }
