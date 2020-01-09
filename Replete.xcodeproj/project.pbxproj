@@ -528,7 +528,7 @@
 					"$(PROJECT_DIR)/Replete/openssl/iOS/lib",
 					"$(PROJECT_DIR)/Replete/nghttp2/lib",
 				);
-				MARKETING_VERSION = 2.3;
+				MARKETING_VERSION = 2.3.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fikesfarm.Replete;
 				PRODUCT_NAME = "Replete REPL";
 				SWIFT_OBJC_BRIDGING_HEADER = "Replete/Replete-Bridging-Header.h";
@@ -556,7 +556,7 @@
 					"$(PROJECT_DIR)/Replete/openssl/iOS/lib",
 					"$(PROJECT_DIR)/Replete/nghttp2/lib",
 				);
-				MARKETING_VERSION = 2.3;
+				MARKETING_VERSION = 2.3.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fikesfarm.Replete;
 				PRODUCT_NAME = "Replete REPL";
 				SWIFT_OBJC_BRIDGING_HEADER = "Replete/Replete-Bridging-Header.h";
