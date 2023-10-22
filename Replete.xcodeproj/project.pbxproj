@@ -520,7 +520,7 @@
 				DEVELOPMENT_TEAM = FMH366978P;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Replete/curl/include";
 				INFOPLIST_FILE = Replete/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -548,7 +548,7 @@
 				DEVELOPMENT_TEAM = FMH366978P;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Replete/curl/include";
 				INFOPLIST_FILE = Replete/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
